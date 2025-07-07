@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -45,7 +44,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           <Target className="text-purple-600" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Use the Core Objectives</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Core Objectives</h3>
           <p className="text-gray-600 text-sm">Select the learning objectives that align with your lesson goals</p>
         </div>
       </div>

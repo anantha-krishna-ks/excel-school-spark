@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,14 +12,14 @@ const ExpectedLearningOutcome = () => {
   const [bloomsLevel, setBloomsLevel] = useState('1,3');
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
     'Different levels of students',
-    'We the core objectives',
+    'Use the Core Objectives',
     'Blooms/DoK',
     'MI theory based'
   ]);
 
   const features = [
     { id: 'levels', label: 'Different levels of students', icon: '👥', description: 'Accommodate diverse learning abilities' },
-    { id: 'objectives', label: 'We the core objectives', icon: '🎯', description: 'Align with selected core objectives' },
+    { id: 'objectives', label: 'Use the Core Objectives', icon: '🎯', description: 'Align with selected core objectives' },
     { id: 'blooms', label: 'Blooms/DoK', icon: '🧠', description: 'Depth of Knowledge taxonomy' },
     { id: 'mi', label: 'MI theory based', icon: '🌟', description: 'Multiple Intelligence theory' }
   ];
