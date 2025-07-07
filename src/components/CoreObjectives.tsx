@@ -11,12 +11,12 @@ interface CoreObjectivesProps {
 const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([
     'Current happenings',
-    'School values (dust out)'
+    'School values (List out)'
   ]);
   
   const objectives = [
     { id: 'current', label: 'Current happenings', icon: '📰', color: 'blue' },
-    { id: 'values', label: 'School values (dust out)', icon: '🏫', color: 'purple' },
+    { id: 'values', label: 'School values (List out)', icon: '🏫', color: 'purple' },
     { id: 'ethics', label: 'Human, ethics & moral', icon: '🤝', color: 'green' },
     { id: 'timeless', label: 'Timeless values', icon: '⭐', color: 'yellow' },
     { id: 'career', label: 'College & career readiness', icon: '🎓', color: 'indigo' },
@@ -45,7 +45,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           <Target className="text-purple-600" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Core Objectives</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Use the Core Objectives</h3>
           <p className="text-gray-600 text-sm">Select the learning objectives that align with your lesson goals</p>
         </div>
       </div>
