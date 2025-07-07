@@ -1,11 +1,44 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import Header from '@/components/Header';
+import SelectionPanel from '@/components/SelectionPanel';
+import CoreObjectives from '@/components/CoreObjectives';
+import ExpectedLearningOutcome from '@/components/ExpectedLearningOutcome';
 
 const Index = () => {
+  const [board, setBoard] = useState('');
+  const [grade, setGrade] = useState('');
+  const [subject, setSubject] = useState('');
+  const [generatedCOs, setGeneratedCOs] = useState<string[]>([]);
+
+  const handleGenerateCO = (objectives: string[]) => {
+    // Simulate generating course objectives based on selected core objectives
+    const cos = objectives.map(obj => `CO: ${obj} - Students will demonstrate understanding of ${obj.toLowerCase()}`);
+    setGeneratedCOs(cos);
+    
+    // You could add a toast notification here
+    console.log('Generated COs:', cos);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="space-y-8">
+          <SelectionPanel 
+            board={board}
+            setBoard={setBoard}
+            grade={grade}
+            setGrade={setGrade}
+            subject={subject}
+            setSubject={setSubject}
+          />
+          
+          <CoreObjectives onGenerateCO={handleGenerateCO} />
+          
+          <ExpectedLearningOutcome />
+        </div>
       </div>
     </div>
   );
