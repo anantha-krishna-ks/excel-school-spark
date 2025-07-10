@@ -1,15 +1,30 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Clock, Hash, Users, Brain, Lightbulb } from 'lucide-react';
+import { Plus, Clock, Hash, Users, Brain, Lightbulb, X } from 'lucide-react';
+
+interface ActivityRow {
+  id: string;
+  duration: string;
+  activityNumber: string;
+  activityType: string;
+  bloomsLevel: string;
+}
 
 const ExpectedLearningOutcome = () => {
-  const [duration, setDuration] = useState('');
-  const [activityNumber, setActivityNumber] = useState('');
-  const [activityType, setActivityType] = useState('');
-  const [bloomsLevel, setBloomsLevel] = useState('1,3');
+  const [activityRows, setActivityRows] = useState<ActivityRow[]>([
+    {
+      id: '1',
+      duration: '',
+      activityNumber: '',
+      activityType: '',
+      bloomsLevel: '1,3'
+    }
+  ]);
+  
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
     'Different levels of students',
     'Use the Core Objectives',
@@ -32,12 +47,32 @@ const ExpectedLearningOutcome = () => {
     }
   };
 
+  const handleAddRow = () => {
+    const newRow: ActivityRow = {
+      id: Date.now().toString(),
+      duration: '',
+      activityNumber: '',
+      activityType: '',
+      bloomsLevel: '1,3'
+    };
+    setActivityRows([...activityRows, newRow]);
+  };
+
+  const handleRemoveRow = (id: string) => {
+    if (activityRows.length > 1) {
+      setActivityRows(activityRows.filter(row => row.id !== id));
+    }
+  };
+
+  const handleRowChange = (id: string, field: keyof ActivityRow, value: string) => {
+    setActivityRows(activityRows.map(row => 
+      row.id === id ? { ...row, [field]: value } : row
+    ));
+  };
+
   const handleGenerateELO = () => {
     console.log('Generating ELO with:', {
-      duration,
-      activityNumber,
-      activityType,
-      bloomsLevel,
+      activityRows,
       selectedFeatures
     });
   };
@@ -56,71 +91,90 @@ const ExpectedLearningOutcome = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <Clock size={16} className="text-blue-500" />
-            Duration
-          </label>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              placeholder="45"
-              className="w-20 h-10 text-center border-gray-300 focus:border-blue-500"
-            />
-            <span className="text-sm text-gray-500 font-medium">mins</span>
+      <div className="space-y-4 mb-6">
+        {activityRows.map((row, index) => (
+          <div key={row.id} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border border-gray-200 rounded-lg relative">
+            {activityRows.length > 1 && (
+              <button
+                onClick={() => handleRemoveRow(row.id)}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+              >
+                <X size={12} />
+              </button>
+            )}
+            
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Clock size={16} className="text-blue-500" />
+                Duration
+              </label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={row.duration}
+                  onChange={(e) => handleRowChange(row.id, 'duration', e.target.value)}
+                  placeholder="45"
+                  className="w-20 h-10 text-center border-gray-300 focus:border-blue-500"
+                />
+                <span className="text-sm text-gray-500 font-medium">mins</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Hash size={16} className="text-purple-500" />
+                Activity No.
+              </label>
+              <Input
+                type="number"
+                value={row.activityNumber}
+                onChange={(e) => handleRowChange(row.id, 'activityNumber', e.target.value)}
+                placeholder={`${index + 1}`}
+                className="w-20 h-10 text-center border-gray-300 focus:border-blue-500"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Users size={16} className="text-orange-500" />
+                Type
+              </label>
+              <Select value={row.activityType} onValueChange={(value) => handleRowChange(row.id, 'activityType', value)}>
+                <SelectTrigger className="w-32 h-10 border-gray-300 focus:border-blue-500">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="group">Group</SelectItem>
+                  <SelectItem value="class">Class</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Brain size={16} className="text-pink-500" />
+                Blooms/DoK
+              </label>
+              <Input
+                value={row.bloomsLevel}
+                onChange={(e) => handleRowChange(row.id, 'bloomsLevel', e.target.value)}
+                placeholder="1,3"
+                className="w-24 h-10 text-center border-gray-300 focus:border-blue-500"
+              />
+            </div>
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <Hash size={16} className="text-purple-500" />
-            Activity No.
-          </label>
-          <Input
-            type="number"
-            value={activityNumber}
-            onChange={(e) => setActivityNumber(e.target.value)}
-            placeholder="1"
-            className="w-20 h-10 text-center border-gray-300 focus:border-blue-500"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <Users size={16} className="text-orange-500" />
-            Type
-          </label>
-          <div className="flex items-center gap-2">
-            <Select value={activityType} onValueChange={setActivityType}>
-              <SelectTrigger className="w-32 h-10 border-gray-300 focus:border-blue-500">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="individual">Individual</SelectItem>
-                <SelectItem value="group">Group</SelectItem>
-                <SelectItem value="class">Class</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button size="sm" variant="outline" className="p-2 border-gray-300 hover:border-blue-400">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <Brain size={16} className="text-pink-500" />
-            Blooms/DoK
-          </label>
-          <Input
-            value={bloomsLevel}
-            onChange={(e) => setBloomsLevel(e.target.value)}
-            placeholder="1,3"
-            className="w-24 h-10 text-center border-gray-300 focus:border-blue-500"
-          />
+        ))}
+        
+        <div className="flex justify-center">
+          <Button 
+            onClick={handleAddRow}
+            variant="outline"
+            className="flex items-center gap-2 border-dashed border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+          >
+            <Plus size={16} />
+            Add Activity Row
+          </Button>
         </div>
       </div>
 
