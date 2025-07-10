@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Target, Sparkles, Lightbulb, Bot, CheckCircle, GripVertical } from 'lucide-react';
+import { Target, Sparkles, Lightbulb, Bot, CheckCircle, GripVertical, Edit3, Trash2 } from 'lucide-react';
 
 interface CoreObjectivesProps {
   onGenerateCO: (objectives: string[]) => void;
