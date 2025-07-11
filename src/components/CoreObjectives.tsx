@@ -108,7 +108,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
             }`}
           >
             <Lightbulb size={16} />
-            <span className="font-medium">Pick & Choose</span>
+            <span className="font-medium">Recommended</span>
           </button>
           <button
             onClick={() => setActiveTab('aiAssist')}
@@ -119,7 +119,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
             }`}
           >
             <Bot size={16} />
-            <span className="font-medium">AI Suggestions</span>
+            <span className="font-medium">AI Assist</span>
           </button>
         </div>
 
@@ -193,36 +193,51 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
 
         {/* AI Assist Tab Content */}
         {activeTab === 'aiAssist' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {availableObjectives.map((objective) => (
-              <div 
-                key={objective.id} 
-                className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
-                  selectedObjectives.includes(objective.label) 
-                    ? 'border-blue-200 bg-blue-50' 
-                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                }`}
-              >
-                <Checkbox
-                  id={objective.id}
-                  checked={selectedObjectives.includes(objective.label)}
-                  onCheckedChange={(checked) => handleObjectiveChange(objective.label, !!checked)}
-                  className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg">{objective.icon}</span>
-                    <label 
-                      htmlFor={objective.id} 
-                      className="text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900"
-                    >
-                      {objective.label}
-                    </label>
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-blue-900 mb-3">AI-Suggested Objectives</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {availableObjectives.map((objective) => (
+                <div 
+                  key={objective.id} 
+                  className="flex items-start gap-3 bg-white p-3 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200"
+                >
+                  <span className="text-lg flex-shrink-0">{objective.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={objective.id}
+                          checked={selectedObjectives.includes(objective.label)}
+                          onCheckedChange={(checked) => handleObjectiveChange(objective.label, !!checked)}
+                          className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                        />
+                        <label 
+                          htmlFor={objective.id} 
+                          className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                        >
+                          {objective.label}
+                        </label>
+                      </div>
+                      <button
+                        onClick={() => handleAddToShortlist(objective.label)}
+                        className={`p-1 rounded transition-colors ${
+                          shortlistedObjectives.includes(objective.label)
+                            ? 'text-orange-500'
+                            : 'text-gray-400 hover:text-orange-500'
+                        }`}
+                      >
+                        {shortlistedObjectives.includes(objective.label) ? (
+                          <Star size={14} fill="currentColor" />
+                        ) : (
+                          <StarOff size={14} />
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-600 ml-6">{objective.description}</p>
                   </div>
-                  <p className="text-xs text-gray-600">{objective.description}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>

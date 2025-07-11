@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Plus, Upload, BookOpen, Users, Clock } from 'lucide-react';
+import { Plus, Upload, BookOpen, Clock } from 'lucide-react';
 
 interface SelectionPanelProps {
   board: string;
@@ -28,39 +28,8 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
           <p className="text-gray-600 text-sm">Configure your lesson details in just a few clicks</p>
         </div>
       </div>
-      
-      {/* Time Section */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Clock className="text-blue-600" size={16} />
-          <label className="text-sm font-medium text-gray-700">Lesson Duration</label>
-        </div>
-        <div className="grid grid-cols-2 gap-4 max-w-xs">
-          <div className="space-y-2">
-            <label className="text-xs text-gray-600">Hours</label>
-            <Input
-              type="number"
-              placeholder="1"
-              min="0"
-              max="8"
-              className="h-10 text-center border-gray-300 focus:border-blue-500"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs text-gray-600">Minutes</label>
-            <Input
-              type="number"
-              placeholder="30"
-              min="0"
-              max="59"
-              step="5"
-              className="h-10 text-center border-gray-300 focus:border-blue-500"
-            />
-          </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Board/Standard</label>
           <Select value={board} onValueChange={setBoard}>
@@ -105,6 +74,36 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
             </SelectContent>
           </Select>
         </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Clock className="text-blue-600" size={16} />
+            <label className="text-sm font-medium text-gray-700">Lesson Duration</label>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-xs text-gray-600">Hours</label>
+              <Input
+                type="number"
+                placeholder="1"
+                min="0"
+                max="8"
+                className="h-11 text-center border-gray-300 focus:border-blue-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-gray-600">Minutes</label>
+              <Input
+                type="number"
+                placeholder="30"
+                min="0"
+                max="59"
+                step="5"
+                className="h-11 text-center border-gray-300 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
@@ -114,13 +113,6 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
         >
           <Plus className="mr-2" size={18} />
           Create New Lesson
-        </Button>
-        <Button 
-          variant="outline" 
-          className="min-w-[160px] h-12 bg-gradient-to-r from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-200 text-green-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-        >
-          <Users className="mr-2" size={18} />
-          Use Template
         </Button>
       </div>
 
