@@ -2,7 +2,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Upload, BookOpen, Users } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Plus, Upload, BookOpen, Users, Clock } from 'lucide-react';
 
 interface SelectionPanelProps {
   board: string;
@@ -24,10 +25,41 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
         </div>
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Setup Your Lesson Plan</h3>
-          <p className="text-gray-600 text-sm">Configure board, grade, subject and other parameters</p>
+          <p className="text-gray-600 text-sm">Configure your lesson details in just a few clicks</p>
         </div>
       </div>
       
+      {/* Time Section */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Clock className="text-blue-600" size={16} />
+          <label className="text-sm font-medium text-gray-700">Lesson Duration</label>
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-w-xs">
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600">Hours</label>
+            <Input
+              type="number"
+              placeholder="1"
+              min="0"
+              max="8"
+              className="h-10 text-center border-gray-300 focus:border-blue-500"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600">Minutes</label>
+            <Input
+              type="number"
+              placeholder="30"
+              min="0"
+              max="59"
+              step="5"
+              className="h-10 text-center border-gray-300 focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Board/Standard</label>
@@ -81,28 +113,31 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
           className="min-w-[160px] h-12 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-200 text-blue-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <Plus className="mr-2" size={18} />
-          Create New LP
+          Create New Lesson
         </Button>
         <Button 
           variant="outline" 
           className="min-w-[160px] h-12 bg-gradient-to-r from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-200 text-green-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <Users className="mr-2" size={18} />
-          Modify Existing LP
+          Use Template
         </Button>
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors">
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-              <Upload className="text-gray-600" size={16} />
+              <Upload className="text-blue-600" size={16} />
             </div>
-            <p className="text-gray-700 font-medium">Upload existing lesson plan to modify</p>
+            <div>
+              <p className="text-blue-900 font-medium">Upload Lesson Content</p>
+              <p className="text-blue-600 text-xs">PDFs, documents, or existing lesson plans</p>
+            </div>
           </div>
           <Button 
             variant="outline" 
-            className="bg-white border-gray-300 hover:bg-gray-50 shadow-sm"
+            className="bg-white border-blue-300 hover:bg-blue-50 shadow-sm text-blue-700"
           >
             Browse Files
           </Button>
