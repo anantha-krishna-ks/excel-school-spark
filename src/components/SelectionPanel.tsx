@@ -29,7 +29,7 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Board/Standard</label>
           <Select value={board} onValueChange={setBoard}>
@@ -78,11 +78,10 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Clock className="text-blue-600" size={16} />
-            <label className="text-sm font-medium text-gray-700">Lesson Duration</label>
+            <label className="text-sm font-medium text-gray-700">Duration</label>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <label className="text-xs text-gray-600">Hours</label>
+          <div className="flex gap-2">
+            <div className="flex-1">
               <Input
                 type="number"
                 placeholder="1"
@@ -90,9 +89,9 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
                 max="8"
                 className="h-11 text-center border-gray-300 focus:border-blue-500"
               />
+              <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs text-gray-600">Minutes</label>
+            <div className="flex-1">
               <Input
                 type="number"
                 placeholder="30"
@@ -101,6 +100,7 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
                 step="5"
                 className="h-11 text-center border-gray-300 focus:border-blue-500"
               />
+              <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
             </div>
           </div>
         </div>

@@ -21,11 +21,8 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
   
   const availableObjectives = [
     { id: 'timeless', label: 'Timeless values', icon: '⭐', description: 'Help students understand eternal principles and moral values' },
-    { id: 'relevance', label: 'Relevance to life', icon: '🌱', description: 'Connect learning to real-world applications and daily life' },
     { id: 'lifeskill', label: 'Life skill', icon: '💪', description: 'Develop practical skills for personal and professional growth' },
-    { id: 'critical', label: 'Critical thinking', icon: '🧠', description: 'Enhance analytical and problem-solving abilities' },
-    { id: 'creativity', label: 'Creativity & Innovation', icon: '🎨', description: 'Foster creative expression and innovative thinking' },
-    { id: 'collaboration', label: 'Collaboration', icon: '🤝', description: 'Build teamwork and communication skills' }
+    { id: 'relevance', label: 'Relevance to life', icon: '🌱', description: 'Connect learning to real-world applications and daily life' }
   ];
 
   const handleObjectiveChange = (objective: string, checked: boolean) => {
@@ -129,7 +126,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
             {/* Available Core Objectives */}
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
               <h4 className="font-medium text-blue-900 mb-3">Choose from Popular Objectives</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {availableObjectives.map((objective) => (
                   <div
                     key={objective.id}
@@ -195,7 +192,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
         {activeTab === 'aiAssist' && (
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
             <h4 className="font-medium text-blue-900 mb-3">AI-Suggested Objectives</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {availableObjectives.map((objective) => (
                 <div 
                   key={objective.id} 

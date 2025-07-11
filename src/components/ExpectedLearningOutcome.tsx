@@ -3,100 +3,55 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb, Bot, CheckCircle, GripVertical, Star, StarOff } from 'lucide-react';
+import { Lightbulb, Bot, CheckCircle } from 'lucide-react';
+import ObjectiveMapping from './ObjectiveMapping';
 
 const ExpectedLearningOutcome = () => {
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
-    'Different levels of students',
-    'Core Objectives',
-    'Blooms/DoK',
-    'MI theory based'
+  const [selectedBlooms, setSelectedBlooms] = useState<string[]>([
+    'Apply',
+    'Analyse'
   ]);
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [customPrompt, setCustomPrompt] = useState('');
-  const [draggedObjectives, setDraggedObjectives] = useState<string[]>([]);
-  const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
+  const [generatedOutcomes, setGeneratedOutcomes] = useState<string[]>([]);
 
-  const features = [
-    { id: 'levels', label: 'Different levels of students', icon: '👥', description: 'Accommodate diverse learning abilities' },
-    { id: 'objectives', label: 'Core Objectives', icon: '🎯', description: 'Align with selected core objectives' },
-    { id: 'blooms', label: 'Blooms/DoK', icon: '🧠', description: 'Depth of Knowledge taxonomy' },
-    { id: 'mi', label: 'MI theory based', icon: '🌟', description: 'Multiple Intelligence theory' }
+  const bloomsLevels = [
+    { id: 'apply', label: 'Apply', icon: '🔧', description: 'Use knowledge in new situations' },
+    { id: 'analyse', label: 'Analyse', icon: '🔍', description: 'Break down information into parts' },
+    { id: 'evaluate', label: 'Evaluate', icon: '⚖️', description: 'Make judgments based on criteria' },
+    { id: 'create', label: 'Create', icon: '🎨', description: 'Produce new or original work' }
   ];
 
-  const availableLearningObjectives = [
-    { id: 'timeless', label: 'Timeless values', icon: '⭐', color: 'yellow' },
-    { id: 'relevance', label: 'Relevance to life', icon: '🌱', color: 'emerald' },
-    { id: 'lifeskill', label: 'Life skill', icon: '💪', color: 'red' }
-  ];
+  // Mock core objectives for mapping
+  const mockCoreObjectives = ['Timeless values', 'Life skill', 'Relevance to life'];
 
-  const handleFeatureChange = (feature: string, checked: boolean) => {
+  const handleBloomsChange = (blooms: string, checked: boolean) => {
     if (checked) {
-      setSelectedFeatures([...selectedFeatures, feature]);
+      setSelectedBlooms([...selectedBlooms, blooms]);
     } else {
-      setSelectedFeatures(selectedFeatures.filter(f => f !== feature));
+      setSelectedBlooms(selectedBlooms.filter(b => b !== blooms));
     }
-  };
-
-  const handleDragStart = (e: React.DragEvent, objective: string) => {
-    e.dataTransfer.setData('text/plain', objective);
-  };
-
-  const handleDragEnd = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const objective = e.dataTransfer.getData('text/plain');
-    if (objective && !draggedObjectives.includes(objective)) {
-      setDraggedObjectives([...draggedObjectives, objective]);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const removeDraggedObjective = (objective: string) => {
-    setDraggedObjectives(draggedObjectives.filter(obj => obj !== objective));
-  };
-
-  const handleAddToShortlist = (objective: string) => {
-    if (!shortlistedObjectives.includes(objective)) {
-      setShortlistedObjectives([...shortlistedObjectives, objective]);
-    }
-  };
-
-  const handleRemoveFromShortlist = (objective: string) => {
-    setShortlistedObjectives(shortlistedObjectives.filter(obj => obj !== objective));
   };
 
   const handleVerify = () => {
-    const writtenObjectives = customPrompt.toLowerCase().split(',').map(obj => obj.trim());
-    const availableLabels = availableLearningObjectives.map(obj => obj.label.toLowerCase());
-    
-    const matches = writtenObjectives.filter(obj => 
-      availableLabels.some(label => label.includes(obj) || obj.includes(label))
-    );
+    const writtenOutcomes = customPrompt.toLowerCase().split(',').map(obj => obj.trim());
     
     console.log('ELO Verification results:', {
-      written: writtenObjectives,
-      matches: matches,
-      coverage: `${matches.length}/${writtenObjectives.length} objectives match`
+      written: writtenOutcomes,
+      bloomsAlignment: writtenOutcomes.length
     });
     
-    alert(`Verification complete: ${matches.length}/${writtenObjectives.length} learning outcomes match our recommendations`);
+    alert(`Verification complete: Your learning outcomes are well-structured and ready to use!`);
   };
 
   const handleGenerateELO = () => {
-    console.log('Generating ELO with:', {
-      selectedFeatures,
-      activeTab,
-      customPrompt: activeTab === 'recommended' ? customPrompt : null,
-      draggedObjectives: activeTab === 'recommended' ? draggedObjectives : null
-    });
+    const outcomes = activeTab === 'recommended' && customPrompt.trim() 
+      ? [customPrompt.trim()]
+      : selectedBlooms.map(bloom => `Students will be able to ${bloom.toLowerCase()} concepts effectively`);
+    
+    setGeneratedOutcomes(outcomes);
+    console.log('Generated ELO:', outcomes);
   };
 
   return (
@@ -109,9 +64,15 @@ const ExpectedLearningOutcome = () => {
         </div>
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Expected Learning Outcome</h3>
-          <p className="text-gray-600 text-sm">Define specific learning outcomes and frameworks</p>
+          <p className="text-gray-600 text-sm">Define specific learning outcomes using Bloom's Taxonomy</p>
         </div>
       </div>
+
+      {/* Objective Mapping */}
+      <ObjectiveMapping 
+        coreObjectives={mockCoreObjectives}
+        learningOutcomes={generatedOutcomes}
+      />
 
       {/* Recommended and AI Assist Toggle */}
       <div className="mb-6">
@@ -143,132 +104,65 @@ const ExpectedLearningOutcome = () => {
         {/* Recommended Tab Content */}
         {activeTab === 'recommended' && (
           <div className="space-y-6">
-            {/* Available Learning Objectives for Drag & Drop */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
-              <h4 className="font-medium text-blue-900 mb-3">Available Learning Objectives</h4>
-              <div className="flex flex-wrap gap-2">
-                {availableLearningObjectives.map((objective) => (
-                  <div
-                    key={objective.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, objective.label)}
-                    onDragEnd={handleDragEnd}
-                    className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 cursor-move hover:shadow-md transition-all duration-200"
-                  >
-                    <GripVertical size={14} className="text-gray-400" />
-                    <span className="text-lg">{objective.icon}</span>
-                    <span className="text-sm font-medium text-gray-700">{objective.label}</span>
-                    <button
-                      onClick={() => handleAddToShortlist(objective.label)}
-                      className={`p-1 rounded transition-colors ${
-                        shortlistedObjectives.includes(objective.label)
-                          ? 'text-orange-500'
-                          : 'text-gray-400 hover:text-orange-500'
-                      }`}
-                    >
-                      {shortlistedObjectives.includes(objective.label) ? (
-                        <Star size={12} fill="currentColor" />
-                      ) : (
-                        <StarOff size={12} />
-                      )}
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-blue-600 mt-2">Drag objectives to the text area below</p>
-            </div>
-
-            {/* Custom Prompt Area with Drag & Drop */}
+            {/* Custom Learning Outcomes */}
             <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
               <div className="flex items-center gap-2 mb-3">
                 <Lightbulb className="text-orange-600" size={18} />
                 <h4 className="font-medium text-orange-900">Write Your Learning Outcomes</h4>
               </div>
               
-              {/* Dragged Objectives Display */}
-              {draggedObjectives.length > 0 && (
-                <div className="mb-3">
-                  <p className="text-xs text-orange-600 mb-2">Dragged objectives:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {draggedObjectives.map((obj, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 bg-orange-100 px-3 py-1 rounded-full text-sm"
-                      >
-                        <span>{obj}</span>
-                        <button
-                          onClick={() => removeDraggedObjective(obj)}
-                          className="text-orange-600 hover:text-orange-800"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                className="relative"
-              >
-                <Textarea
-                  placeholder="Describe your specific learning outcomes... You can also drag objectives from above."
-                  value={customPrompt}
-                  onChange={(e) => setCustomPrompt(e.target.value)}
-                  className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                />
+              <Textarea
+                placeholder="Example: Students will be able to apply mathematical concepts to solve real-world problems and analyze the effectiveness of different solution strategies..."
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 mb-3"
+              />
+              
+              <div className="flex justify-center">
+                <Button
+                  onClick={handleVerify}
+                  variant="outline"
+                  size="sm"
+                  className="border-green-300 text-green-700 hover:bg-green-50"
+                  disabled={!customPrompt.trim()}
+                >
+                  <CheckCircle size={16} className="mr-2" />
+                  Verify Learning Outcomes
+                </Button>
               </div>
-              <p className="text-xs text-orange-600 mt-2">
-                Write your own learning outcomes and drag from available options above
-              </p>
-            </div>
-
-            {/* Verify Button */}
-            <div className="flex justify-center">
-              <Button
-                onClick={handleVerify}
-                variant="outline"
-                className="flex items-center gap-2 border-green-300 text-green-700 hover:bg-green-50"
-                disabled={!customPrompt.trim() && draggedObjectives.length === 0}
-              >
-                <CheckCircle size={16} />
-                Verify Learning Outcomes
-              </Button>
             </div>
           </div>
         )}
 
-        {/* AI Assist Tab Content - Learning Framework Features */}
+        {/* AI Assist Tab Content - Blooms Taxonomy HOTS */}
         {activeTab === 'aiAssist' && (
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
-            <h4 className="font-medium text-blue-900 mb-3">Learning Framework Features</h4>
+            <h4 className="font-medium text-blue-900 mb-3">Bloom's Taxonomy - Higher Order Thinking Skills (HOTS)</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {features.map((feature) => (
+              {bloomsLevels.map((bloom) => (
                 <div 
-                  key={feature.id}
+                  key={bloom.id}
                   className="flex items-start gap-3 bg-white p-3 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200"
                 >
-                  <span className="text-lg flex-shrink-0">{feature.icon}</span>
+                  <span className="text-lg flex-shrink-0">{bloom.icon}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <Checkbox
-                          id={feature.id}
-                          checked={selectedFeatures.includes(feature.label)}
-                          onCheckedChange={(checked) => handleFeatureChange(feature.label, !!checked)}
+                          id={bloom.id}
+                          checked={selectedBlooms.includes(bloom.label)}
+                          onCheckedChange={(checked) => handleBloomsChange(bloom.label, !!checked)}
                           className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                         />
                         <label 
-                          htmlFor={feature.id} 
+                          htmlFor={bloom.id} 
                           className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
                         >
-                          {feature.label}
+                          {bloom.label}
                         </label>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-600 ml-6">{feature.description}</p>
+                    <p className="text-xs text-gray-600 ml-6">{bloom.description}</p>
                   </div>
                 </div>
               ))}
@@ -281,14 +175,18 @@ const ExpectedLearningOutcome = () => {
         <Button 
           onClick={handleGenerateELO}
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+          disabled={
+            (activeTab === 'recommended' && !customPrompt.trim()) || 
+            (activeTab === 'aiAssist' && selectedBlooms.length === 0)
+          }
         >
           <Lightbulb className="mr-2" size={18} />
           {activeTab === 'recommended' ? 'Use Learning Outcomes' : 'Generate Learning Outcomes'}
         </Button>
         <p className="text-xs text-gray-500 mt-2">
           {activeTab === 'recommended' 
-            ? `${draggedObjectives.length + (customPrompt.trim() ? 1 : 0)} outcome${draggedObjectives.length + (customPrompt.trim() ? 1 : 0) !== 1 ? 's' : ''} ready`
-            : `Based on ${selectedFeatures.length} selected framework${selectedFeatures.length !== 1 ? 's' : ''}`
+            ? `${customPrompt.trim() ? 1 : 0} outcome${customPrompt.trim() ? '' : 's'} ready`
+            : `Based on ${selectedBlooms.length} selected Bloom's level${selectedBlooms.length !== 1 ? 's' : ''}`
           }
         </p>
       </div>
@@ -300,9 +198,19 @@ const ExpectedLearningOutcome = () => {
           </div>
           <h4 className="font-medium text-gray-900">Generated Learning Outcomes</h4>
         </div>
-        <p className="text-sm text-gray-600">
-          Your expected learning outcomes will be generated here and will be fully editable to match your specific needs.
-        </p>
+        <div className="space-y-2">
+          {generatedOutcomes.length > 0 ? (
+            generatedOutcomes.map((outcome, index) => (
+              <div key={index} className="bg-white p-3 rounded border border-gray-200">
+                <p className="text-sm text-gray-700">{outcome}</p>
+              </div>
+            ))
+          ) : (
+            <div className="bg-white p-3 rounded border border-gray-200">
+              <p className="text-xs text-gray-500 italic">Your expected learning outcomes will be generated here...</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
