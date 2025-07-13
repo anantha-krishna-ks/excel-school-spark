@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import SelectionPanel from '@/components/SelectionPanel';
-import CoreObjectives from '@/components/CoreObjectives';
+import LessonPlanStepper from '@/components/LessonPlanStepper';
 import ExpectedLearningOutcome from '@/components/ExpectedLearningOutcome';
 
 const Index = () => {
@@ -34,7 +34,7 @@ const Index = () => {
             setSubject={setSubject}
           />
           
-          <CoreObjectives onGenerateCO={handleGenerateCO} />
+          <LessonPlanStepper onGenerateCO={handleGenerateCO} />
           
           <ExpectedLearningOutcome />
         </div>
