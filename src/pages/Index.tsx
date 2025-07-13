@@ -1,9 +1,7 @@
 
 import React, { useState } from 'react';
 import Header from '@/components/Header';
-import SelectionPanel from '@/components/SelectionPanel';
-import LessonPlanStepper from '@/components/LessonPlanStepper';
-import ExpectedLearningOutcome from '@/components/ExpectedLearningOutcome';
+import MainStepper from '@/components/MainStepper';
 
 const Index = () => {
   const [board, setBoard] = useState('');
@@ -24,20 +22,15 @@ const Index = () => {
       <Header />
       
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="space-y-8">
-          <SelectionPanel 
-            board={board}
-            setBoard={setBoard}
-            grade={grade}
-            setGrade={setGrade}
-            subject={subject}
-            setSubject={setSubject}
-          />
-          
-          <LessonPlanStepper onGenerateCO={handleGenerateCO} />
-          
-          <ExpectedLearningOutcome />
-        </div>
+        <MainStepper
+          board={board}
+          setBoard={setBoard}
+          grade={grade}
+          setGrade={setGrade}
+          subject={subject}
+          setSubject={setSubject}
+          onGenerateCO={handleGenerateCO}
+        />
       </div>
     </div>
   );

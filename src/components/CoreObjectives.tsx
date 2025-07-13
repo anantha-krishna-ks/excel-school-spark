@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Target, Sparkles, Star, Heart, Trophy, CheckCircle2, Zap, Lightbulb, Bot } from 'lucide-react';
-import CoreObjectivesShortlist from './CoreObjectivesShortlist';
+import { Target, Sparkles, CheckCircle2, Heart, Bot } from 'lucide-react';
 
 interface CoreObjectivesProps {
   onGenerateCO: (objectives: string[]) => void;
@@ -13,7 +11,6 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [customObjective, setCustomObjective] = useState('');
-  const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
   const [showCelebration, setShowCelebration] = useState(false);
   
   const availableObjectives = [
@@ -40,12 +37,21 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
     }
   ];
 
+  // Auto-select all objectives in AI Assist mode
+  React.useEffect(() => {
+    if (activeTab === 'aiAssist') {
+      setSelectedObjectives(availableObjectives.map(obj => obj.label));
+    }
+  }, [activeTab]);
+
   const triggerCelebration = () => {
     setShowCelebration(true);
     setTimeout(() => setShowCelebration(false), 1000);
   };
 
   const handleObjectiveToggle = (objective: string) => {
+    if (activeTab === 'aiAssist') return; // Don't allow changes in AI mode
+    
     const isSelected = selectedObjectives.includes(objective);
     
     if (isSelected) {
@@ -54,17 +60,6 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
       setSelectedObjectives([...selectedObjectives, objective]);
       triggerCelebration();
     }
-  };
-
-  const handleAddToShortlist = (objective: string) => {
-    if (!shortlistedObjectives.includes(objective)) {
-      setShortlistedObjectives([...shortlistedObjectives, objective]);
-      triggerCelebration();
-    }
-  };
-
-  const handleRemoveFromShortlist = (objective: string) => {
-    setShortlistedObjectives(shortlistedObjectives.filter(obj => obj !== objective));
   };
 
   const handleGenerateCO = () => {
@@ -84,16 +79,8 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-ping">
             <Sparkles className="text-yellow-400" size={32} />
           </div>
-          <div className="absolute top-1/4 left-1/4 animate-bounce delay-100">
-            <Star className="text-purple-500" size={16} />
-          </div>
-          <div className="absolute top-1/3 right-1/4 animate-bounce delay-200">
-            <Heart className="text-pink-500" size={14} />
-          </div>
         </div>
       )}
-
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
       
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
@@ -116,7 +103,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
               : 'text-gray-600 hover:text-gray-800'
           }`}
         >
-          <Star size={16} className={activeTab === 'recommended' ? 'fill-current' : ''} />
+          <Heart size={16} />
           <span className="font-medium">Recommended</span>
         </button>
         <button
@@ -127,187 +114,73 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
               : 'text-gray-600 hover:text-gray-800'
           }`}
         >
-          <Star size={16} className={activeTab === 'aiAssist' ? 'fill-current' : ''} />
+          <Bot size={16} />
           <span className="font-medium">AI Assist</span>
         </button>
       </div>
 
-      {/* Progress Indicator */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <Trophy className="text-yellow-500" size={16} />
-          <span className="text-sm font-medium text-gray-700">
-            {totalSelected === 0 ? "Choose your objectives" : `${totalSelected} objective${totalSelected > 1 ? 's' : ''} selected! 🎉`}
-          </span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${Math.min((totalSelected / 3) * 100, 100)}%` }}
-          ></div>
-        </div>
+      {/* Objectives Grid - Consistent for both tabs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {availableObjectives.map((objective) => {
+          const isSelected = selectedObjectives.includes(objective.label);
+          return (
+            <div
+              key={objective.id}
+              className={`
+                relative p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg
+                ${isSelected 
+                  ? `border-transparent bg-gradient-to-br ${objective.color} text-white shadow-lg` 
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+                }
+                ${activeTab === 'aiAssist' ? 'cursor-default' : ''}
+              `}
+              onClick={() => handleObjectiveToggle(objective.label)}
+            >
+              {/* Selection indicator */}
+              <div className="absolute top-3 right-3">
+                <CheckCircle2 className={isSelected ? "text-white" : "text-gray-400"} size={20} />
+              </div>
+              
+              <div className="text-center">
+                <div className="text-3xl mb-3">{objective.icon}</div>
+                <h4 className={`font-semibold mb-2 ${isSelected ? 'text-white' : 'text-gray-800'}`}>
+                  {objective.label}
+                </h4>
+                <p className={`text-sm ${isSelected ? 'text-white/90' : 'text-gray-600'}`}>
+                  {objective.description}
+                </p>
+              </div>
+              
+              {/* AI mode indicator */}
+              {activeTab === 'aiAssist' && (
+                <div className="absolute bottom-2 right-2">
+                  <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
+                    Always Selected
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      {/* Recommended Tab Content */}
-      {activeTab === 'recommended' && (
-        <div className="space-y-6">
-          {/* Main Objectives Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {availableObjectives.map((objective) => {
-              const isSelected = selectedObjectives.includes(objective.label);
-              return (
-                <div
-                  key={objective.id}
-                  className={`
-                    relative p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg group
-                    ${isSelected 
-                      ? `border-transparent bg-gradient-to-br ${objective.color} text-white shadow-lg` 
-                      : 'border-gray-200 bg-white hover:border-gray-300'
-                    }
-                  `}
-                >
-                  {/* Star button for shortlisting */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToShortlist(objective.label);
-                    }}
-                    className={`absolute top-2 left-2 p-1 rounded-full transition-all duration-200 ${
-                      shortlistedObjectives.includes(objective.label)
-                        ? 'text-yellow-400'
-                        : isSelected ? 'text-white/70 hover:text-white' : 'text-gray-400 hover:text-yellow-400'
-                    }`}
-                  >
-                    <Star size={16} className={shortlistedObjectives.includes(objective.label) ? 'fill-current' : ''} />
-                  </button>
-                  
-                  {/* Selection indicator */}
-                  {isSelected && (
-                    <div className="absolute top-2 right-2">
-                      <CheckCircle2 className="text-white" size={20} />
-                    </div>
-                  )}
-                  
-                  <div 
-                    className="text-center pt-4"
-                    onClick={() => handleObjectiveToggle(objective.label)}
-                  >
-                    <div className="text-3xl mb-3">{objective.icon}</div>
-                    <h4 className={`font-semibold mb-2 ${isSelected ? 'text-white' : 'text-gray-800'}`}>
-                      {objective.label}
-                    </h4>
-                    <p className={`text-sm ${isSelected ? 'text-white/90' : 'text-gray-600'}`}>
-                      {objective.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Custom Objective */}
-          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="text-2xl">💡</div>
-              <h4 className="font-semibold text-orange-900">Got Something Specific in Mind?</h4>
-            </div>
-            
-            <Textarea
-              placeholder="Type your own teaching objective here... (e.g., Students will learn to solve real-world problems creatively)"
-              value={customObjective}
-              onChange={(e) => setCustomObjective(e.target.value)}
-              className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
-            />
-          </div>
+      {/* Custom Objective */}
+      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="text-2xl">💡</div>
+          <h4 className="font-semibold text-orange-900">Add Your Special Touch (Optional)</h4>
         </div>
-      )}
-
-      {/* AI Assist Tab Content */}
-      {activeTab === 'aiAssist' && (
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
-          <div className="flex items-center gap-2 mb-4">
-            <Bot className="text-blue-600" size={20} />
-            <h4 className="font-medium text-blue-900">AI-Powered Objective Suggestions</h4>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {availableObjectives.map((objective) => {
-              const isSelected = selectedObjectives.includes(objective.label);
-              return (
-                <div
-                  key={`ai-${objective.id}`}
-                  className={`
-                    relative p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-105 group
-                    ${isSelected 
-                      ? 'border-blue-300 bg-blue-100 shadow-md' 
-                      : 'border-gray-200 bg-white hover:border-blue-200'
-                    }
-                  `}
-                >
-                  {/* Star button for shortlisting */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToShortlist(objective.label);
-                    }}
-                    className={`absolute top-2 left-2 p-1 rounded-full transition-all duration-200 ${
-                      shortlistedObjectives.includes(objective.label)
-                        ? 'text-yellow-500'
-                        : 'text-gray-400 hover:text-yellow-400'
-                    }`}
-                  >
-                    <Star size={14} className={shortlistedObjectives.includes(objective.label) ? 'fill-current' : ''} />
-                  </button>
-
-                  {/* AI suggestion indicator */}
-                  <div className="absolute top-2 right-2">
-                    <Zap className="text-blue-500" size={14} />
-                  </div>
-                  
-                  <div 
-                    className="text-center pt-4"
-                    onClick={() => handleObjectiveToggle(objective.label)}
-                  >
-                    <div className="text-2xl mb-2">{objective.icon}</div>
-                    <h5 className={`font-medium text-sm mb-1 ${isSelected ? 'text-blue-800' : 'text-gray-800'}`}>
-                      {objective.label}
-                    </h5>
-                    <p className={`text-xs ${isSelected ? 'text-blue-600' : 'text-gray-600'}`}>
-                      AI recommended
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="bg-white rounded-lg p-4 border border-blue-200">
-            <div className="flex items-center gap-2 mb-2">
-              <Lightbulb className="text-blue-600" size={16} />
-              <span className="text-sm font-medium text-blue-900">AI Custom Suggestion</span>
-            </div>
-            <Textarea
-              placeholder="Describe your teaching context and let AI suggest objectives..."
-              value={customObjective}
-              onChange={(e) => setCustomObjective(e.target.value)}
-              className="w-full min-h-[60px] resize-none border-blue-200 focus:border-blue-400 focus:ring-blue-400"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Shortlisted Objectives */}
-      <div className="mt-6">
-        <CoreObjectivesShortlist
-          shortlistedObjectives={shortlistedObjectives}
-          onRemoveFromShortlist={handleRemoveFromShortlist}
-          onAddToShortlist={handleAddToShortlist}
-          availableObjectives={availableObjectives.map(obj => obj.label)}
+        
+        <Textarea
+          placeholder="Type your own teaching objective here... (e.g., Students will learn to solve real-world problems creatively)"
+          value={customObjective}
+          onChange={(e) => setCustomObjective(e.target.value)}
+          className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
         />
       </div>
 
       {/* Generate Button */}
-      <div className="text-center mt-6">
+      <div className="text-center">
         <Button 
           onClick={handleGenerateCO}
           disabled={totalSelected === 0}
@@ -320,12 +193,12 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           `}
         >
           <Sparkles className="mr-2" size={20} />
-          {totalSelected === 0 ? 'Choose at least one objective' : `Create My Lesson Plan! 🚀`}
+          {totalSelected === 0 ? 'Choose at least one objective' : `Continue with ${totalSelected} objective${totalSelected > 1 ? 's' : ''}! 🚀`}
         </Button>
         
         {totalSelected > 0 && (
           <p className="text-sm text-gray-600 mt-3">
-            Ready to create an amazing lesson with {totalSelected} objective{totalSelected > 1 ? 's' : ''}! 
+            Ready to proceed with {totalSelected} objective{totalSelected > 1 ? 's' : ''}! 
           </p>
         )}
       </div>

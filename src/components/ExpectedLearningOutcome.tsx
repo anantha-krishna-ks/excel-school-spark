@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb, Bot, CheckCircle } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target } from 'lucide-react';
 import ObjectiveMapping from './ObjectiveMapping';
 
 const ExpectedLearningOutcome = () => {
@@ -11,6 +12,8 @@ const ExpectedLearningOutcome = () => {
     'Apply',
     'Analyse'
   ]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [customPrompt, setCustomPrompt] = useState('');
@@ -23,6 +26,22 @@ const ExpectedLearningOutcome = () => {
     { id: 'create', label: 'Create', icon: '🎨', description: 'Produce new or original work' }
   ];
 
+  const skillsList = [
+    'Critical Thinking',
+    'Communication',
+    'Collaboration',
+    'Creativity',
+    'Problem Solving'
+  ];
+
+  const attitudesList = [
+    'Respect',
+    'Integrity', 
+    'Compassion',
+    'Empathy',
+    'Responsibility'
+  ];
+
   // Mock core objectives for mapping
   const mockCoreObjectives = ['Timeless values', 'Life skill', 'Relevance to life'];
 
@@ -31,6 +50,22 @@ const ExpectedLearningOutcome = () => {
       setSelectedBlooms([...selectedBlooms, blooms]);
     } else {
       setSelectedBlooms(selectedBlooms.filter(b => b !== blooms));
+    }
+  };
+
+  const handleSkillsChange = (skill: string, checked: boolean) => {
+    if (checked) {
+      setSelectedSkills([...selectedSkills, skill]);
+    } else {
+      setSelectedSkills(selectedSkills.filter(s => s !== skill));
+    }
+  };
+
+  const handleAttitudesChange = (attitude: string, checked: boolean) => {
+    if (checked) {
+      setSelectedAttitudes([...selectedAttitudes, attitude]);
+    } else {
+      setSelectedAttitudes(selectedAttitudes.filter(a => a !== attitude));
     }
   };
 
@@ -134,25 +169,29 @@ const ExpectedLearningOutcome = () => {
           </div>
         )}
 
-        {/* AI Assist Tab Content - Blooms Taxonomy HOTS */}
+        {/* AI Assist Tab Content - Factors for ELO */}
         {activeTab === 'aiAssist' && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
-            <h4 className="font-medium text-blue-900 mb-3">Bloom's Taxonomy - Higher Order Thinking Skills (HOTS)</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {bloomsLevels.map((bloom) => (
-                <div 
-                  key={bloom.id}
-                  className="flex items-start gap-3 bg-white p-3 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200"
-                >
-                  <span className="text-lg flex-shrink-0">{bloom.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
+          <div className="space-y-6">
+            {/* Blooms Taxonomy */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Brain className="text-purple-600" size={20} />
+                <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {bloomsLevels.map((bloom) => (
+                  <div 
+                    key={bloom.id}
+                    className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                  >
+                    <span className="text-lg flex-shrink-0">{bloom.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
                         <Checkbox
                           id={bloom.id}
                           checked={selectedBlooms.includes(bloom.label)}
                           onCheckedChange={(checked) => handleBloomsChange(bloom.label, !!checked)}
-                          className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                          className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                         />
                         <label 
                           htmlFor={bloom.id} 
@@ -161,12 +200,71 @@ const ExpectedLearningOutcome = () => {
                           {bloom.label}
                         </label>
                       </div>
+                      <p className="text-xs text-gray-600 ml-6">{bloom.description}</p>
                     </div>
-                    <p className="text-xs text-gray-600 ml-6">{bloom.description}</p>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Skills */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="text-blue-600" size={20} />
+                <h4 className="font-semibold text-gray-900">Skills</h4>
+                <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">Coming Soon</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {skillsList.map((skill) => (
+                  <div 
+                    key={skill}
+                    className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                  >
+                    <Checkbox
+                      id={`skill-${skill}`}
+                      checked={selectedSkills.includes(skill)}
+                      onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
+                      className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                    />
+                    <label 
+                      htmlFor={`skill-${skill}`} 
+                      className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                    >
+                      {skill}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Attitudes */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Heart className="text-pink-600" size={20} />
+                <h4 className="font-semibold text-gray-900">Attitudes</h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {attitudesList.map((attitude) => (
+                  <div 
+                    key={attitude}
+                    className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                  >
+                    <Checkbox
+                      id={`attitude-${attitude}`}
+                      checked={selectedAttitudes.includes(attitude)}
+                      onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
+                      className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
+                    />
+                    <label 
+                      htmlFor={`attitude-${attitude}`} 
+                      className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                    >
+                      {attitude}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </div>
         )}
       </div>
@@ -177,7 +275,7 @@ const ExpectedLearningOutcome = () => {
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
           disabled={
             (activeTab === 'recommended' && !customPrompt.trim()) || 
-            (activeTab === 'aiAssist' && selectedBlooms.length === 0)
+            (activeTab === 'aiAssist' && selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0)
           }
         >
           <Lightbulb className="mr-2" size={18} />
@@ -186,7 +284,7 @@ const ExpectedLearningOutcome = () => {
         <p className="text-xs text-gray-500 mt-2">
           {activeTab === 'recommended' 
             ? `${customPrompt.trim() ? 1 : 0} outcome${customPrompt.trim() ? '' : 's'} ready`
-            : `Based on ${selectedBlooms.length} selected Bloom's level${selectedBlooms.length !== 1 ? 's' : ''}`
+            : `${selectedBlooms.length} Blooms + ${selectedSkills.length} Skills + ${selectedAttitudes.length} Attitudes selected`
           }
         </p>
       </div>
