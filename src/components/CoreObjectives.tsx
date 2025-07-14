@@ -179,8 +179,22 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
         />
       </div>
 
-      {/* Generate Button */}
-      <div className="text-center">
+      {/* Action Buttons */}
+      <div className="text-center space-y-4">
+        {/* Validate Button for Recommended Tab */}
+        {activeTab === 'recommended' && totalSelected > 0 && (
+          <div className="flex justify-center">
+            <Button 
+              variant="outline"
+              className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 px-6 py-2 rounded-lg font-medium shadow-sm"
+            >
+              <CheckCircle2 className="mr-2" size={18} />
+              Validate Objectives
+            </Button>
+          </div>
+        )}
+        
+        {/* Generate/Continue Button */}
         <Button 
           onClick={handleGenerateCO}
           disabled={totalSelected === 0}

@@ -24,7 +24,7 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
           <BookOpen className="text-blue-600" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Setup Your Lesson Plan</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Manage Lesson Plan</h3>
           <p className="text-gray-600 text-sm">Configure your lesson details in just a few clicks</p>
         </div>
       </div>
@@ -124,7 +124,7 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
             </div>
             <div>
               <p className="text-blue-900 font-medium">Upload Lesson Content</p>
-              <p className="text-blue-600 text-xs">PDFs, documents, or existing lesson plans</p>
+              <p className="text-blue-600 text-xs">PDFs, documents, and materials</p>
             </div>
           </div>
           <Button 
