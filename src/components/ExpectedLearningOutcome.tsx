@@ -178,32 +178,19 @@ const ExpectedLearningOutcome = () => {
                 <Brain className="text-purple-600" size={20} />
                 <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {bloomsLevels.map((bloom) => (
-                  <div 
-                    key={bloom.id}
-                    className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <span className="text-lg flex-shrink-0">{bloom.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Checkbox
-                          id={bloom.id}
-                          checked={selectedBlooms.includes(bloom.label)}
-                          onCheckedChange={(checked) => handleBloomsChange(bloom.label, !!checked)}
-                          className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                        />
-                        <label 
-                          htmlFor={bloom.id} 
-                          className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
-                        >
-                          {bloom.label}
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-600 ml-6">{bloom.description}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                <select 
+                  value={selectedBlooms[0] || ""} 
+                  onChange={(e) => setSelectedBlooms(e.target.value ? [e.target.value] : [])}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                >
+                  <option value="">Select Bloom's level</option>
+                  {bloomsLevels.map((bloom) => (
+                    <option key={bloom.id} value={bloom.label}>
+                      {bloom.icon} {bloom.label} - {bloom.description}
+                    </option>
+                  ))}
+                </select>
               </div>
             </Card>
 

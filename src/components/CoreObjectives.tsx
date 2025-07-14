@@ -88,7 +88,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           <Target className="text-purple-600" size={24} />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">Core Objectives</h3>
+          <h3 className="text-xl font-bold text-gray-900">Manage Objectives</h3>
           <p className="text-gray-600">Choose what matters most for your students ✨</p>
         </div>
       </div>
@@ -104,7 +104,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           }`}
         >
           <Heart size={16} />
-          <span className="font-medium">Recommended</span>
+          <span className="font-medium">Partially AI-assisted</span>
         </button>
         <button
           onClick={() => setActiveTab('aiAssist')}
@@ -115,7 +115,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           }`}
         >
           <Bot size={16} />
-          <span className="font-medium">AI Assist</span>
+          <span className="font-medium">Fully AI-assisted</span>
         </button>
       </div>
 
@@ -181,15 +181,22 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
 
       {/* Action Buttons */}
       <div className="text-center space-y-4">
-        {/* Validate Button for Recommended Tab */}
+        {/* Validate and Shortlist Buttons for Recommended Tab */}
         {activeTab === 'recommended' && totalSelected > 0 && (
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
             <Button 
               variant="outline"
-              className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 px-6 py-2 rounded-lg font-medium shadow-sm"
+              className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 px-4 py-2 rounded-lg font-medium shadow-sm"
             >
-              <CheckCircle2 className="mr-2" size={18} />
-              Validate Objectives
+              <CheckCircle2 className="mr-2" size={16} />
+              Validate
+            </Button>
+            <Button 
+              variant="outline"
+              className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 px-4 py-2 rounded-lg font-medium shadow-sm"
+            >
+              <Target className="mr-2" size={16} />
+              Shortlist
             </Button>
           </div>
         )}
@@ -198,13 +205,9 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
         <Button 
           onClick={handleGenerateCO}
           disabled={totalSelected === 0}
-          className={`
-            px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 transform
-            ${totalSelected > 0 
-              ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-105 hover:shadow-xl' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }
-          `}
+          className={`px-8 py-3 rounded-lg font-medium shadow-lg transition-all duration-200 ${
+            totalSelected > 0 ? '' : 'opacity-50 cursor-not-allowed'
+          }`}
         >
           <Sparkles className="mr-2" size={20} />
           {totalSelected === 0 ? 'Choose at least one objective' : `Continue with ${totalSelected} objective${totalSelected > 1 ? 's' : ''}! 🚀`}
