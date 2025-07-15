@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, BookOpen, Target, FileCheck, Sparkles, Award, Clock, Users } from 'lucide-react';
 import SelectionPanel from './SelectionPanel';
@@ -25,6 +26,7 @@ const MainStepper = ({
   setSubject, 
   onGenerateCO 
 }: MainStepperProps) => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
@@ -423,7 +425,18 @@ const MainStepper = ({
             {/* Prominent CTA Button */}
             <div className="flex justify-center mt-12">
               <Button
-                onClick={() => markStepComplete(4)}
+                onClick={() => {
+                  markStepComplete(4);
+                  navigate('/lesson-plan-output', {
+                    state: {
+                      lessonData: {
+                        grade,
+                        subject,
+                        lessonName: `${subject} Lesson Plan`
+                      }
+                    }
+                  });
+                }}
                 size="lg"
                 className="px-12 py-6 text-lg font-bold bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-2xl shadow-amber-500/30 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-3xl hover:shadow-amber-500/40 group relative overflow-hidden"
               >
