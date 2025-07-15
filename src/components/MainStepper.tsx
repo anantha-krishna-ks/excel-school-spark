@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, BookOpen, Target, FileCheck, Sparkles, Award, Clock, Users } from 'lucide-react';
@@ -28,6 +29,7 @@ const MainStepper = ({
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
   const [isSticky, setIsSticky] = useState(false);
+  const [scrolledBeyondHeader, setScrolledBeyondHeader] = useState(false);
   
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const stepperRef = useRef<HTMLDivElement>(null);
@@ -39,16 +41,18 @@ const MainStepper = ({
       const sections = sectionRefs.current;
       const stepperElement = stepperRef.current;
       const scrollPosition = window.scrollY;
-      const headerOffset = 120; // Offset for header + sticky positioning
+      const headerHeight = 120; // Header + some padding
       
       // Check if stepper should be sticky
       if (stepperElement) {
         const stepperTop = stepperElement.offsetTop;
-        setIsSticky(scrollPosition > stepperTop - headerOffset);
+        setIsSticky(scrollPosition > stepperTop - headerHeight);
+        // Check if we've scrolled significantly beyond the header
+        setScrolledBeyondHeader(scrollPosition > headerHeight + 50);
       }
       
       // Update current step based on scroll position
-      const adjustedScrollPosition = scrollPosition + headerOffset + 100;
+      const adjustedScrollPosition = scrollPosition + headerHeight + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
@@ -153,7 +157,11 @@ const MainStepper = ({
         ref={stepperRef}
         className={`${
           isSticky 
-            ? 'fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/30 shadow-sm' 
+            ? `fixed top-[120px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm ${
+                scrolledBeyondHeader 
+                  ? 'bg-white/80 backdrop-blur-md' 
+                  : 'bg-white'
+              }` 
             : 'bg-white border-b border-gray-200'
         } py-3 transition-all duration-300`}
       >
