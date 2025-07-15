@@ -21,7 +21,13 @@ import {
   Home,
   Edit3,
   Calendar,
-  GraduationCap
+  GraduationCap,
+  Image,
+  Play,
+  Activity,
+  HelpCircle,
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
 import Header from '@/components/Header';
 
@@ -38,39 +44,67 @@ const LessonPlanOutput = () => {
 
   const activities = [
     {
-      title: "Opening Minds",
-      description: "Students will brainstorm what they already know about climate change and share their ideas.",
-      duration: "10 minutes"
+      title: "Exploring Climate Change Causes and Effects",
+      duration: "13 minutes",
+      grouping: "Small groups",
+      materials: "Climate change infographic handouts, Whiteboard and markers",
+      objective: "Students will analyze visual data to identify causes and effects of climate change.",
+      steps: [
+        "Step 1: Distribute infographics to small groups.",
+        "Step 2: Groups analyze the infographic, highlighting causes (such as burning fossil fuels) and effects (like rising sea levels).",
+        "Step 3: Each group shares one key cause and one effect with the class, while the teacher records responses on the whiteboard."
+      ],
+      teacherNotes: "Encourage students to use vocabulary like 'greenhouse gases' and 'fossil fuels' when discussing the infographic."
+    }
+  ];
+
+  const visualAids = [
+    {
+      title: "CLIMATE CHANGE: UNDERSTANDING THE SCIENCE BEHIND IT",
+      source: "Bing",
+      type: "Infographic",
+      description: "Comprehensive climate change data visualization showing temperature and precipitation changes"
     },
     {
-      title: "Core Learning", 
-      description: "Teacher will present the concept of greenhouse gases and their role in climate change using interactive diagrams.",
-      duration: "20 minutes"
+      title: "Understanding Climate Change Unit Plan for 9th - 12th Grade | Lesson Planet",
+      source: "Bing", 
+      type: "Lesson Plan",
+      description: "Complete unit plan with activities and resources for high school climate education"
     },
     {
-      title: "Hands-On Exploration",
-      description: "Students will conduct a simple experiment to demonstrate the greenhouse effect using clear containers.",
-      duration: "25 minutes"
+      title: "Understanding Climate Change",
+      source: "Science, Policy",
+      type: "Educational Material",
+      description: "Scientific policy documentation on climate change understanding"
     },
     {
-      title: "Group Discussion",
-      description: "Students will work in small groups to discuss the impact of climate change on their local community.",
-      duration: "15 minutes"
+      title: "Understanding Climate Change",
+      source: "Green Environment",
+      type: "Educational Resource",
+      description: "Environmental education materials focusing on climate science"
     }
   ];
 
   const realWorldExamples = [
-    "Melting polar ice caps and rising sea levels",
-    "Extreme weather events like hurricanes and droughts", 
-    "Changes in animal migration patterns",
-    "Impact on agriculture and food production"
+    {
+      title: "Melting polar ice caps",
+      description: "Polar ice caps are melting faster due to rising global temperatures, which is causing sea levels to rise."
+    },
+    {
+      title: "Increased wildfires in California", 
+      description: "Hotter and drier conditions, linked to climate change, are making wildfires more common and severe."
+    }
   ];
 
   const discussionQuestions = [
-    "What can we do in our daily lives to reduce our carbon footprint?",
-    "How might climate change affect our local community in the next 20 years?",
-    "What role do governments and businesses play in addressing climate change?",
-    "How can renewable energy sources help combat climate change?"
+    {
+      question: "Why do you think climate change is happening faster now than in the past?",
+      purpose: "Encourages students to connect human activity with changes in the environment."
+    },
+    {
+      question: "How might climate change affect the place where you live?",
+      purpose: "Helps students relate global issues to their own lives and communities."
+    }
   ];
 
   const currentEvents = [
@@ -82,19 +116,16 @@ const LessonPlanOutput = () => {
 
   const educationalVideos = [
     {
-      title: "Climate Change: The Greenhouse Effect",
-      source: "National Geographic Kids",
-      duration: "5 minutes"
+      title: "Climate Change - The Facts in 4 minutes",
+      source: "BBC",
+      thumbnail: "/placeholder-video-1.jpg",
+      description: "Comprehensive overview of climate change facts"
     },
     {
-      title: "Understanding Global Warming", 
-      source: "NASA Climate Kids",
-      duration: "8 minutes"
-    },
-    {
-      title: "Renewable Energy Solutions",
-      source: "TED-Ed",
-      duration: "6 minutes"
+      title: "Science, Grade 2-3, 3/27 - Lesson 1,...",
+      source: "YouTube", 
+      thumbnail: "/placeholder-video-2.jpg",
+      description: "Educational lesson on climate science for elementary students"
     }
   ];
 
@@ -315,12 +346,42 @@ const LessonPlanOutput = () => {
             </CardContent>
           </Card>
 
+          {/* Visual Aids */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Image className="h-5 w-5 text-primary" />
+                  Visual Aids
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {visualAids.map((aid, index) => (
+                  <div key={index} className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                      <Badge variant="outline" className="text-xs">{aid.type}</Badge>
+                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <h4 className="font-semibold mb-2 text-sm leading-snug">{aid.title}</h4>
+                    <p className="text-xs text-muted-foreground mb-2">{aid.description}</p>
+                    <p className="text-xs text-primary">Source: {aid.source}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Activities */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
+                  <Activity className="h-5 w-5 text-primary" />
                   Activities
                 </CardTitle>
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
@@ -328,14 +389,61 @@ const LessonPlanOutput = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               {activities.map((activity, index) => (
-                <div key={index} className="border border-border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold">{activity.title}</h4>
-                    <Badge variant="secondary">{activity.duration}</Badge>
+                <div key={index} className="border border-border rounded-lg p-6 space-y-4">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-lg font-semibold text-primary">{activity.title}</h3>
                   </div>
-                  <p className="text-muted-foreground">{activity.description}</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm"><strong>Duration:</strong> {activity.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm"><strong>Grouping:</strong> {activity.grouping}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-2">
+                        <FileText className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <span className="text-sm"><strong>Materials:</strong> {activity.materials}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <Target className="h-4 w-4 text-muted-foreground mt-0.5" />
+                      <span className="text-sm"><strong>Objective:</strong> {activity.objective}</span>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-semibold">Steps:</span>
+                      </div>
+                      <ol className="list-decimal list-inside space-y-1 ml-6">
+                        {activity.steps.map((step, stepIndex) => (
+                          <li key={stepIndex} className="text-sm text-muted-foreground">{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                    
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                      <div className="flex items-start gap-2">
+                        <Lightbulb className="h-4 w-4 text-yellow-600 mt-0.5" />
+                        <div>
+                          <span className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">Teacher Notes:</span>
+                          <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1 italic">{activity.teacherNotes}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -354,15 +462,13 @@ const LessonPlanOutput = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {realWorldExamples.map((example, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <span className="text-muted-foreground">{example}</span>
-                  </li>
-                ))}
-              </ul>
+            <CardContent className="space-y-4">
+              {realWorldExamples.map((example, index) => (
+                <div key={index} className="border-l-4 border-primary/30 pl-4 py-2">
+                  <h4 className="font-semibold text-foreground mb-2">{example.title}</h4>
+                  <p className="text-muted-foreground text-sm">{example.description}</p>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
@@ -371,7 +477,7 @@ const LessonPlanOutput = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-primary" />
+                  <HelpCircle className="h-5 w-5 text-primary" />
                   Discussion Questions
                 </CardTitle>
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
@@ -379,15 +485,13 @@ const LessonPlanOutput = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {discussionQuestions.map((question, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="text-primary font-semibold text-sm">Q{index + 1}:</span>
-                    <span className="text-muted-foreground">{question}</span>
-                  </li>
-                ))}
-              </ul>
+            <CardContent className="space-y-4">
+              {discussionQuestions.map((item, index) => (
+                <div key={index} className="border-l-4 border-blue-500/30 pl-4 py-2">
+                  <h4 className="font-semibold text-foreground mb-2">{item.question}</h4>
+                  <p className="text-muted-foreground text-sm italic">{item.purpose}</p>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
@@ -421,7 +525,7 @@ const LessonPlanOutput = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Video className="h-5 w-5 text-primary" />
+                  <Play className="h-5 w-5 text-primary" />
                   Educational Videos
                 </CardTitle>
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
@@ -430,14 +534,18 @@ const LessonPlanOutput = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4">
+              <div className="space-y-4">
                 {educationalVideos.map((video, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{video.title}</h4>
-                      <p className="text-sm text-muted-foreground">Source: {video.source}</p>
+                  <div key={index} className="flex gap-4 p-4 border border-border rounded-lg hover:shadow-md transition-shadow">
+                    <div className="w-32 h-20 bg-muted rounded-lg flex items-center justify-center">
+                      <Play className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <Badge variant="outline">{video.duration}</Badge>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-primary mb-1">{video.title}</h4>
+                      <p className="text-sm text-muted-foreground mb-2">{video.description}</p>
+                      <p className="text-xs text-muted-foreground">Source: {video.source}</p>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
                   </div>
                 ))}
               </div>
