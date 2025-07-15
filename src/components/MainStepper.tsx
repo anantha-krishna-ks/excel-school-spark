@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, BookOpen, Upload, Target, FileCheck } from 'lucide-react';
+import { CheckCircle2, BookOpen, Target, FileCheck } from 'lucide-react';
 import SelectionPanel from './SelectionPanel';
 import CoreObjectives from './CoreObjectives';
 import ExpectedLearningOutcome from './ExpectedLearningOutcome';
@@ -174,13 +174,13 @@ const MainStepper = ({
           ref={(el) => { if (el) sectionRefs.current[0] = el; }}
           className="bg-background py-12"
         >
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-6">
             <div className="text-center space-y-4 mb-8">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto">
-                <BookOpen className="h-8 w-8 text-primary" />
+              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto">
+                <BookOpen className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-3xl font-bold text-foreground">Basic Setup & Content</h1>
-              <p className="text-muted-foreground max-w-md mx-auto">Configure your lesson basics and upload materials</p>
+              <h1 className="text-3xl font-bold text-gray-900">Basic Setup & Content</h1>
+              <p className="text-gray-600 max-w-md mx-auto">Configure your lesson basics and upload materials</p>
             </div>
             
             <SelectionPanel

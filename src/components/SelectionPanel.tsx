@@ -27,17 +27,20 @@ const SelectionPanel = ({
           <BookOpen className="text-blue-600" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Manage Lesson Plan</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Basic Setup</h3>
           <p className="text-gray-600 text-sm">Configure your lesson details in just a few clicks</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Board/Standard</label>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <label className="text-sm font-medium text-gray-700">Board/Standard</label>
+          </div>
           <Select value={board} onValueChange={setBoard}>
             <SelectTrigger className="h-11 bg-gray-50 border-gray-300 hover:bg-white transition-colors">
-              <SelectValue placeholder="Select Board" />
+              <SelectValue placeholder="CBSE" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="cbse">CBSE</SelectItem>
@@ -48,10 +51,13 @@ const SelectionPanel = ({
         </div>
         
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Grade</label>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <label className="text-sm font-medium text-gray-700">Grade</label>
+          </div>
           <Select value={grade} onValueChange={setGrade}>
             <SelectTrigger className="h-11 bg-gray-50 border-gray-300 hover:bg-white transition-colors">
-              <SelectValue placeholder="Select Grade" />
+              <SelectValue placeholder="Grade 2" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="1">Grade 1</SelectItem>
@@ -64,10 +70,13 @@ const SelectionPanel = ({
         </div>
         
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Subject</label>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+            <label className="text-sm font-medium text-gray-700">Subject</label>
+          </div>
           <Select value={subject} onValueChange={setSubject}>
             <SelectTrigger className="h-11 bg-gray-50 border-gray-300 hover:bg-white transition-colors">
-              <SelectValue placeholder="Select Subject" />
+              <SelectValue placeholder="English" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="math">Mathematics</SelectItem>
@@ -77,21 +86,21 @@ const SelectionPanel = ({
             </SelectContent>
           </Select>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Clock className="text-blue-600" size={16} />
-            <label className="text-sm font-medium text-gray-700">Duration</label>
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Clock className="text-blue-600" size={16} />
+          <label className="text-sm font-medium text-gray-700">Duration</label>
+        </div>
+        <div className="flex gap-3 max-w-xs">
+          <div className="flex-1">
+            <Input type="number" placeholder="0" min="0" max="8" className="h-11 text-center border-gray-300 focus:border-blue-500" />
+            <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
           </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Input type="number" placeholder="1" min="0" max="8" className="h-11 text-center border-gray-300 focus:border-blue-500" />
-              <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
-            </div>
-            <div className="flex-1">
-              <Input type="number" placeholder="30" min="0" max="59" step="5" className="h-11 text-center border-gray-300 focus:border-blue-500" />
-              <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
-            </div>
+          <div className="flex-1">
+            <Input type="number" placeholder="30" min="0" max="59" step="5" className="h-11 text-center border-gray-300 focus:border-blue-500" />
+            <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
           </div>
         </div>
       </div>
