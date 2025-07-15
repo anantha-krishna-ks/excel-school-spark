@@ -119,6 +119,33 @@ const MainStepper = ({
     }
   };
 
+  // Check section completion status
+  const isSectionCompleted = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1:
+        return board && grade && subject;
+      case 2:
+        return shortlistedObjectives.length > 0;
+      case 3:
+        return false; // Add logic based on your ExpectedLearningOutcome component
+      case 4:
+        return board && grade && subject && shortlistedObjectives.length > 0;
+      default:
+        return false;
+    }
+  };
+
+  // Update completed steps based on section completion
+  useEffect(() => {
+    const newCompletedSteps: number[] = [];
+    for (let i = 1; i <= 4; i++) {
+      if (isSectionCompleted(i)) {
+        newCompletedSteps.push(i);
+      }
+    }
+    setCompletedSteps(newCompletedSteps);
+  }, [board, grade, subject, shortlistedObjectives]);
+
   return (
     <div className="w-full bg-background">
       {/* Sticky Stepper */}
@@ -126,9 +153,9 @@ const MainStepper = ({
         ref={stepperRef}
         className={`${
           isSticky 
-            ? 'fixed top-[70px] left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-lg' 
+            ? 'fixed top-16 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/30 shadow-sm' 
             : 'bg-white border-b border-gray-200'
-        } py-4 transition-all duration-300`}
+        } py-3 transition-all duration-300`}
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-center space-x-8">
@@ -199,7 +226,7 @@ const MainStepper = ({
       </div>
 
       {/* Spacer for sticky stepper */}
-      {isSticky && <div className="h-[88px]"></div>}
+      {isSticky && <div className="h-[76px]"></div>}
 
       {/* Sections Container with Enhanced Visual Separation */}
       <div className="relative">

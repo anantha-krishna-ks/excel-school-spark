@@ -16,7 +16,7 @@ const CoreObjectives = ({
 }: CoreObjectivesProps) => {
   const [activeTab, setActiveTab] = useState<'fullyAI' | 'partiallyAI'>('fullyAI');
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
-  const [customObjective, setCustomObjective] = useState('');
+  const [customObjectives, setCustomObjectives] = useState<string[]>(['']);
   const [showCelebration, setShowCelebration] = useState(false);
   
   const availableObjectives = [
@@ -68,23 +68,38 @@ const CoreObjectives = ({
     }
   };
 
+  const addCustomObjective = () => {
+    setCustomObjectives([...customObjectives, '']);
+  };
+
+  const removeCustomObjective = (index: number) => {
+    if (customObjectives.length > 1) {
+      setCustomObjectives(customObjectives.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateCustomObjective = (index: number, value: string) => {
+    const newObjectives = [...customObjectives];
+    newObjectives[index] = value;
+    setCustomObjectives(newObjectives);
+  };
+
   const handleGenerateCO = () => {
-    const objectives = customObjective.trim() 
-      ? [...selectedObjectives, customObjective.trim()] 
-      : selectedObjectives;
+    const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
+    const objectives = [...selectedObjectives, ...validCustomObjectives];
     onGenerateCO(objectives);
   };
 
   const handleShortlist = () => {
-    const objectives = customObjective.trim() 
-      ? [...selectedObjectives, customObjective.trim()] 
-      : selectedObjectives;
+    const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
+    const objectives = [...selectedObjectives, ...validCustomObjectives];
     if (setShortlistedObjectives) {
       setShortlistedObjectives(objectives);
     }
   };
 
-  const totalSelected = selectedObjectives.length + (customObjective.trim() ? 1 : 0);
+  const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
+  const totalSelected = selectedObjectives.length + validCustomObjectives.length;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
@@ -179,19 +194,45 @@ const CoreObjectives = ({
         })}
       </div>
 
-      {/* Custom Objective */}
+      {/* Custom Objectives */}
       <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="text-2xl">💡</div>
-          <h4 className="font-semibold text-orange-900">Add Your Special Touch (Optional)</h4>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="text-2xl">💡</div>
+            <h4 className="font-semibold text-orange-900">Add Your Special Touch (Optional)</h4>
+          </div>
+          <Button
+            onClick={addCustomObjective}
+            variant="outline"
+            size="sm"
+            className="border-orange-300 text-orange-700 hover:bg-orange-100"
+          >
+            + Add More
+          </Button>
         </div>
         
-        <Textarea
-          placeholder="Type your own teaching objective here... (e.g., Students will learn to solve real-world problems creatively)"
-          value={customObjective}
-          onChange={(e) => setCustomObjective(e.target.value)}
-          className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
-        />
+        <div className="space-y-3">
+          {customObjectives.map((objective, index) => (
+            <div key={index} className="flex gap-2">
+              <Textarea
+                placeholder="Type your own teaching objective here... (e.g., Students will learn to solve real-world problems creatively)"
+                value={objective}
+                onChange={(e) => updateCustomObjective(index, e.target.value)}
+                className="flex-1 min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
+              />
+              {customObjectives.length > 1 && (
+                <Button
+                  onClick={() => removeCustomObjective(index)}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-300 text-red-700 hover:bg-red-50 self-start mt-2"
+                >
+                  ✕
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Action Buttons */}
