@@ -18,7 +18,10 @@ import {
   Lightbulb, 
   MessageSquare, 
   TrendingUp,
-  Home
+  Home,
+  Edit3,
+  Calendar,
+  GraduationCap
 } from 'lucide-react';
 import Header from '@/components/Header';
 
@@ -160,20 +163,47 @@ const LessonPlanOutput = () => {
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header Section */}
-          <Card>
+          {/* Lesson Plan Details Section */}
+          <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
             <CardHeader>
               <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <CardTitle className="text-2xl font-bold">{lessonData.lessonName}</CardTitle>
-                  <div className="flex gap-2">
-                    <Badge variant="secondary">Grade {lessonData.grade}</Badge>
-                    <Badge variant="outline">{lessonData.subject}</Badge>
+                <CardTitle className="text-2xl font-bold text-primary mb-4">📚 Lesson Plan Details</CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Lesson Title</p>
+                      <p className="font-semibold">{lessonData.lessonName}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <GraduationCap className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Grade</p>
+                      <p className="font-semibold">{lessonData.grade}th Grade</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  60 minutes
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Duration</p>
+                      <p className="font-semibold">60 minutes</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Subject</p>
+                      <p className="font-semibold">{lessonData.subject}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -182,10 +212,15 @@ const LessonPlanOutput = () => {
           {/* Learning Objectives */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
-                Learning Objectives
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  Learning Objectives
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-start gap-3">
@@ -210,10 +245,15 @@ const LessonPlanOutput = () => {
           {/* Mathematical Link */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-primary" />
-                Mathematical Link Present
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-primary" />
+                  Mathematical Link Present
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -227,10 +267,15 @@ const LessonPlanOutput = () => {
           {/* Key Vocabulary */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                Key Vocabulary
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  Key Vocabulary
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -246,10 +291,15 @@ const LessonPlanOutput = () => {
           {/* Introduction */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-primary" />
-                Introduction
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5 text-primary" />
+                  Introduction
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
@@ -268,10 +318,15 @@ const LessonPlanOutput = () => {
           {/* Activities */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Activities
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  Activities
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {activities.map((activity, index) => (
@@ -289,10 +344,15 @@ const LessonPlanOutput = () => {
           {/* Real World Examples */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-primary" />
-                Real World Examples
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  Real World Examples
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
@@ -309,10 +369,15 @@ const LessonPlanOutput = () => {
           {/* Discussion Questions */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-primary" />
-                Discussion Questions
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  Discussion Questions
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
@@ -329,10 +394,15 @@ const LessonPlanOutput = () => {
           {/* Current Events */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Current Events
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Current Events
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
@@ -349,10 +419,15 @@ const LessonPlanOutput = () => {
           {/* Educational Videos */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Video className="h-5 w-5 text-primary" />
-                Educational Videos
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Video className="h-5 w-5 text-primary" />
+                  Educational Videos
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
@@ -372,10 +447,15 @@ const LessonPlanOutput = () => {
           {/* Assessment */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                Assessment
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  Assessment
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -401,10 +481,15 @@ const LessonPlanOutput = () => {
           {/* Differentiation */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-primary" />
-                Differentiation
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-primary" />
+                  Differentiation
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
@@ -425,10 +510,15 @@ const LessonPlanOutput = () => {
           {/* Educational Resources */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-primary" />
-                Educational Resources
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  Educational Resources
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
