@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, BookOpen, Target, Clock, Users, Video, Globe, FileText, Brain, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Target, Clock, Users, Video, Globe, FileText, Brain, CheckCircle2, Lightbulb, MessageSquare, TrendingUp } from 'lucide-react';
 import Header from '@/components/Header';
 
 interface LessonPlanResultProps {
@@ -23,7 +24,7 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
       duration: "10 minutes"
     },
     {
-      title: "Core Learning",
+      title: "Core Learning", 
       description: "Teacher will present the concept of greenhouse gases and their role in climate change using interactive diagrams.",
       duration: "20 minutes"
     },
@@ -31,6 +32,50 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
       title: "Hands-On Exploration",
       description: "Students will conduct a simple experiment to demonstrate the greenhouse effect using clear containers.",
       duration: "25 minutes"
+    },
+    {
+      title: "Group Discussion",
+      description: "Students will work in small groups to discuss the impact of climate change on their local community.",
+      duration: "15 minutes"
+    }
+  ];
+
+  const realWorldExamples = [
+    "Melting polar ice caps and rising sea levels",
+    "Extreme weather events like hurricanes and droughts", 
+    "Changes in animal migration patterns",
+    "Impact on agriculture and food production"
+  ];
+
+  const discussionQuestions = [
+    "What can we do in our daily lives to reduce our carbon footprint?",
+    "How might climate change affect our local community in the next 20 years?",
+    "What role do governments and businesses play in addressing climate change?",
+    "How can renewable energy sources help combat climate change?"
+  ];
+
+  const currentEvents = [
+    "Recent climate summit agreements and commitments",
+    "New renewable energy projects in our region",
+    "Local environmental conservation efforts",
+    "Youth climate activism movements"
+  ];
+
+  const educationalVideos = [
+    {
+      title: "Climate Change: The Greenhouse Effect",
+      source: "National Geographic Kids",
+      duration: "5 minutes"
+    },
+    {
+      title: "Understanding Global Warming", 
+      source: "NASA Climate Kids",
+      duration: "8 minutes"
+    },
+    {
+      title: "Renewable Energy Solutions",
+      source: "TED-Ed",
+      duration: "6 minutes"
     }
   ];
 
@@ -47,8 +92,13 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
     },
     {
       title: "Carbon Footprint Calculator",
-      type: "Tool",
+      type: "Tool", 
       source: "EPA"
+    },
+    {
+      title: "Climate Change Basics",
+      type: "Article",
+      source: "NOAA Climate.gov"
     }
   ];
 
@@ -109,6 +159,10 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
                 <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
                 <p>Students will demonstrate understanding through hands-on experiments and discussions.</p>
               </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                <p>Students will analyze real-world examples of climate change impacts.</p>
+              </div>
             </CardContent>
           </Card>
 
@@ -117,13 +171,14 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-primary" />
-                Mathematical Link Presents
+                Mathematical Link Present
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
                 Students will analyze temperature data graphs, calculate percentage increases in CO2 levels, 
-                and interpret statistical information about climate trends over the past century.
+                and interpret statistical information about climate trends over the past century. They will 
+                work with data visualization and mathematical modeling concepts.
               </p>
             </CardContent>
           </Card>
@@ -138,12 +193,34 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {['Climate Change', 'Greenhouse Effect', 'Carbon Dioxide', 'Global Warming', 'Fossil Fuels', 'Renewable Energy'].map((term) => (
+                {['Climate Change', 'Greenhouse Effect', 'Carbon Dioxide', 'Global Warming', 'Fossil Fuels', 'Renewable Energy', 'Carbon Footprint', 'Sustainability'].map((term) => (
                   <Badge key={term} variant="outline" className="justify-center py-2">
                     {term}
                   </Badge>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Introduction */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-primary" />
+                Introduction
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Climate change is one of the most pressing issues of our time. This lesson will help students understand 
+                the science behind climate change, its causes, and its impacts on our planet. Through engaging activities 
+                and discussions, students will explore how human activities contribute to climate change and what we can 
+                do to address this global challenge.
+              </p>
+              <p className="text-muted-foreground">
+                Students will begin by sharing their prior knowledge and then dive deep into the greenhouse effect, 
+                examining data and conducting experiments to solidify their understanding.
+              </p>
             </CardContent>
           </Card>
 
@@ -168,6 +245,89 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
             </CardContent>
           </Card>
 
+          {/* Real World Examples */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5 text-primary" />
+                Real World Examples
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {realWorldExamples.map((example, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <span className="text-muted-foreground">{example}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Discussion Questions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Discussion Questions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {discussionQuestions.map((question, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="text-primary font-semibold text-sm">Q{index + 1}:</span>
+                    <span className="text-muted-foreground">{question}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Current Events */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Current Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {currentEvents.map((event, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5" />
+                    <span className="text-muted-foreground">{event}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Educational Videos */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="h-5 w-5 text-primary" />
+                Educational Videos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {educationalVideos.map((video, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">{video.title}</h4>
+                      <p className="text-sm text-muted-foreground">Source: {video.source}</p>
+                    </div>
+                    <Badge variant="outline">{video.duration}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Assessment */}
           <Card>
             <CardHeader>
@@ -181,7 +341,8 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
                 <h4 className="font-semibold mb-2">Formative Assessment</h4>
                 <p className="text-muted-foreground">
                   Observe student participation during discussions and hands-on activities. 
-                  Use exit tickets to assess understanding of key concepts.
+                  Use exit tickets to assess understanding of key concepts. Monitor group work 
+                  and provide feedback during experimental activities.
                 </p>
               </div>
               <Separator />
@@ -189,7 +350,8 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
                 <h4 className="font-semibold mb-2">Summative Assessment</h4>
                 <p className="text-muted-foreground">
                   Students will create a poster or digital presentation explaining one solution to climate change, 
-                  demonstrating their understanding of the topic.
+                  demonstrating their understanding of the topic. Assessment will include accuracy of scientific 
+                  concepts, creativity, and ability to communicate solutions effectively.
                 </p>
               </div>
             </CardContent>
@@ -206,15 +368,15 @@ const LessonPlanResult = ({ lessonData, onBack }: LessonPlanResultProps) => {
             <CardContent className="space-y-3">
               <div>
                 <h4 className="font-semibold">For Advanced Learners:</h4>
-                <p className="text-muted-foreground">Research specific climate change impacts in different regions of the world.</p>
+                <p className="text-muted-foreground">Research specific climate change impacts in different regions of the world. Analyze complex climate data and create predictive models.</p>
               </div>
               <div>
                 <h4 className="font-semibold">For Struggling Learners:</h4>
-                <p className="text-muted-foreground">Provide simplified diagrams and one-on-one support during activities.</p>
+                <p className="text-muted-foreground">Provide simplified diagrams and one-on-one support during activities. Use graphic organizers to help structure learning.</p>
               </div>
               <div>
                 <h4 className="font-semibold">For ELL Students:</h4>
-                <p className="text-muted-foreground">Include visual aids and bilingual resources where available.</p>
+                <p className="text-muted-foreground">Include visual aids and bilingual resources where available. Pair with bilingual peers for support.</p>
               </div>
             </CardContent>
           </Card>
