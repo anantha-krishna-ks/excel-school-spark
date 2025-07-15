@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Edit, Eye, Trash2 } from 'lucide-react';
 import Header from '@/components/Header';
@@ -47,6 +47,12 @@ const LessonPlanAssistant = () => {
       title: "Exploring the Wonders of Light",
       grade: "VII",
       subject: "Science"
+    },
+    {
+      id: 6,
+      title: "Journey Through the Digestive System",
+      grade: "7",
+      subject: "Science"
     }
   ];
 
@@ -75,13 +81,13 @@ const LessonPlanAssistant = () => {
           </Button>
         </div>
 
-        <Card className="w-full">
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1 space-y-2">
-                <label className="text-sm font-medium text-foreground">Grade</label>
+        <Card className="w-full border border-border/50 shadow-sm">
+          <CardHeader className="pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground">Grade</label>
                 <Select value={filters.grade} onValueChange={(value) => setFilters({...filters, grade: value})}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 bg-background">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
@@ -93,6 +99,7 @@ const LessonPlanAssistant = () => {
                     <SelectItem value="5">Grade 5</SelectItem>
                     <SelectItem value="6">Grade 6</SelectItem>
                     <SelectItem value="7">Grade 7</SelectItem>
+                    <SelectItem value="VII">Grade VII</SelectItem>
                     <SelectItem value="8">Grade 8</SelectItem>
                     <SelectItem value="9">Grade 9</SelectItem>
                     <SelectItem value="10">Grade 10</SelectItem>
@@ -102,10 +109,10 @@ const LessonPlanAssistant = () => {
                 </Select>
               </div>
 
-              <div className="flex-1 space-y-2">
-                <label className="text-sm font-medium text-foreground">Subject</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground">Subject</label>
                 <Select value={filters.subject} onValueChange={(value) => setFilters({...filters, subject: value})}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 bg-background">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
@@ -124,56 +131,58 @@ const LessonPlanAssistant = () => {
                 </Select>
               </div>
 
-              <div className="flex-1 space-y-2">
-                <label className="text-sm font-medium text-foreground">Lesson Name</label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground">Lesson Name</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Enter lesson name"
                     value={filters.lessonName}
                     onChange={(e) => setFilters({...filters, lessonName: e.target.value})}
-                    className="pl-10"
+                    className="pl-10 h-11 bg-background"
                   />
                 </div>
               </div>
             </div>
           </CardHeader>
           
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-20">SL No.</TableHead>
-                  <TableHead>Lesson Plan Title</TableHead>
-                  <TableHead className="w-24">Grade</TableHead>
-                  <TableHead className="w-40">Subject</TableHead>
-                  <TableHead className="w-32">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lessonPlans.map((lesson, index) => (
-                  <TableRow key={lesson.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-medium">{lesson.title}</TableCell>
-                    <TableCell>{lesson.grade}</TableCell>
-                    <TableCell>{lesson.subject}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Edit className="h-4 w-4 text-purple-600" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Eye className="h-4 w-4 text-green-600" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </Button>
-                      </div>
-                    </TableCell>
+          <CardContent className="p-0">
+            <div className="border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30 hover:bg-muted/30">
+                    <TableHead className="w-20 font-semibold text-foreground">SL No.</TableHead>
+                    <TableHead className="font-semibold text-foreground">Lesson Plan Title</TableHead>
+                    <TableHead className="w-24 font-semibold text-foreground">Grade</TableHead>
+                    <TableHead className="w-40 font-semibold text-foreground">Subject</TableHead>
+                    <TableHead className="w-32 font-semibold text-foreground">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {lessonPlans.map((lesson, index) => (
+                    <TableRow key={lesson.id} className="border-b border-border/50 hover:bg-muted/20">
+                      <TableCell className="font-medium text-muted-foreground">{index + 1}</TableCell>
+                      <TableCell className="font-medium text-foreground">{lesson.title}</TableCell>
+                      <TableCell className="text-muted-foreground">{lesson.grade}</TableCell>
+                      <TableCell className="text-muted-foreground">{lesson.subject}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-purple-50">
+                            <Edit className="h-4 w-4 text-purple-600" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-50">
+                            <Eye className="h-4 w-4 text-green-600" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-50">
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -41,7 +41,7 @@ const MainStepper = ({
       const sections = sectionRefs.current;
       const stepperElement = stepperRef.current;
       const scrollPosition = window.scrollY;
-      const headerHeight = 120; // Header + some padding
+      const headerHeight = 110; // Header + some padding
       
       // Check if stepper should be sticky
       if (stepperElement) {
@@ -157,7 +157,7 @@ const MainStepper = ({
         ref={stepperRef}
         className={`${
           isSticky 
-            ? `fixed top-[120px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm ${
+            ? `fixed top-[110px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm ${
                 scrolledBeyondHeader 
                   ? 'bg-white/80 backdrop-blur-md' 
                   : 'bg-white'
