@@ -153,7 +153,7 @@ const MainStepper = ({
         ref={stepperRef}
         className={`${
           isSticky 
-            ? 'fixed top-16 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/30 shadow-sm' 
+            ? 'fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/30 shadow-sm' 
             : 'bg-white border-b border-gray-200'
         } py-3 transition-all duration-300`}
       >
