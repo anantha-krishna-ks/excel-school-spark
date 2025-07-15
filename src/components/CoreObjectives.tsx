@@ -5,10 +5,16 @@ import { Target, Sparkles, CheckCircle2, Heart, Bot } from 'lucide-react';
 
 interface CoreObjectivesProps {
   onGenerateCO: (objectives: string[]) => void;
+  shortlistedObjectives?: string[];
+  setShortlistedObjectives?: (objectives: string[]) => void;
 }
 
-const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
-  const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
+const CoreObjectives = ({ 
+  onGenerateCO, 
+  shortlistedObjectives = [], 
+  setShortlistedObjectives 
+}: CoreObjectivesProps) => {
+  const [activeTab, setActiveTab] = useState<'fullyAI' | 'partiallyAI'>('fullyAI');
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [customObjective, setCustomObjective] = useState('');
   const [showCelebration, setShowCelebration] = useState(false);
@@ -37,9 +43,9 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
     }
   ];
 
-  // Auto-select all objectives in AI Assist mode
+  // Auto-select all objectives in Fully AI-assisted mode
   React.useEffect(() => {
-    if (activeTab === 'aiAssist') {
+    if (activeTab === 'fullyAI') {
       setSelectedObjectives(availableObjectives.map(obj => obj.label));
     }
   }, [activeTab]);
@@ -50,7 +56,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
   };
 
   const handleObjectiveToggle = (objective: string) => {
-    if (activeTab === 'aiAssist') return; // Don't allow changes in AI mode
+    if (activeTab === 'fullyAI') return; // Don't allow changes in fully AI mode
     
     const isSelected = selectedObjectives.includes(objective);
     
@@ -67,6 +73,15 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
       ? [...selectedObjectives, customObjective.trim()] 
       : selectedObjectives;
     onGenerateCO(objectives);
+  };
+
+  const handleShortlist = () => {
+    const objectives = customObjective.trim() 
+      ? [...selectedObjectives, customObjective.trim()] 
+      : selectedObjectives;
+    if (setShortlistedObjectives) {
+      setShortlistedObjectives(objectives);
+    }
   };
 
   const totalSelected = selectedObjectives.length + (customObjective.trim() ? 1 : 0);
@@ -96,9 +111,9 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
       {/* Tab Navigation */}
       <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
         <button
-          onClick={() => setActiveTab('recommended')}
+          onClick={() => setActiveTab('partiallyAI')}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-all duration-200 ${
-            activeTab === 'recommended'
+            activeTab === 'partiallyAI'
               ? 'bg-white text-purple-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-800'
           }`}
@@ -107,9 +122,9 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
           <span className="font-medium">Partially AI-assisted</span>
         </button>
         <button
-          onClick={() => setActiveTab('aiAssist')}
+          onClick={() => setActiveTab('fullyAI')}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-all duration-200 ${
-            activeTab === 'aiAssist'
+            activeTab === 'fullyAI'
               ? 'bg-white text-blue-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-800'
           }`}
@@ -132,7 +147,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
                   ? `border-transparent bg-gradient-to-br ${objective.color} text-white shadow-lg` 
                   : 'border-gray-200 bg-white hover:border-gray-300'
                 }
-                ${activeTab === 'aiAssist' ? 'cursor-default' : ''}
+                ${activeTab === 'fullyAI' ? 'cursor-default' : ''}
               `}
               onClick={() => handleObjectiveToggle(objective.label)}
             >
@@ -152,7 +167,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
               </div>
               
               {/* AI mode indicator */}
-              {activeTab === 'aiAssist' && (
+              {activeTab === 'fullyAI' && (
                 <div className="absolute bottom-2 right-2">
                   <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
                     Always Selected
@@ -181,8 +196,8 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
 
       {/* Action Buttons */}
       <div className="text-center space-y-4">
-        {/* Validate and Shortlist Buttons for Recommended Tab */}
-        {activeTab === 'recommended' && totalSelected > 0 && (
+        {/* Validate and Shortlist Buttons for Partially AI-assisted Tab */}
+        {activeTab === 'partiallyAI' && totalSelected > 0 && (
           <div className="flex justify-center gap-3">
             <Button 
               variant="outline"
@@ -193,6 +208,7 @@ const CoreObjectives = ({ onGenerateCO }: CoreObjectivesProps) => {
             </Button>
             <Button 
               variant="outline"
+              onClick={handleShortlist}
               className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 px-4 py-2 rounded-lg font-medium shadow-sm"
             >
               <Target className="mr-2" size={16} />

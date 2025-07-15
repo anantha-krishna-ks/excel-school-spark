@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Circle, ArrowRight, ArrowLeft } from 'lucide-react';
 import SelectionPanel from './SelectionPanel';
@@ -26,25 +26,34 @@ const MainStepper = ({
 }: MainStepperProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
+  
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
   const steps = [
     {
       number: 1,
-      title: 'Manage Lesson Plan',
-      description: 'Set up your teaching context',
-      icon: '🎯'
+      title: 'Basic Setup',
+      description: 'Configure your lesson basics',
+      icon: '📚'
     },
     {
       number: 2,
-      title: 'Manage Objectives',
-      description: 'Define your teaching goals',
-      icon: '🎪'
+      title: 'Upload Content',
+      description: 'Add your lesson materials',
+      icon: '📁'
     },
     {
       number: 3,
-      title: 'Expected Learning Outcome',
-      description: 'Create specific learning outcomes',
-      icon: '🎓'
+      title: 'Select Objectives',
+      description: 'Choose learning objectives',
+      icon: '🎯'
+    },
+    {
+      number: 4,
+      title: 'Review & Create',
+      description: 'Finalize your lesson plan',
+      icon: '✅'
     }
   ];
 
@@ -52,34 +61,103 @@ const MainStepper = ({
   const isStepActive = (stepNumber: number) => currentStep === stepNumber;
   const isStepAccessible = (stepNumber: number) => stepNumber <= currentStep;
 
-  const handleNext = () => {
-    if (currentStep < steps.length) {
-      if (!completedSteps.includes(currentStep)) {
-        setCompletedSteps([...completedSteps, currentStep]);
-      }
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleStepClick = (stepNumber: number) => {
-    if (isStepAccessible(stepNumber) || isStepCompleted(stepNumber)) {
+  const scrollToSection = (stepNumber: number) => {
+    const section = sectionRefs.current[stepNumber - 1];
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setCurrentStep(stepNumber);
     }
   };
 
-  const canProceedFromStep1 = board && grade && subject;
-  const canProceedFromStep2 = true; // Will be updated based on Core Objectives selection
+  const handleStepClick = (stepNumber: number) => {
+    scrollToSection(stepNumber);
+  };
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
+  const canProceedFromStep1 = board && grade && subject;
+
+  const markStepComplete = (stepNumber: number) => {
+    if (!completedSteps.includes(stepNumber)) {
+      setCompletedSteps([...completedSteps, stepNumber]);
+    }
+  };
+
+  return (
+    <div className="w-full">
+      {/* Horizontal Stepper */}
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center">
+                <div 
+                  className={`flex items-center cursor-pointer transition-all duration-200 ${
+                    index < steps.length - 1 ? 'flex-1' : ''
+                  }`}
+                  onClick={() => handleStepClick(step.number)}
+                >
+                  {/* Step Circle */}
+                  <div className={`
+                    relative flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200
+                    ${isStepCompleted(step.number)
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : isStepActive(step.number)
+                      ? 'bg-primary border-primary text-primary-foreground'
+                      : isStepAccessible(step.number)
+                      ? 'border-muted-foreground text-muted-foreground hover:border-primary'
+                      : 'border-muted text-muted-foreground'
+                    }
+                  `}>
+                    {isStepCompleted(step.number) ? (
+                      <CheckCircle2 size={16} />
+                    ) : (
+                      <span className="text-sm font-medium">{step.number}</span>
+                    )}
+                  </div>
+
+                  {/* Step Title */}
+                  <div className="ml-3 hidden sm:block">
+                    <div className={`text-sm font-medium transition-colors duration-200 ${
+                      isStepActive(step.number)
+                        ? 'text-primary'
+                        : isStepCompleted(step.number)
+                        ? 'text-green-600'
+                        : 'text-muted-foreground'
+                    }`}>
+                      {step.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {step.description}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Connector Line */}
+                {index < steps.length - 1 && (
+                  <div className={`hidden sm:block flex-1 h-0.5 mx-4 transition-colors duration-200 ${
+                    isStepCompleted(step.number) ? 'bg-green-500' : 'bg-muted'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Sections Container */}
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Section 1: Basic Setup & Content */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[0] = el; }}
+          className="min-h-screen py-8 space-y-8"
+        >
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto">
+              <span className="text-2xl">📚</span>
+            </div>
+            <h1 className="text-3xl font-bold text-foreground">Basic Setup & Content</h1>
+            <p className="text-muted-foreground max-w-md mx-auto">Configure your lesson basics and upload materials</p>
+          </div>
+          
           <SelectionPanel
             board={board}
             setBoard={setBoard}
@@ -88,160 +166,162 @@ const MainStepper = ({
             subject={subject}
             setSubject={setSubject}
           />
-        );
-      case 2:
-        return <CoreObjectives onGenerateCO={onGenerateCO} />;
-      case 3:
-        return <ExpectedLearningOutcome />;
-      default:
-        return null;
-    }
-  };
+          
+          {canProceedFromStep1 && (
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  markStepComplete(1);
+                  scrollToSection(2);
+                }}
+                className="px-8 py-3"
+              >
+                Next Step
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </section>
 
-  const getNudgeMessage = () => {
-    if (currentStep === 1 && !canProceedFromStep1) {
-      return "👋 Complete your lesson setup to continue to the next step!";
-    }
-    if (currentStep === 2) {
-      return "🎯 Choose your core objectives to proceed to learning outcomes!";
-    }
-    if (currentStep === 3) {
-      return "🎓 Define your learning outcomes with Blooms taxonomy, skills, and attitudes!";
-    }
-    return null;
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Modern Step Navigation */}
-      <div className="relative">
-        {/* Progress Background */}
-        <div className="absolute top-10 left-0 right-0 h-0.5 bg-muted rounded-full"></div>
-        
-        {/* Active Progress */}
-        <div 
-          className="absolute top-10 left-0 h-0.5 bg-primary rounded-full transition-all duration-500 ease-out"
-          style={{ 
-            width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` 
-          }}
-        ></div>
-
-        {/* Steps */}
-        <div className="relative flex justify-between items-center">
-          {steps.map((step, index) => (
-            <div 
-              key={step.number} 
-              className="flex flex-col items-center group cursor-pointer"
-              onClick={() => handleStepClick(step.number)}
+        {/* Section 2: Upload Content */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[1] = el; }}
+          className="min-h-screen py-8 space-y-8"
+        >
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto">
+              <span className="text-2xl">📁</span>
+            </div>
+            <h1 className="text-3xl font-bold text-foreground">Upload Content</h1>
+            <p className="text-muted-foreground max-w-md mx-auto">Add your lesson materials</p>
+          </div>
+          
+          <div className="bg-card rounded-lg border p-8 text-center space-y-4">
+            <div className="w-16 h-16 bg-muted/20 rounded-lg flex items-center justify-center mx-auto">
+              <ArrowRight className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium">Upload Your Materials</h3>
+            <p className="text-muted-foreground">PDFs, documents, or presentations</p>
+            <Button className="mt-4">
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Browse Files
+            </Button>
+            <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center justify-center gap-2 text-green-700">
+                <CheckCircle2 className="h-5 w-5" />
+                <span className="font-medium">Perfect! Your content is uploaded and ready.</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-center">
+            <Button
+              onClick={() => {
+                markStepComplete(2);
+                scrollToSection(3);
+              }}
+              className="px-8 py-3"
             >
-              {/* Step Circle */}
-              <div className={`
-                relative w-16 h-16 rounded-full flex items-center justify-center text-xl font-semibold transition-all duration-300 ease-out
-                ${isStepCompleted(step.number)
-                  ? 'bg-primary text-primary-foreground shadow-lg'
-                  : isStepActive(step.number)
-                  ? 'bg-primary text-primary-foreground shadow-lg ring-2 ring-primary/20'
-                  : isStepAccessible(step.number)
-                  ? 'bg-muted text-muted-foreground hover:bg-muted/80 shadow-sm'
-                  : 'bg-muted/50 text-muted-foreground/50 shadow-sm'
-                }
-              `}>
-                {isStepCompleted(step.number) ? (
-                  <CheckCircle2 size={20} />
-                ) : (
-                  <span>{step.icon}</span>
-                )}
-              </div>
-
-              {/* Step Info */}
-              <div className="mt-4 text-center max-w-32">
-                <h4 className={`font-bold text-sm mb-1 transition-colors duration-300 ${
-                  isStepActive(step.number) 
-                    ? 'text-primary' 
-                    : isStepCompleted(step.number)
-                    ? 'text-green-600'
-                    : isStepAccessible(step.number)
-                    ? 'text-gray-700 group-hover:text-gray-900'
-                    : 'text-gray-400'
-                }`}>
-                  {step.title}
-                </h4>
-                <p className={`text-xs leading-tight transition-colors duration-300 ${
-                  isStepActive(step.number) 
-                    ? 'text-primary/70' 
-                    : isStepCompleted(step.number)
-                    ? 'text-green-500'
-                    : 'text-gray-500'
-                }`}>
-                  {step.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Enhanced Nudge Message */}
-      {getNudgeMessage() && (
-        <div className="bg-muted/50 rounded-lg p-4 border border-border">
-          <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <span className="text-lg">💡</span>
-            </div>
-            <div className="flex-1">
-              <span className="text-sm text-foreground font-medium">{getNudgeMessage()}</span>
-            </div>
+              Next Step
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
-        </div>
-      )}
+        </section>
 
-      {/* Step Content */}
-      <div className="min-h-[500px]">
-        {renderStepContent()}
-      </div>
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between items-center bg-card rounded-lg border border-border p-4">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentStep === 1}
-          className="flex items-center gap-2"
+        {/* Section 3: Select Objectives */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[2] = el; }}
+          className="min-h-screen py-8 space-y-8"
         >
-          <ArrowLeft size={16} />
-          <span>Previous</span>
-        </Button>
-
-        <div className="text-center">
-          <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">Progress</div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-foreground">
-              Step {currentStep} of {steps.length}
-            </span>
-            <div className="flex gap-1">
-              {steps.map((_, idx) => (
-                <div 
-                  key={idx}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    idx < currentStep ? 'bg-primary' : 'bg-muted'
-                  }`}
-                />
-              ))}
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto">
+              <span className="text-2xl">🎯</span>
             </div>
+            <h1 className="text-3xl font-bold text-foreground">Select Objectives</h1>
+            <p className="text-muted-foreground max-w-md mx-auto">Choose learning objectives</p>
           </div>
-        </div>
+          
+          <CoreObjectives 
+            onGenerateCO={onGenerateCO}
+            shortlistedObjectives={shortlistedObjectives}
+            setShortlistedObjectives={setShortlistedObjectives}
+          />
+          
+          <div className="flex justify-center">
+            <Button
+              onClick={() => {
+                markStepComplete(3);
+                scrollToSection(4);
+              }}
+              className="px-8 py-3"
+            >
+              Next Step
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </section>
 
-        <Button
-          onClick={handleNext}
-          disabled={
-            currentStep === steps.length ||
-            (currentStep === 1 && !canProceedFromStep1)
-          }
-          className="flex items-center gap-2"
+        {/* Section 4: Review & Create */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[3] = el; }}
+          className="min-h-screen py-8 space-y-8"
         >
-          <span>Next</span>
-          <ArrowRight size={16} />
-        </Button>
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto">
+              <span className="text-2xl">✅</span>
+            </div>
+            <h1 className="text-3xl font-bold text-foreground">Review & Create Your Lesson Plan</h1>
+            <p className="text-muted-foreground max-w-md mx-auto">Everything looks perfect! Review and finalize your lesson plan.</p>
+          </div>
+          
+          <ExpectedLearningOutcome />
+          
+          <div className="bg-card rounded-lg border p-6 space-y-6">
+            <h3 className="text-lg font-semibold">Lesson Summary</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">Board:</div>
+                <div className="font-medium">{board || 'Not selected'}</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">Grade:</div>
+                <div className="font-medium">{grade || 'Not selected'}</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">Subject:</div>
+                <div className="font-medium">{subject || 'Not selected'}</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">Duration:</div>
+                <div className="font-medium">0h 30min</div>
+              </div>
+            </div>
+            
+            {shortlistedObjectives.length > 0 && (
+              <div className="space-y-3">
+                <div className="text-sm text-muted-foreground">Selected Core Objectives:</div>
+                <div className="space-y-2">
+                  {shortlistedObjectives.map((objective, index) => (
+                    <div key={index} className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="text-purple-800 font-medium">{objective}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-center">
+            <Button
+              onClick={() => markStepComplete(4)}
+              className="px-8 py-3 bg-green-600 hover:bg-green-700"
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Create My Lesson Plan!
+            </Button>
+          </div>
+        </section>
       </div>
     </div>
   );
