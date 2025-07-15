@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RoleSelection from "./pages/RoleSelection";
 import ToolsDashboard from "./pages/ToolsDashboard";
+import LessonPlanAssistant from "./pages/LessonPlanAssistant";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<RoleSelection />} />
           <Route path="/tools" element={<ToolsDashboard />} />
+          <Route path="/lesson-plan-assistant" element={<LessonPlanAssistant />} />
           <Route path="/lesson-plan" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

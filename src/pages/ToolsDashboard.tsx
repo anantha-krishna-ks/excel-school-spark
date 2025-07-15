@@ -48,7 +48,7 @@ const ToolsDashboard = () => {
       icon: BookOpen,
       color: 'bg-blue-500',
       buttonColor: 'bg-blue-500 hover:bg-blue-600',
-      route: '/lesson-plan'
+      route: '/lesson-plan-assistant'
     },
     {
       id: 'grade-assistant',
@@ -85,7 +85,7 @@ const ToolsDashboard = () => {
       description: 'AI-assisted creation',
       icon: BookOpen,
       color: 'bg-blue-500',
-      route: '/lesson-plan'
+      route: '/lesson-plan-assistant'
     },
     {
       title: 'Generate Report',
