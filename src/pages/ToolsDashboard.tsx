@@ -1,4 +1,4 @@
-import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3 } from 'lucide-react';
+import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -104,34 +104,42 @@ const ToolsDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">School Verse</h1>
-              <p className="text-sm text-gray-500">Administrative Panel</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-white">
+      {/* Header with Breadcrumbs */}
+      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Breadcrumbs */}
+          <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+            <Home className="w-4 h-4" />
+            <span className="mx-2">/</span>
+            <span className="text-blue-600 font-medium">Teacher Tools</span>
+          </nav>
           
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="text-gray-600">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-gray-600"
-              onClick={() => navigate('/')}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="text-gray-600 hover:text-gray-900 hover:bg-blue-50 transition-colors duration-200"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Role Selection
+              </Button>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <GraduationCap className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">ExcelSchool</h1>
+                  <p className="text-sm text-gray-500">Teacher Dashboard</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-600">Online</span>
+            </div>
           </div>
         </div>
       </header>

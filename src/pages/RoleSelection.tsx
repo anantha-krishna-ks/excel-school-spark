@@ -48,44 +48,47 @@ const RoleSelection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mb-4">
+        <div className="text-center mb-16">
+          <h1 className="text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mb-4">
             EXCEL
           </h1>
-          <h2 className="text-2xl text-blue-600 font-medium mb-8">
+          <h2 className="text-3xl text-blue-600 font-medium mb-8">
             SCHOOL AI
           </h2>
-          <div className="flex justify-center gap-2 mb-12">
-            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+          <div className="flex justify-center gap-2 mb-16">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
           </div>
-          <p className="text-xl text-gray-700 font-medium">
+          <p className="text-2xl text-gray-700 font-medium">
             I will be using Excel School AI as:
           </p>
         </div>
 
         {/* Role Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {roles.map((role) => {
             const IconComponent = role.icon;
             return (
               <div
                 key={role.id}
                 onClick={() => handleRoleSelect(role.route)}
-                className={`${role.bgColor} rounded-3xl p-8 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg group`}
+                className="bg-white rounded-3xl p-8 cursor-pointer transition-all duration-500 hover:scale-110 hover:shadow-2xl group border-2 border-gray-100 hover:border-blue-200 relative overflow-hidden"
               >
-                <div className="text-center">
-                  <div className={`${role.color} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-8 h-8 text-white" />
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-purple-50/0 group-hover:from-blue-50/50 group-hover:to-purple-50/50 transition-all duration-500 rounded-3xl"></div>
+                
+                <div className="text-center relative z-10">
+                  <div className={`${role.color} w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-125 group-hover:rotate-6 transition-all duration-500 shadow-lg group-hover:shadow-xl`}>
+                    <IconComponent className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">
                     {role.title}
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-500 text-lg group-hover:text-gray-700 transition-colors duration-300">
                     {role.subtitle}
                   </p>
                 </div>

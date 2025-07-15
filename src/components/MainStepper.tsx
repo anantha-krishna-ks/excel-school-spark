@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, BookOpen, Upload, Target, FileCheck } from 'lucide-react';
 import SelectionPanel from './SelectionPanel';
@@ -29,6 +29,33 @@ const MainStepper = ({
   const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
   
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const canProceedFromStep1 = board && grade && subject;
+
+  // Auto-detect current step based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = sectionRefs.current;
+      const scrollPosition = window.scrollY + 200; // Offset for header
+      
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && section.offsetTop <= scrollPosition) {
+          setCurrentStep(i + 1);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Auto-complete step 1 when basic setup is done
+  useEffect(() => {
+    if (canProceedFromStep1 && !completedSteps.includes(1)) {
+      setCompletedSteps(prev => [...prev, 1]);
+    }
+  }, [board, grade, subject, canProceedFromStep1, completedSteps]);
 
   const steps = [
     {
@@ -72,8 +99,6 @@ const MainStepper = ({
   const handleStepClick = (stepNumber: number) => {
     scrollToSection(stepNumber);
   };
-
-  const canProceedFromStep1 = board && grade && subject;
 
   const markStepComplete = (stepNumber: number) => {
     if (!completedSteps.includes(stepNumber)) {
