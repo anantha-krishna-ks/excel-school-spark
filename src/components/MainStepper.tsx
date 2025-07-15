@@ -84,8 +84,8 @@ const MainStepper = ({
   return (
     <div className="w-full bg-background">
       {/* Modern Horizontal Stepper */}
-      <div className="sticky top-0 z-50 bg-background border-b">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="bg-white border-b border-gray-200 py-6">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-center space-x-8">
             {steps.map((step, index) => {
               const StepIcon = step.icon;
@@ -97,12 +97,12 @@ const MainStepper = ({
                   >
                     {/* Modern Step Circle with Icon */}
                     <div className={`
-                      relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-2
+                      relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3
                       ${isStepActive(step.number)
-                        ? 'bg-primary text-primary-foreground shadow-lg scale-110'
+                        ? 'bg-blue-500 text-white shadow-lg scale-110'
                         : isStepCompleted(step.number)
-                        ? 'bg-green-100 text-green-600 border-2 border-green-200'
-                        : 'bg-muted/50 text-muted-foreground hover:bg-muted group-hover:scale-105'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200 group-hover:scale-105'
                       }
                     `}>
                       {isStepCompleted(step.number) ? (
@@ -113,17 +113,17 @@ const MainStepper = ({
                     </div>
 
                     {/* Step Title and Description */}
-                    <div className="text-center">
+                    <div className="text-center max-w-32">
                       <div className={`text-sm font-medium transition-colors duration-200 ${
                         isStepActive(step.number)
-                          ? 'text-primary'
+                          ? 'text-blue-600'
                           : isStepCompleted(step.number)
                           ? 'text-green-600'
-                          : 'text-muted-foreground'
+                          : 'text-gray-500'
                       }`}>
                         {step.title}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1 max-w-24">
+                      <div className="text-xs text-gray-400 mt-1">
                         {step.description}
                       </div>
                     </div>
@@ -131,8 +131,8 @@ const MainStepper = ({
 
                   {/* Connector Line */}
                   {index < steps.length - 1 && (
-                    <div className={`w-16 h-0.5 mx-6 mt-6 transition-colors duration-300 ${
-                      isStepCompleted(step.number) ? 'bg-green-300' : 'bg-border'
+                    <div className={`w-16 h-0.5 mx-6 mb-8 transition-colors duration-300 ${
+                      isStepCompleted(step.number) ? 'bg-green-300' : 'bg-gray-200'
                     }`} />
                   )}
                 </div>

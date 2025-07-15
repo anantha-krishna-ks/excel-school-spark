@@ -18,20 +18,17 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="w-full min-h-screen bg-background">
       <Header />
-      
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <MainStepper
-          board={board}
-          setBoard={setBoard}
-          grade={grade}
-          setGrade={setGrade}
-          subject={subject}
-          setSubject={setSubject}
-          onGenerateCO={handleGenerateCO}
-        />
-      </div>
+      <MainStepper
+        board={board}
+        setBoard={setBoard}
+        grade={grade}
+        setGrade={setGrade}
+        subject={subject}
+        setSubject={setSubject}
+        onGenerateCO={handleGenerateCO}
+      />
     </div>
   );
 };
