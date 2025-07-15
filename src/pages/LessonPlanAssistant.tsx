@@ -11,8 +11,8 @@ import Header from '@/components/Header';
 const LessonPlanAssistant = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
-    grade: "",
-    subject: "",
+    grade: "all",
+    subject: "all",
     lessonName: ""
   });
 
@@ -91,7 +91,7 @@ const LessonPlanAssistant = () => {
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="1">Grade 1</SelectItem>
                     <SelectItem value="2">Grade 2</SelectItem>
                     <SelectItem value="3">Grade 3</SelectItem>
@@ -116,7 +116,7 @@ const LessonPlanAssistant = () => {
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="mathematics">Mathematics</SelectItem>
                     <SelectItem value="science">Science</SelectItem>
                     <SelectItem value="general-science">General Science</SelectItem>
