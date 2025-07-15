@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Plus, Upload, BookOpen, Clock } from 'lucide-react';
-
 interface SelectionPanelProps {
   board: string;
   setBoard: (value: string) => void;
@@ -13,10 +11,15 @@ interface SelectionPanelProps {
   subject: string;
   setSubject: (value: string) => void;
 }
-
-const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject }: SelectionPanelProps) => {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
+const SelectionPanel = ({
+  board,
+  setBoard,
+  grade,
+  setGrade,
+  subject,
+  setSubject
+}: SelectionPanelProps) => {
+  return <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-green-500"></div>
       
       <div className="flex items-center gap-3 mb-6">
@@ -82,24 +85,11 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
-              <Input
-                type="number"
-                placeholder="1"
-                min="0"
-                max="8"
-                className="h-11 text-center border-gray-300 focus:border-blue-500"
-              />
+              <Input type="number" placeholder="1" min="0" max="8" className="h-11 text-center border-gray-300 focus:border-blue-500" />
               <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
             </div>
             <div className="flex-1">
-              <Input
-                type="number"
-                placeholder="30"
-                min="0"
-                max="59"
-                step="5"
-                className="h-11 text-center border-gray-300 focus:border-blue-500"
-              />
+              <Input type="number" placeholder="30" min="0" max="59" step="5" className="h-11 text-center border-gray-300 focus:border-blue-500" />
               <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
             </div>
           </div>
@@ -107,13 +97,7 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
-        <Button 
-          variant="outline" 
-          className="min-w-[160px] h-12 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-200 text-blue-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-        >
-          <Plus className="mr-2" size={18} />
-          Create New Lesson
-        </Button>
+        
       </div>
 
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors">
@@ -127,16 +111,11 @@ const SelectionPanel = ({ board, setBoard, grade, setGrade, subject, setSubject 
               <p className="text-blue-600 text-xs">PDFs, documents, and materials</p>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            className="bg-white border-blue-300 hover:bg-blue-50 shadow-sm text-blue-700"
-          >
+          <Button variant="outline" className="bg-white border-blue-300 hover:bg-blue-50 shadow-sm text-blue-700">
             Browse Files
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SelectionPanel;
