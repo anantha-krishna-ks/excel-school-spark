@@ -6,6 +6,7 @@ import { CheckCircle2, BookOpen, Target, FileCheck, Sparkles, Award, Clock, User
 import SelectionPanel from './SelectionPanel';
 import CoreObjectives from './CoreObjectives';
 import ExpectedLearningOutcome from './ExpectedLearningOutcome';
+import ObjectiveMapping from './ObjectiveMapping';
 
 interface MainStepperProps {
   board: string;
@@ -101,6 +102,12 @@ const MainStepper = ({
     },
     {
       number: 4,
+      title: 'Objective Mapping',
+      description: 'Connect objectives to outcomes',
+      icon: Target
+    },
+    {
+      number: 5,
       title: 'Review & Create',
       description: 'Finalize your lesson plan',
       icon: CheckCircle2
@@ -139,6 +146,8 @@ const MainStepper = ({
       case 3:
         return false; // Add logic based on your ExpectedLearningOutcome component
       case 4:
+        return false; // Add logic for mapping completion
+      case 5:
         return board && grade && subject && shortlistedObjectives.length > 0;
       default:
         return false;
@@ -148,7 +157,7 @@ const MainStepper = ({
   // Update completed steps based on section completion
   useEffect(() => {
     const newCompletedSteps: number[] = [];
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       if (isSectionCompleted(i)) {
         newCompletedSteps.push(i);
       }
@@ -328,9 +337,37 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 4: Review & Create - Enhanced */}
+        {/* Section 4: Objective Mapping */}
         <section 
           ref={(el) => { if (el) sectionRefs.current[3] = el; }}
+          className="relative bg-gradient-to-br from-indigo-50/50 to-white py-16"
+        >
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-200 to-transparent"></div>
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center space-y-6 mb-12">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/25">
+                <Target className="h-10 w-10 text-white drop-shadow-sm" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-800 bg-clip-text text-transparent">
+                  Objective Mapping
+                </h1>
+                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+                  Connect Core Objectives with Expected Learning Outcomes
+                </p>
+              </div>
+            </div>
+            
+            <ObjectiveMapping 
+              coreObjectives={shortlistedObjectives}
+              learningOutcomes={['Students will demonstrate understanding of concepts', 'Students will apply knowledge in real situations']} // Mock data for now
+            />
+          </div>
+        </section>
+
+        {/* Section 5: Review & Create - Enhanced */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[4] = el; }}
           className="relative bg-gradient-to-br from-amber-50/50 via-yellow-50/30 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent"></div>

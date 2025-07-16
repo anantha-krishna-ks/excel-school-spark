@@ -109,8 +109,8 @@ const SelectionPanel = ({
         </div>
       </div>
 
-      {/* Chapter/Unit Row */}
-      <div className="mb-6">
+      {/* Chapter/Unit and Duration Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
@@ -156,21 +156,21 @@ const SelectionPanel = ({
             }}
           />
         </div>
-      </div>
 
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Clock className="text-blue-600" size={16} />
-          <label className="text-sm font-medium text-gray-700">Duration</label>
-        </div>
-        <div className="flex gap-3 max-w-xs">
-          <div className="flex-1">
-            <Input type="number" placeholder="0" min="0" max="8" className="h-11 text-center border-gray-300 focus:border-blue-500" />
-            <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Clock className="text-blue-600" size={16} />
+            <label className="text-sm font-medium text-gray-700">Duration</label>
           </div>
-          <div className="flex-1">
-            <Input type="number" placeholder="30" min="0" max="59" step="5" className="h-11 text-center border-gray-300 focus:border-blue-500" />
-            <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <Input type="number" placeholder="0" min="0" max="8" className="h-11 text-center border-gray-300 focus:border-blue-500" />
+              <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
+            </div>
+            <div className="flex-1">
+              <Input type="number" placeholder="30" min="0" max="59" step="5" className="h-11 text-center border-gray-300 focus:border-blue-500" />
+              <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
+            </div>
           </div>
         </div>
       </div>

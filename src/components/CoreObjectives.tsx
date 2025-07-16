@@ -52,13 +52,13 @@ const CoreObjectives = ({
   shortlistedObjectives = [], 
   setShortlistedObjectives 
 }: CoreObjectivesProps) => {
-  const [activeTab, setActiveTab] = useState<'fullyAI' | 'partiallyAI'>('fullyAI');
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [customObjectives, setCustomObjectives] = useState<string[]>(['']);
   const [showCelebration, setShowCelebration] = useState(false);
   const [savedObjectives, setSavedObjectives] = useState<SavedObjective[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [validationResults, setValidationResults] = useState<{[key: string]: ValidationResult}>({});
+  const [suggestedObjectives, setSuggestedObjectives] = useState<string[]>([]);
   
   const availableObjectives = [
     { 
@@ -84,12 +84,24 @@ const CoreObjectives = ({
     }
   ];
 
-  // Auto-select all objectives in Fully AI-assisted mode
+  // Auto-generate suggested objectives on component mount
   React.useEffect(() => {
-    if (activeTab === 'fullyAI') {
-      setSelectedObjectives(availableObjectives.map(obj => obj.label));
-    }
-  }, [activeTab]);
+    const suggestions = [
+      "Long lasting values: Students develop gratitude towards farmers for their hard work and their role in ensuring food security.",
+      "Life skills: Students acquire the ability to analyze complex problems and develop sustainable solutions.",
+      "Relevance to life: Students gain a holistic understanding of food production and its socio-economic impact in the country."
+    ];
+    setSuggestedObjectives(suggestions);
+    
+    // Auto-save suggested objectives
+    const autoSavedObjectives = suggestions.map(text => ({
+      id: `auto_${Date.now()}_${Math.random()}`,
+      text,
+      categories: categorizeObjective(text),
+      isValidated: false
+    }));
+    setSavedObjectives(autoSavedObjectives);
+  }, []);
 
   const triggerCelebration = () => {
     setShowCelebration(true);
@@ -223,8 +235,6 @@ const CoreObjectives = ({
   };
 
   const handleObjectiveToggle = (objective: string) => {
-    if (activeTab === 'fullyAI') return; // Don't allow changes in fully AI mode
-    
     const isSelected = selectedObjectives.includes(objective);
     
     if (isSelected) {
@@ -291,76 +301,32 @@ const CoreObjectives = ({
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
-        <button
-          onClick={() => setActiveTab('partiallyAI')}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-all duration-200 ${
-            activeTab === 'partiallyAI'
-              ? 'bg-white text-purple-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          <Heart size={16} />
-          <span className="font-medium">Partially AI-assisted</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('fullyAI')}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-all duration-200 ${
-            activeTab === 'fullyAI'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          <Bot size={16} />
-          <span className="font-medium">Fully AI-assisted</span>
-        </button>
-      </div>
-
-      {/* Objectives Grid - Consistent for both tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {availableObjectives.map((objective) => {
-          const isSelected = selectedObjectives.includes(objective.label);
-          return (
-            <div
-              key={objective.id}
-              className={`
-                relative p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg
-                ${isSelected 
-                  ? `border-transparent bg-gradient-to-br ${objective.color} text-white shadow-lg` 
-                  : 'border-gray-200 bg-white hover:border-gray-300'
-                }
-                ${activeTab === 'fullyAI' ? 'cursor-default' : ''}
-              `}
-              onClick={() => handleObjectiveToggle(objective.label)}
-            >
-              {/* Selection indicator */}
-              <div className="absolute top-3 right-3">
-                <CheckCircle2 className={isSelected ? "text-white" : "text-gray-400"} size={20} />
-              </div>
-              
-              <div className="text-center">
-                <div className="text-3xl mb-3">{objective.icon}</div>
-                <h4 className={`font-semibold mb-2 ${isSelected ? 'text-white' : 'text-gray-800'}`}>
-                  {objective.label}
-                </h4>
-                <p className={`text-sm ${isSelected ? 'text-white/90' : 'text-gray-600'}`}>
-                  {objective.description}
-                </p>
-              </div>
-              
-              {/* AI mode indicator */}
-              {activeTab === 'fullyAI' && (
-                <div className="absolute bottom-2 right-2">
-                  <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
-                    Always Selected
-                  </div>
+      {/* AI-Suggested Objectives */}
+      {suggestedObjectives.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="text-blue-600" size={20} />
+            <h4 className="font-semibold text-blue-900">AI-Suggested Core Objectives</h4>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            {availableObjectives.map((objective) => (
+              <div
+                key={objective.id}
+                className="relative p-4 rounded-lg border border-blue-200 bg-white/80 hover:bg-white transition-all duration-200"
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">{objective.icon}</div>
+                  <h5 className="font-medium text-gray-800 mb-1">{objective.label}</h5>
+                  <p className="text-xs text-gray-600">{objective.description}</p>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-blue-700 bg-blue-100/50 p-3 rounded-lg">
+            ✨ These objectives are automatically generated and categorized based on best practices. Each saved objective will be dynamically categorized.
+          </p>
+        </div>
+      )}
 
       {/* Enhanced Custom Objectives with Save Feature */}
       <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200 mb-6">
@@ -596,29 +562,27 @@ const CoreObjectives = ({
 
       {/* Action Buttons */}
       <div className="text-center space-y-4">
-        {/* Validate All and Shortlist All Buttons for Partially AI-assisted Tab */}
-        {activeTab === 'partiallyAI' && (
-          <div className="flex justify-center gap-3 mb-4">
-            <Button 
-              variant="outline"
-              onClick={() => savedObjectives.forEach(obj => !obj.isValidated && validateObjective(obj))}
-              disabled={savedObjectives.every(obj => obj.isValidated)}
-              className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 px-4 py-2 rounded-lg font-medium shadow-sm"
-            >
-              <CheckCircle2 className="mr-2" size={16} />
-              Validate All
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={handleShortlist}
-              disabled={totalSelected === 0}
-              className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 px-4 py-2 rounded-lg font-medium shadow-sm"
-            >
-              <Target className="mr-2" size={16} />
-              Shortlist All
-            </Button>
-          </div>
-        )}
+        {/* Validate All and Shortlist All Buttons */}
+        <div className="flex justify-center gap-3 mb-4">
+          <Button 
+            variant="outline"
+            onClick={() => savedObjectives.forEach(obj => !obj.isValidated && validateObjective(obj))}
+            disabled={savedObjectives.every(obj => obj.isValidated)}
+            className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 px-4 py-2 rounded-lg font-medium shadow-sm"
+          >
+            <CheckCircle2 className="mr-2" size={16} />
+            Validate All
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={handleShortlist}
+            disabled={totalSelected === 0}
+            className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 px-4 py-2 rounded-lg font-medium shadow-sm"
+          >
+            <Target className="mr-2" size={16} />
+            Shortlist All
+          </Button>
+        </div>
         
         {/* Generate/Continue Button */}
         <Button 
