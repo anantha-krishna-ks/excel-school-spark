@@ -2,7 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Plus, Upload, BookOpen, Clock } from 'lucide-react';
+import { Plus, Upload, BookOpen, Clock, X } from 'lucide-react';
+import ReactSelect from 'react-select';
 interface SelectionPanelProps {
   board: string;
   setBoard: (value: string) => void;
@@ -10,6 +11,8 @@ interface SelectionPanelProps {
   setGrade: (value: string) => void;
   subject: string;
   setSubject: (value: string) => void;
+  chapters: string[];
+  setChapters: (value: string[]) => void;
 }
 const SelectionPanel = ({
   board,
@@ -17,8 +20,26 @@ const SelectionPanel = ({
   grade,
   setGrade,
   subject,
-  setSubject
+  setSubject,
+  chapters,
+  setChapters
 }: SelectionPanelProps) => {
+  const chapterOptions = [
+    { value: 'chapter1', label: 'Chapter 1: Introduction to Science' },
+    { value: 'chapter2', label: 'Chapter 2: Matter and Materials' },
+    { value: 'chapter3', label: 'Chapter 3: Energy and Motion' },
+    { value: 'chapter4', label: 'Chapter 4: Living Things' },
+    { value: 'chapter5', label: 'Chapter 5: Earth and Space' },
+    { value: 'unit1', label: 'Unit 1: Numbers and Operations' },
+    { value: 'unit2', label: 'Unit 2: Geometry and Measurement' },
+    { value: 'unit3', label: 'Unit 3: Data and Probability' }
+  ];
+
+  const handleChapterChange = (selectedOptions: any) => {
+    const selectedValues = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
+    setChapters(selectedValues);
+  };
+
   return <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-green-500"></div>
       
@@ -32,7 +53,7 @@ const SelectionPanel = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -85,6 +106,52 @@ const SelectionPanel = ({
               <SelectItem value="social">Social Studies</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+            <label className="text-sm font-medium text-gray-700">Chapter/Unit</label>
+          </div>
+          <ReactSelect
+            isMulti
+            value={chapterOptions.filter(option => chapters.includes(option.value))}
+            onChange={handleChapterChange}
+            options={chapterOptions}
+            placeholder="Select chapters/units..."
+            className="react-select-container"
+            classNamePrefix="react-select"
+            styles={{
+              control: (base) => ({
+                ...base,
+                minHeight: '44px',
+                backgroundColor: '#f9fafb',
+                borderColor: '#d1d5db',
+                '&:hover': {
+                  backgroundColor: 'white',
+                  borderColor: '#d1d5db'
+                }
+              }),
+              multiValue: (base) => ({
+                ...base,
+                backgroundColor: '#e5e7eb',
+                borderRadius: '6px'
+              }),
+              multiValueLabel: (base) => ({
+                ...base,
+                color: '#374151',
+                fontSize: '0.875rem'
+              }),
+              multiValueRemove: (base) => ({
+                ...base,
+                color: '#6b7280',
+                '&:hover': {
+                  backgroundColor: '#ef4444',
+                  color: 'white'
+                }
+              })
+            }}
+          />
         </div>
       </div>
 

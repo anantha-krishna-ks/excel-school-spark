@@ -14,6 +14,8 @@ interface MainStepperProps {
   setGrade: (grade: string) => void;
   subject: string;
   setSubject: (subject: string) => void;
+  chapters: string[];
+  setChapters: (chapters: string[]) => void;
   onGenerateCO: (objectives: string[]) => void;
 }
 
@@ -24,6 +26,8 @@ const MainStepper = ({
   setGrade, 
   subject, 
   setSubject, 
+  chapters,
+  setChapters,
   onGenerateCO 
 }: MainStepperProps) => {
   const navigate = useNavigate();
@@ -159,11 +163,7 @@ const MainStepper = ({
         ref={stepperRef}
         className={`${
           isSticky 
-            ? `fixed top-[110px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm ${
-                scrolledBeyondHeader 
-                  ? 'bg-white/80 backdrop-blur-md' 
-                  : 'bg-white'
-              }` 
+            ? `fixed top-[110px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm bg-white/95 backdrop-blur-md` 
             : 'bg-white border-b border-gray-200'
         } py-3 transition-all duration-300`}
       >
@@ -268,6 +268,8 @@ const MainStepper = ({
               setGrade={setGrade}
               subject={subject}
               setSubject={setSubject}
+              chapters={chapters}
+              setChapters={setChapters}
             />
           </div>
         </section>

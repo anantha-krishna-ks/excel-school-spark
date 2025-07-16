@@ -7,6 +7,7 @@ const Index = () => {
   const [board, setBoard] = useState('');
   const [grade, setGrade] = useState('');
   const [subject, setSubject] = useState('');
+  const [chapters, setChapters] = useState<string[]>([]);
   const [generatedCOs, setGeneratedCOs] = useState<string[]>([]);
 
   const handleGenerateCO = (objectives: string[]) => {
@@ -27,6 +28,8 @@ const Index = () => {
         setGrade={setGrade}
         subject={subject}
         setSubject={setSubject}
+        chapters={chapters}
+        setChapters={setChapters}
         onGenerateCO={handleGenerateCO}
       />
     </div>

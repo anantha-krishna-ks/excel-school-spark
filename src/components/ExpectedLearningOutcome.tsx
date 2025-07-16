@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target, Plus, X } from 'lucide-react';
 import ObjectiveMapping from './ObjectiveMapping';
 
 const ExpectedLearningOutcome = () => {
@@ -14,6 +15,8 @@ const ExpectedLearningOutcome = () => {
   ]);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
+  const [customSkills, setCustomSkills] = useState('');
+  const [customAttitudes, setCustomAttitudes] = useState('');
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [customPrompt, setCustomPrompt] = useState('');
@@ -67,6 +70,25 @@ const ExpectedLearningOutcome = () => {
     } else {
       setSelectedAttitudes(selectedAttitudes.filter(a => a !== attitude));
     }
+  };
+
+  const parseCustomInput = (input: string): string[] => {
+    return input
+      .split(/[,\n]/)
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+  };
+
+  const handleCustomSkillsChange = (value: string) => {
+    setCustomSkills(value);
+    const parsedSkills = parseCustomInput(value);
+    setSelectedSkills([...new Set([...selectedSkills.filter(skill => !parseCustomInput(customSkills).includes(skill)), ...parsedSkills])]);
+  };
+
+  const handleCustomAttitudesChange = (value: string) => {
+    setCustomAttitudes(value);
+    const parsedAttitudes = parseCustomInput(value);
+    setSelectedAttitudes([...new Set([...selectedAttitudes.filter(attitude => !parseCustomInput(customAttitudes).includes(attitude)), ...parsedAttitudes])]);
   };
 
   const handleVerify = () => {
@@ -166,6 +188,116 @@ const ExpectedLearningOutcome = () => {
                 </Button>
               </div>
             </div>
+
+            {/* Blooms Taxonomy */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Brain className="text-purple-600" size={20} />
+                <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
+              </div>
+              <div className="space-y-3">
+                <select 
+                  value={selectedBlooms[0] || ""} 
+                  onChange={(e) => setSelectedBlooms(e.target.value ? [e.target.value] : [])}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                >
+                  <option value="">Select Bloom's level</option>
+                  {bloomsLevels.map((bloom) => (
+                    <option key={bloom.id} value={bloom.label}>
+                      {bloom.icon} {bloom.label} - {bloom.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </Card>
+
+            {/* Skills */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="text-blue-600" size={20} />
+                <h4 className="font-semibold text-gray-900">Skills</h4>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {skillsList.map((skill) => (
+                    <div 
+                      key={skill}
+                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                    >
+                      <Checkbox
+                        id={`skill-${skill}`}
+                        checked={selectedSkills.includes(skill)}
+                        onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
+                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                      />
+                      <label 
+                        htmlFor={`skill-${skill}`} 
+                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                      >
+                        {skill}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Add custom skills (comma, space, or enter separated)
+                  </label>
+                  <Input
+                    placeholder="e.g., Research skills, Digital literacy, Time management"
+                    value={customSkills}
+                    onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </Card>
+
+            {/* Attitudes */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Heart className="text-pink-600" size={20} />
+                <h4 className="font-semibold text-gray-900">Attitudes</h4>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {attitudesList.map((attitude) => (
+                    <div 
+                      key={attitude}
+                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                    >
+                      <Checkbox
+                        id={`attitude-${attitude}`}
+                        checked={selectedAttitudes.includes(attitude)}
+                        onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
+                        className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
+                      />
+                      <label 
+                        htmlFor={`attitude-${attitude}`} 
+                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                      >
+                        {attitude}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Add custom attitudes (comma, space, or enter separated)
+                  </label>
+                  <Input
+                    placeholder="e.g., Curiosity, Perseverance, Open-mindedness"
+                    value={customAttitudes}
+                    onChange={(e) => handleCustomAttitudesChange(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </Card>
           </div>
         )}
 
@@ -199,28 +331,42 @@ const ExpectedLearningOutcome = () => {
               <div className="flex items-center gap-2 mb-4">
                 <Target className="text-blue-600" size={20} />
                 <h4 className="font-semibold text-gray-900">Skills</h4>
-                <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">Coming Soon</span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {skillsList.map((skill) => (
-                  <div 
-                    key={skill}
-                    className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <Checkbox
-                      id={`skill-${skill}`}
-                      checked={selectedSkills.includes(skill)}
-                      onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
-                      className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                    />
-                    <label 
-                      htmlFor={`skill-${skill}`} 
-                      className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {skillsList.map((skill) => (
+                    <div 
+                      key={skill}
+                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
                     >
-                      {skill}
-                    </label>
-                  </div>
-                ))}
+                      <Checkbox
+                        id={`ai-skill-${skill}`}
+                        checked={selectedSkills.includes(skill)}
+                        onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
+                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                      />
+                      <label 
+                        htmlFor={`ai-skill-${skill}`} 
+                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                      >
+                        {skill}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Add custom skills (comma, space, or enter separated)
+                  </label>
+                  <Input
+                    placeholder="e.g., Research skills, Digital literacy, Time management"
+                    value={customSkills}
+                    onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
               </div>
             </Card>
 
@@ -230,26 +376,41 @@ const ExpectedLearningOutcome = () => {
                 <Heart className="text-pink-600" size={20} />
                 <h4 className="font-semibold text-gray-900">Attitudes</h4>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {attitudesList.map((attitude) => (
-                  <div 
-                    key={attitude}
-                    className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <Checkbox
-                      id={`attitude-${attitude}`}
-                      checked={selectedAttitudes.includes(attitude)}
-                      onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
-                      className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
-                    />
-                    <label 
-                      htmlFor={`attitude-${attitude}`} 
-                      className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {attitudesList.map((attitude) => (
+                    <div 
+                      key={attitude}
+                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
                     >
-                      {attitude}
-                    </label>
-                  </div>
-                ))}
+                      <Checkbox
+                        id={`ai-attitude-${attitude}`}
+                        checked={selectedAttitudes.includes(attitude)}
+                        onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
+                        className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
+                      />
+                      <label 
+                        htmlFor={`ai-attitude-${attitude}`} 
+                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                      >
+                        {attitude}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Add custom attitudes (comma, space, or enter separated)
+                  </label>
+                  <Input
+                    placeholder="e.g., Curiosity, Perseverance, Open-mindedness"
+                    value={customAttitudes}
+                    onChange={(e) => handleCustomAttitudesChange(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
               </div>
             </Card>
           </div>
