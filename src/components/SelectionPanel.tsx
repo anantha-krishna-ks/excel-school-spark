@@ -53,7 +53,7 @@ const SelectionPanel = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -107,7 +107,10 @@ const SelectionPanel = ({
             </SelectContent>
           </Select>
         </div>
-        
+      </div>
+
+      {/* Chapter/Unit Row */}
+      <div className="mb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
@@ -115,7 +118,7 @@ const SelectionPanel = ({
           </div>
           <ReactSelect
             isMulti
-            value={chapterOptions.filter(option => chapters.includes(option.value))}
+            value={chapterOptions.filter(option => (chapters || []).includes(option.value))}
             onChange={handleChapterChange}
             options={chapterOptions}
             placeholder="Select chapters/units..."
