@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target, Plus, X } from 'lucide-react';
-import ObjectiveMapping from './ObjectiveMapping';
+
 
 const ExpectedLearningOutcome = () => {
   const [selectedBlooms, setSelectedBlooms] = useState<string[]>([
@@ -125,11 +125,6 @@ const ExpectedLearningOutcome = () => {
         </div>
       </div>
 
-      {/* Objective Mapping */}
-      <ObjectiveMapping 
-        coreObjectives={mockCoreObjectives}
-        learningOutcomes={generatedOutcomes}
-      />
 
       {/* Recommended and AI Assist Toggle */}
       <div className="mb-6">
@@ -213,17 +208,17 @@ const ExpectedLearningOutcome = () => {
                   ))}
                 </div>
                 
-                <div className="border-t pt-4">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Add custom skills (comma, space, or enter separated)
-                  </label>
-                  <Input
-                    placeholder="e.g., Research skills, Digital literacy, Time management"
-                    value={customSkills}
-                    onChange={(e) => handleCustomSkillsChange(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
+                 <div className="border-t pt-4">
+                   <label className="text-sm font-medium text-gray-700 mb-2 block">
+                     Add custom skills (comma, space, or enter separated)
+                   </label>
+                   <Input
+                     placeholder="e.g., Research skills, Digital literacy, Time management"
+                     value={customSkills}
+                     onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                     className="w-full"
+                   />
+                 </div>
               </div>
             </Card>
 
@@ -316,17 +311,17 @@ const ExpectedLearningOutcome = () => {
                   ))}
                 </div>
                 
-                <div className="border-t pt-4">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Add custom skills (comma, space, or enter separated)
-                  </label>
-                  <Input
-                    placeholder="e.g., Research skills, Digital literacy, Time management"
-                    value={customSkills}
-                    onChange={(e) => handleCustomSkillsChange(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
+                 <div className="border-t pt-4">
+                   <label className="text-sm font-medium text-gray-700 mb-2 block">
+                     Add custom skills (comma, space, or enter separated)
+                   </label>
+                   <Input
+                     placeholder="e.g., Research skills, Digital literacy, Time management"
+                     value={customSkills}
+                     onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                     className="w-full"
+                   />
+                 </div>
               </div>
             </Card>
 

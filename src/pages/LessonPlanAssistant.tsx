@@ -172,7 +172,15 @@ const LessonPlanAssistant = () => {
                       <TableCell className="font-medium text-foreground">{lesson.title}</TableCell>
                       <TableCell className="text-muted-foreground">{lesson.grade}</TableCell>
                       <TableCell className="text-muted-foreground">{lesson.subject}</TableCell>
-                      <TableCell className="text-muted-foreground">Session ({lesson.session})</TableCell>
+                       <TableCell>
+                         <Button 
+                           variant="link" 
+                           className="p-0 h-auto text-primary hover:text-primary/80 font-medium"
+                           onClick={() => navigate(`/session/${lesson.id}`)}
+                         >
+                           Session ({lesson.session})
+                         </Button>
+                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-purple-50">

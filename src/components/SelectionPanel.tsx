@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Plus, Upload, BookOpen, Clock, X } from 'lucide-react';
+import { Plus, Upload, BookOpen, Target, X } from 'lucide-react';
 interface SelectionPanelProps {
   board: string;
   setBoard: (value: string) => void;
@@ -103,8 +103,8 @@ const SelectionPanel = ({
         </div>
       </div>
 
-      {/* Chapter/Unit and Duration Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      {/* Chapter/Unit Row */}
+      <div className="grid grid-cols-1 gap-6 mb-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
@@ -123,30 +123,13 @@ const SelectionPanel = ({
             </SelectContent>
           </Select>
         </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Clock className="text-blue-600" size={16} />
-            <label className="text-sm font-medium text-gray-700">Duration</label>
-          </div>
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <Input type="number" placeholder="0" min="0" max="8" className="h-11 text-center border-gray-300 focus:border-blue-500" />
-              <label className="text-xs text-gray-500 block text-center mt-1">Hours</label>
-            </div>
-            <div className="flex-1">
-              <Input type="number" placeholder="30" min="0" max="59" step="5" className="h-11 text-center border-gray-300 focus:border-blue-500" />
-              <label className="text-xs text-gray-500 block text-center mt-1">Minutes</label>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
         
       </div>
 
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors">
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
@@ -161,6 +144,14 @@ const SelectionPanel = ({
             Browse Files
           </Button>
         </div>
+      </div>
+
+      {/* Generate COs Button */}
+      <div className="text-center">
+        <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+          <Target className="mr-2" size={18} />
+          Generate COs
+        </Button>
       </div>
     </div>;
 };

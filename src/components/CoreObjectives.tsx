@@ -301,62 +301,7 @@ const CoreObjectives = ({
         </div>
       </div>
 
-
-
-      {/* Enhanced Custom Objectives with Save Feature */}
-      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="text-2xl">💡</div>
-            <h4 className="font-semibold text-orange-900">Write & Save Objectives</h4>
-          </div>
-          <Button
-            onClick={addCustomObjective}
-            variant="outline"
-            size="sm"
-            className="border-orange-300 text-orange-700 hover:bg-orange-100"
-          >
-            + Add More
-          </Button>
-        </div>
-        
-        <div className="space-y-3">
-          {customObjectives.map((objective, index) => (
-            <div key={index} className="flex gap-2">
-              <Textarea
-                placeholder="Type your objective here (e.g., 'Relevance to daily life: Students gain a holistic understanding of food production and its socio-economic impact in the country.')"
-                value={objective}
-                onChange={(e) => updateCustomObjective(index, e.target.value)}
-                className="flex-1 min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
-              />
-              <div className="flex flex-col gap-2">
-                {objective.trim() && (
-                  <Button
-                    onClick={() => saveObjective(objective)}
-                    variant="outline"
-                    size="sm"
-                    className="border-green-300 text-green-700 hover:bg-green-50"
-                  >
-                    💾 Save
-                  </Button>
-                )}
-                {customObjectives.length > 1 && (
-                  <Button
-                    onClick={() => removeCustomObjective(index)}
-                    variant="outline"
-                    size="sm"
-                    className="border-red-300 text-red-700 hover:bg-red-50"
-                  >
-                    ✕
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* AI Generated Objectives */}
+      {/* AI Generated Objectives - First Section */}
       {savedObjectives.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-4">
@@ -504,6 +449,60 @@ const CoreObjectives = ({
         </div>
       )}
 
+      {/* Write & Save Objectives - Placed after AI Generated */}
+      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="text-2xl">💡</div>
+            <h4 className="font-semibold text-orange-900">Write & Save Objectives</h4>
+          </div>
+          <Button
+            onClick={addCustomObjective}
+            variant="outline"
+            size="sm"
+            className="border-orange-300 text-orange-700 hover:bg-orange-100"
+          >
+            + Add More
+          </Button>
+        </div>
+        
+        <div className="space-y-3">
+          {customObjectives.map((objective, index) => (
+            <div key={index} className="flex gap-2">
+              <Textarea
+                placeholder="Type your objective here (e.g., 'Relevance to daily life: Students gain a holistic understanding of food production and its socio-economic impact in the country.')"
+                value={objective}
+                onChange={(e) => updateCustomObjective(index, e.target.value)}
+                className="flex-1 min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
+              />
+              <div className="flex flex-col gap-2">
+                {objective.trim() && (
+                  <Button
+                    onClick={() => saveObjective(objective)}
+                    variant="outline"
+                    size="sm"
+                    className="border-green-300 text-green-700 hover:bg-green-50"
+                  >
+                    💾 Save
+                  </Button>
+                )}
+                {customObjectives.length > 1 && (
+                  <Button
+                    onClick={() => removeCustomObjective(index)}
+                    variant="outline"
+                    size="sm"
+                    className="border-red-300 text-red-700 hover:bg-red-50"
+                  >
+                    ✕
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+
       {/* Shortlisted Objectives Display */}
       {shortlistedObjectives.length > 0 && (
         <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200 mb-6">
@@ -537,27 +536,6 @@ const CoreObjectives = ({
 
       {/* Action Buttons */}
       <div className="text-center space-y-4">
-        {/* Validate All and Shortlist All Buttons */}
-        <div className="flex justify-center gap-3 mb-4">
-          <Button 
-            variant="outline"
-            onClick={() => savedObjectives.forEach(obj => !obj.isValidated && validateObjective(obj))}
-            disabled={savedObjectives.every(obj => obj.isValidated)}
-            className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 px-4 py-2 rounded-lg font-medium shadow-sm"
-          >
-            <CheckCircle2 className="mr-2" size={16} />
-            Validate All
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={handleShortlist}
-            disabled={totalSelected === 0}
-            className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 px-4 py-2 rounded-lg font-medium shadow-sm"
-          >
-            <Target className="mr-2" size={16} />
-            Shortlist All
-          </Button>
-        </div>
         
         {/* Generate/Continue Button */}
         <Button 

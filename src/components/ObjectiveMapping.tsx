@@ -1,70 +1,78 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, Target, Lightbulb, Link, Unlink, Eye, CheckCircle2 } from 'lucide-react';
+import { Target, Brain, Users, Heart, Link, ArrowRight, Eye, Lightbulb } from 'lucide-react';
 
 interface ObjectiveMappingProps {
-  coreObjectives: string[];
-  learningOutcomes: string[];
+  coreObjectives?: string[];
+  learningOutcomes?: string[];
 }
 
-interface MappingRelation {
-  coIndex: number;
-  eloIndex: number;
-}
+// Dummy data structure as specified
+const dummyMappingData = [
+  {
+    id: 1,
+    coreObjective: "CO 1: Students will identify primary colors.",
+    learningOutcomes: [
+      "ELO 1.1: Recognize red, blue, yellow.",
+      "ELO 1.2: Differentiate primary from secondary."
+    ],
+    bloomsTaxonomy: "Knowledge",
+    skills: ["Observation", "Identification"]
+  },
+  {
+    id: 2,
+    coreObjective: "CO 2: Students will analyze a simple poem.",
+    learningOutcomes: [
+      "ELO 2.1: Explain metaphors.",
+      "ELO 2.2: Summarize the poem's theme."
+    ],
+    bloomsTaxonomy: "Analysis",
+    skills: ["Critical Thinking", "Interpretation", "Deduction"]
+  },
+  {
+    id: 3,
+    coreObjective: "CO 3: Students will create a short story with a moral.",
+    learningOutcomes: [
+      "ELO 3.1: Develop compelling characters.",
+      "ELO 3.2: Incorporate a clear moral lesson."
+    ],
+    bloomsTaxonomy: "Creation",
+    skills: ["Creative Writing", "Problem-Solving", "Imagination"]
+  }
+];
 
-const ObjectiveMapping = ({ coreObjectives, learningOutcomes }: ObjectiveMappingProps) => {
-  const [mappings, setMappings] = useState<MappingRelation[]>([]);
-  const [selectedCO, setSelectedCO] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<'edit' | 'view'>('edit');
+const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: ObjectiveMappingProps) => {
+  const [selectedMappings, setSelectedMappings] = useState<number[]>([]);
+  const [viewMode, setViewMode] = useState<'edit' | 'view'>('view');
 
-  const toggleMapping = (coIndex: number, eloIndex: number) => {
-    const existingMapping = mappings.find(
-      m => m.coIndex === coIndex && m.eloIndex === eloIndex
+  const toggleMapping = (id: number) => {
+    setSelectedMappings(prev => 
+      prev.includes(id) 
+        ? prev.filter(mappingId => mappingId !== id)
+        : [...prev, id]
     );
+  };
 
-    if (existingMapping) {
-      setMappings(mappings.filter(m => !(m.coIndex === coIndex && m.eloIndex === eloIndex)));
-    } else {
-      setMappings([...mappings, { coIndex, eloIndex }]);
+  const getBloomsTaxonomyIcon = (level: string) => {
+    switch (level.toLowerCase()) {
+      case 'knowledge': return '📚';
+      case 'analysis': return '🔍';
+      case 'creation': return '🎨';
+      default: return '🧠';
     }
   };
 
-  const isMapped = (coIndex: number, eloIndex: number) => {
-    return mappings.some(m => m.coIndex === coIndex && m.eloIndex === eloIndex);
+  const getBloomsTaxonomyColor = (level: string) => {
+    switch (level.toLowerCase()) {
+      case 'knowledge': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'analysis': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'creation': return 'bg-green-100 text-green-700 border-green-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
   };
-
-  const getELOsForCO = (coIndex: number) => {
-    return mappings.filter(m => m.coIndex === coIndex).map(m => m.eloIndex);
-  };
-
-  const getCOsForELO = (eloIndex: number) => {
-    return mappings.filter(m => m.eloIndex === eloIndex).map(m => m.coIndex);
-  };
-
-  const getConnectionColor = (coIndex: number) => {
-    const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 
-      'bg-pink-500', 'bg-indigo-500', 'bg-red-500', 'bg-yellow-500'
-    ];
-    return colors[coIndex % colors.length];
-  };
-
-  if (coreObjectives.length === 0 || learningOutcomes.length === 0) {
-    return (
-      <Card className="border-dashed border-2 border-gray-300">
-        <CardContent className="text-center py-12">
-          <div className="text-6xl mb-4">🔗</div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Ready to Map Objectives</h3>
-          <p className="text-gray-500">
-            Add Core Objectives and Expected Learning Outcomes to start creating meaningful connections
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -100,223 +108,191 @@ const ObjectiveMapping = ({ coreObjectives, learningOutcomes }: ObjectiveMapping
         </div>
       </div>
 
-      {/* Beautiful Grid Overview */}
+      {/* Beautiful Grid Overview with Dummy Data */}
       <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-xl p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
               <Target className="text-blue-600" size={24} />
             </div>
-            <div className="text-2xl font-bold text-blue-600">{coreObjectives.length}</div>
+            <div className="text-2xl font-bold text-blue-600">{dummyMappingData.length}</div>
             <div className="text-sm text-blue-700">Core Objectives</div>
           </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
               <Lightbulb className="text-green-600" size={24} />
             </div>
-            <div className="text-2xl font-bold text-green-600">{learningOutcomes.length}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {dummyMappingData.reduce((total, item) => total + item.learningOutcomes.length, 0)}
+            </div>
             <div className="text-sm text-green-700">Learning Outcomes</div>
           </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-              <Link className="text-purple-600" size={24} />
+              <Brain className="text-purple-600" size={24} />
             </div>
-            <div className="text-2xl font-bold text-purple-600">{mappings.length}</div>
-            <div className="text-sm text-purple-700">Total Mappings</div>
+            <div className="text-2xl font-bold text-purple-600">3</div>
+            <div className="text-sm text-purple-700">Bloom's Levels</div>
           </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-              <CheckCircle2 className="text-orange-600" size={24} />
+              <Users className="text-orange-600" size={24} />
             </div>
             <div className="text-2xl font-bold text-orange-600">
-              {Math.round((new Set(mappings.map(m => m.coIndex)).size / Math.max(coreObjectives.length, 1)) * 100)}%
+              {new Set(dummyMappingData.flatMap(item => item.skills)).size}
             </div>
-            <div className="text-sm text-orange-700">Coverage</div>
+            <div className="text-sm text-orange-700">Unique Skills</div>
           </div>
         </div>
       </div>
 
-      {viewMode === 'edit' ? (
-        /* Edit Mode - Interactive Mapping Interface */
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Core Objectives Column */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Target className="text-blue-600" size={20} />
-              <h4 className="font-semibold text-gray-900">Core Objectives ({coreObjectives.length})</h4>
-            </div>
-            
-            {coreObjectives.map((co, coIndex) => {
-              const mappedELOs = getELOsForCO(coIndex);
-              const isSelected = selectedCO === coIndex;
-              
-              return (
-                <Card 
-                  key={coIndex}
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                    isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-                  } ${mappedELOs.length > 0 ? 'border-l-4 border-l-blue-500' : ''}`}
-                  onClick={() => setSelectedCO(isSelected ? null : coIndex)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800 mb-2">{co}</p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            CO {coIndex + 1}
-                          </Badge>
-                          {mappedELOs.length > 0 && (
-                            <Badge className={`text-xs text-white ${getConnectionColor(coIndex)}`}>
-                              {mappedELOs.length} ELO{mappedELOs.length > 1 ? 's' : ''} linked
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      <div className={`w-3 h-3 rounded-full ${getConnectionColor(coIndex)}`}></div>
-                    </div>
-                    
-                    {/* Show connected ELOs when selected */}
-                    {isSelected && mappedELOs.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-xs text-gray-600 mb-2">Connected to:</p>
-                        <div className="space-y-1">
-                          {mappedELOs.map(eloIndex => (
-                            <div key={eloIndex} className="text-xs text-gray-700 bg-gray-100 p-2 rounded">
-                              ELO {eloIndex + 1}: {learningOutcomes[eloIndex]?.substring(0, 60)}...
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+      {/* Grid View with Dummy Data */}
+      <div className="space-y-6">
+        <h4 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <Target className="text-blue-600" size={20} />
+          Mapping Overview
+        </h4>
 
-          {/* Expected Learning Outcomes Column */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="text-green-600" size={20} />
-              <h4 className="font-semibold text-gray-900">Expected Learning Outcomes ({learningOutcomes.length})</h4>
+        {/* Responsive Table */}
+        <div className="overflow-x-auto">
+          <div className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+            {/* Table Header */}
+            <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-200">
+              <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
+                Core Objective (CO)
+              </div>
+              <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
+                Expected Learning Outcomes (ELOs)
+              </div>
+              <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
+                Bloom's Taxonomy
+              </div>
+              <div className="p-4 font-semibold text-gray-900">
+                Skills
+              </div>
             </div>
-            
-            {learningOutcomes.map((elo, eloIndex) => {
-              const mappedCOs = getCOsForELO(eloIndex);
-              const isConnectedToSelected = selectedCO !== null && isMapped(selectedCO, eloIndex);
-              
-              return (
-                <Card 
-                  key={eloIndex}
-                  className={`transition-all duration-200 ${
-                    selectedCO !== null ? 'cursor-pointer hover:shadow-md' : ''
-                  } ${isConnectedToSelected ? 'ring-2 ring-green-500 bg-green-50' : ''} 
-                  ${mappedCOs.length > 0 ? 'border-l-4 border-l-green-500' : ''}`}
-                  onClick={() => selectedCO !== null ? toggleMapping(selectedCO, eloIndex) : undefined}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      {selectedCO !== null && (
-                        <Checkbox
-                          checked={isMapped(selectedCO, eloIndex)}
-                          onChange={() => toggleMapping(selectedCO, eloIndex)}
-                        />
-                      )}
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800 mb-2">{elo}</p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            ELO {eloIndex + 1}
-                          </Badge>
-                          {mappedCOs.length > 0 && (
-                            <Badge className="text-xs bg-green-500 text-white">
-                              {mappedCOs.length} CO{mappedCOs.length > 1 ? 's' : ''} linked
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {/* Show connected COs */}
-                        {mappedCOs.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1">
-                            {mappedCOs.map(coIndex => (
-                              <div
-                                key={coIndex}
-                                className={`w-3 h-3 rounded-full ${getConnectionColor(coIndex)}`}
-                                title={`Connected to CO ${coIndex + 1}`}
-                              ></div>
-                            ))}
-                          </div>
-                        )}
+
+            {/* Table Body */}
+            {dummyMappingData.map((mapping) => (
+              <div key={mapping.id} className="grid grid-cols-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                {/* Core Objective Column */}
+                <div className="p-4 border-r border-gray-200">
+                  <div className="flex items-start gap-3">
+                    {viewMode === 'edit' && (
+                      <Checkbox
+                        checked={selectedMappings.includes(mapping.id)}
+                        onCheckedChange={() => toggleMapping(mapping.id)}
+                        className="mt-1"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900 mb-2">
+                        {mapping.coreObjective}
                       </div>
+                      <Badge variant="outline" className="text-xs">
+                        {mapping.learningOutcomes.length} ELO{mapping.learningOutcomes.length > 1 ? 's' : ''} linked
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        /* View Mode - Visual Representation */
-        <div className="space-y-6">
-          {coreObjectives.map((co, coIndex) => {
-            const mappedELOs = getELOsForCO(coIndex);
-            
-            if (mappedELOs.length === 0) return null;
-            
-            return (
-              <Card key={coIndex} className="border-l-4 border-l-blue-500">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-4 h-4 rounded-full ${getConnectionColor(coIndex)}`}></div>
-                    <CardTitle className="text-lg">CO {coIndex + 1}</CardTitle>
                   </div>
-                  <p className="text-gray-700">{co}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4 mb-4">
-                    <ArrowRight className="text-gray-400" size={20} />
-                    <span className="text-sm font-medium text-gray-600">Maps to {mappedELOs.length} outcome{mappedELOs.length > 1 ? 's' : ''}</span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {mappedELOs.map(eloIndex => (
-                      <div key={eloIndex} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                        <Badge variant="outline" className="text-xs">ELO {eloIndex + 1}</Badge>
-                        <p className="text-sm text-gray-700 flex-1">{learningOutcomes[eloIndex]}</p>
+                </div>
+
+                {/* Expected Learning Outcomes Column */}
+                <div className="p-4 border-r border-gray-200">
+                  <div className="space-y-2">
+                    {mapping.learningOutcomes.map((elo, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-sm text-gray-700">{elo}</p>
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-          
-          {mappings.length === 0 && (
-            <div className="text-center py-8">
-              <Unlink className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No mappings created yet. Switch to edit mode to start connecting objectives and outcomes.</p>
-            </div>
-          )}
-        </div>
-      )}
+                </div>
 
-      {/* Quick Actions */}
-      {selectedCO !== null && viewMode === 'edit' && (
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-sm text-blue-800 mb-2">
-            <strong>Selected:</strong> CO {selectedCO + 1} - Click on Expected Learning Outcomes to create connections
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setSelectedCO(null)}
-            className="border-blue-300 text-blue-700 hover:bg-blue-100"
-          >
-            Clear Selection
-          </Button>
+                {/* Bloom's Taxonomy Column */}
+                <div className="p-4 border-r border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{getBloomsTaxonomyIcon(mapping.bloomsTaxonomy)}</span>
+                    <Badge className={`${getBloomsTaxonomyColor(mapping.bloomsTaxonomy)} border`}>
+                      {mapping.bloomsTaxonomy}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Skills Column */}
+                <div className="p-4">
+                  <div className="flex flex-wrap gap-1">
+                    {mapping.skills.map((skill, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-gray-600">Total Mappings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{dummyMappingData.length}</div>
+              <p className="text-xs text-gray-500">Core objectives mapped</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-gray-600">Learning Outcomes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {dummyMappingData.reduce((total, item) => total + item.learningOutcomes.length, 0)}
+              </div>
+              <p className="text-xs text-gray-500">Total ELOs defined</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-gray-600">Coverage</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">100%</div>
+              <p className="text-xs text-gray-500">Objectives covered</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Buttons */}
+        {viewMode === 'edit' && selectedMappings.length > 0 && (
+          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-sm text-blue-800">
+              <strong>{selectedMappings.length}</strong> mapping{selectedMappings.length > 1 ? 's' : ''} selected
+            </p>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setSelectedMappings([])}
+                className="border-blue-300 text-blue-700 hover:bg-blue-100"
+              >
+                Clear Selection
+              </Button>
+              <Button
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Update Mappings
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
