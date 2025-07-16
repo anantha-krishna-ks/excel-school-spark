@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, Target, Lightbulb, Link, Unlink, Eye } from 'lucide-react';
+import { ArrowRight, Target, Lightbulb, Link, Unlink, Eye, CheckCircle2 } from 'lucide-react';
 
 interface ObjectiveMappingProps {
   coreObjectives: string[];
@@ -67,7 +67,7 @@ const ObjectiveMapping = ({ coreObjectives, learningOutcomes }: ObjectiveMapping
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ const ObjectiveMapping = ({ coreObjectives, learningOutcomes }: ObjectiveMapping
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900">Objective Mapping</h3>
-            <p className="text-gray-600">Create meaningful connections between objectives and outcomes</p>
+            <p className="text-gray-600">Beautiful grid view for mapping Core Objectives to ELOs, Bloom's Taxonomy, and Skills</p>
           </div>
         </div>
         
@@ -100,26 +100,38 @@ const ObjectiveMapping = ({ coreObjectives, learningOutcomes }: ObjectiveMapping
         </div>
       </div>
 
-      {/* Mapping Statistics */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{mappings.length}</div>
-              <div className="text-xs text-blue-700">Total Connections</div>
+      {/* Beautiful Grid Overview */}
+      <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-xl p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <Target className="text-blue-600" size={24} />
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {new Set(mappings.map(m => m.coIndex)).size}
-              </div>
-              <div className="text-xs text-green-700">COs Mapped</div>
+            <div className="text-2xl font-bold text-blue-600">{coreObjectives.length}</div>
+            <div className="text-sm text-blue-700">Core Objectives</div>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <Lightbulb className="text-green-600" size={24} />
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {new Set(mappings.map(m => m.eloIndex)).size}
-              </div>
-              <div className="text-xs text-purple-700">ELOs Mapped</div>
+            <div className="text-2xl font-bold text-green-600">{learningOutcomes.length}</div>
+            <div className="text-sm text-green-700">Learning Outcomes</div>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <Link className="text-purple-600" size={24} />
             </div>
+            <div className="text-2xl font-bold text-purple-600">{mappings.length}</div>
+            <div className="text-sm text-purple-700">Total Mappings</div>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <CheckCircle2 className="text-orange-600" size={24} />
+            </div>
+            <div className="text-2xl font-bold text-orange-600">
+              {Math.round((new Set(mappings.map(m => m.coIndex)).size / Math.max(coreObjectives.length, 1)) * 100)}%
+            </div>
+            <div className="text-sm text-orange-700">Coverage</div>
           </div>
         </div>
       </div>

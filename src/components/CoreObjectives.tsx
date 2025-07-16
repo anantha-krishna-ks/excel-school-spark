@@ -301,32 +301,7 @@ const CoreObjectives = ({
         </div>
       </div>
 
-      {/* AI-Suggested Objectives */}
-      {suggestedObjectives.length > 0 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="text-blue-600" size={20} />
-            <h4 className="font-semibold text-blue-900">AI-Suggested Core Objectives</h4>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            {availableObjectives.map((objective) => (
-              <div
-                key={objective.id}
-                className="relative p-4 rounded-lg border border-blue-200 bg-white/80 hover:bg-white transition-all duration-200"
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-2">{objective.icon}</div>
-                  <h5 className="font-medium text-gray-800 mb-1">{objective.label}</h5>
-                  <p className="text-xs text-gray-600">{objective.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-sm text-blue-700 bg-blue-100/50 p-3 rounded-lg">
-            ✨ These objectives are automatically generated and categorized based on best practices. Each saved objective will be dynamically categorized.
-          </p>
-        </div>
-      )}
+
 
       {/* Enhanced Custom Objectives with Save Feature */}
       <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200 mb-6">
@@ -381,12 +356,12 @@ const CoreObjectives = ({
         </div>
       </div>
 
-      {/* Saved Objectives Management */}
+      {/* AI Generated Objectives */}
       {savedObjectives.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Target className="text-blue-600" size={20} />
-            <h4 className="font-semibold text-gray-900">Saved Objectives ({savedObjectives.length})</h4>
+            <h4 className="font-semibold text-gray-900">AI Generated Objectives ({savedObjectives.length})</h4>
           </div>
           
           <div className="space-y-4">

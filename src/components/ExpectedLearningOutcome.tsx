@@ -120,7 +120,7 @@ const ExpectedLearningOutcome = () => {
           <Lightbulb className="text-green-600" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Expected Learning Outcome</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Expected Learning Outcomes</h3>
           <p className="text-gray-600 text-sm">Define specific learning outcomes using Bloom's Taxonomy</p>
         </div>
       </div>
@@ -161,34 +161,6 @@ const ExpectedLearningOutcome = () => {
         {/* Recommended Tab Content */}
         {activeTab === 'recommended' && (
           <div className="space-y-6">
-            {/* Custom Learning Outcomes */}
-            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Lightbulb className="text-orange-600" size={18} />
-                <h4 className="font-medium text-orange-900">Write Your Learning Outcomes</h4>
-              </div>
-              
-              <Textarea
-                placeholder="Example: Students will be able to apply mathematical concepts to solve real-world problems and analyze the effectiveness of different solution strategies..."
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
-                className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 mb-3"
-              />
-              
-              <div className="flex justify-center">
-                <Button
-                  onClick={handleVerify}
-                  variant="outline"
-                  size="sm"
-                  className="border-green-300 text-green-700 hover:bg-green-50"
-                  disabled={!customPrompt.trim()}
-                >
-                  <CheckCircle size={16} className="mr-2" />
-                  Verify Learning Outcomes
-                </Button>
-              </div>
-            </div>
-
             {/* Blooms Taxonomy */}
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -283,18 +255,6 @@ const ExpectedLearningOutcome = () => {
                       </label>
                     </div>
                   ))}
-                </div>
-                
-                <div className="border-t pt-4">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Add custom attitudes (comma, space, or enter separated)
-                  </label>
-                  <Input
-                    placeholder="e.g., Curiosity, Perseverance, Open-mindedness"
-                    value={customAttitudes}
-                    onChange={(e) => handleCustomAttitudesChange(e.target.value)}
-                    className="w-full"
-                  />
                 </div>
               </div>
             </Card>
@@ -398,18 +358,6 @@ const ExpectedLearningOutcome = () => {
                       </label>
                     </div>
                   ))}
-                </div>
-                
-                <div className="border-t pt-4">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Add custom attitudes (comma, space, or enter separated)
-                  </label>
-                  <Input
-                    placeholder="e.g., Curiosity, Perseverance, Open-mindedness"
-                    value={customAttitudes}
-                    onChange={(e) => handleCustomAttitudesChange(e.target.value)}
-                    className="w-full"
-                  />
                 </div>
               </div>
             </Card>

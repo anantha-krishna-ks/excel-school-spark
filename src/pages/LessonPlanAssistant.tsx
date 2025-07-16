@@ -22,37 +22,43 @@ const LessonPlanAssistant = () => {
       id: 1,
       title: "Understanding Photosynthesis: The Food Factory of Plants",
       grade: "VII",
-      subject: "General Science"
+      subject: "General Science",
+      session: 1
     },
     {
       id: 2,
       title: "Understanding Photosynthesis: The Powerhouse of Plant Life",
       grade: "6",
-      subject: "Science"
+      subject: "Science",
+      session: 2
     },
     {
       id: 3,
       title: "Understanding Heat: Transfer, Effects, and Applications",
       grade: "9",
-      subject: "General Science"
+      subject: "General Science",
+      session: 1
     },
     {
       id: 4,
       title: "Exploring the World of Plants: Structure, Functions, and Importance",
       grade: "8",
-      subject: "General Science"
+      subject: "General Science",
+      session: 3
     },
     {
       id: 5,
       title: "Exploring the Wonders of Light",
       grade: "VII",
-      subject: "Science"
+      subject: "Science",
+      session: 1
     },
     {
       id: 6,
       title: "Journey Through the Digestive System",
       grade: "7",
-      subject: "Science"
+      subject: "Science",
+      session: 2
     }
   ];
 
@@ -155,6 +161,7 @@ const LessonPlanAssistant = () => {
                     <TableHead className="font-semibold text-foreground">Lesson Plan Title</TableHead>
                     <TableHead className="w-24 font-semibold text-foreground">Grade</TableHead>
                     <TableHead className="w-40 font-semibold text-foreground">Subject</TableHead>
+                    <TableHead className="w-32 font-semibold text-foreground">Session</TableHead>
                     <TableHead className="w-32 font-semibold text-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -165,6 +172,7 @@ const LessonPlanAssistant = () => {
                       <TableCell className="font-medium text-foreground">{lesson.title}</TableCell>
                       <TableCell className="text-muted-foreground">{lesson.grade}</TableCell>
                       <TableCell className="text-muted-foreground">{lesson.subject}</TableCell>
+                      <TableCell className="text-muted-foreground">Session ({lesson.session})</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-purple-50">

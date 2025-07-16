@@ -15,8 +15,8 @@ interface MainStepperProps {
   setGrade: (grade: string) => void;
   subject: string;
   setSubject: (subject: string) => void;
-  chapters: string[];
-  setChapters: (chapters: string[]) => void;
+  chapters: string;
+  setChapters: (chapters: string) => void;
   onGenerateCO: (objectives: string[]) => void;
 }
 

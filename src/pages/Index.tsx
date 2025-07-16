@@ -7,7 +7,7 @@ const Index = () => {
   const [board, setBoard] = useState('');
   const [grade, setGrade] = useState('');
   const [subject, setSubject] = useState('');
-  const [chapters, setChapters] = useState<string[]>([]);
+  const [chapters, setChapters] = useState<string>('');
   const [generatedCOs, setGeneratedCOs] = useState<string[]>([]);
 
   const handleGenerateCO = (objectives: string[]) => {
