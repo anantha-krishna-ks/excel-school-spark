@@ -466,7 +466,7 @@ const MainStepper = ({
               <Button
                 onClick={() => {
                   markStepComplete(4);
-                  navigate('/lesson-plan-output', {
+                  navigate('/lesson-plan-options', {
                     state: {
                       lessonData: {
                         grade,
