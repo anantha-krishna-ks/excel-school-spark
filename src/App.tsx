@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RoleSelection from "./pages/RoleSelection";
+import Login from "./pages/Login";
 import ToolsDashboard from "./pages/ToolsDashboard";
 import LessonPlanAssistant from "./pages/LessonPlanAssistant";
 import LessonPlanOutput from "./pages/LessonPlanOutput";
@@ -24,6 +25,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<RoleSelection />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/tools" element={<ToolsDashboard />} />
           <Route path="/lesson-plan-assistant" element={<LessonPlanAssistant />} />
           <Route path="/lesson-plan" element={<Index />} />

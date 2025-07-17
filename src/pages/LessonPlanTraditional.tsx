@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Download, Save, Edit } from 'lucide-react';
+import { ArrowLeft, Download, Save, Edit, RefreshCw } from 'lucide-react';
 import Header from '@/components/Header';
 
 const LessonPlanTraditional = () => {
@@ -34,7 +34,22 @@ const LessonPlanTraditional = () => {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-2 mb-6">
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              // Mock regenerate functionality
+              window.location.reload();
+            }}
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Regenerate
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/lesson-plan-assistant')}
+          >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>
@@ -399,19 +414,6 @@ const LessonPlanTraditional = () => {
               </div>
             </div>
 
-            {/* Reflections */}
-            <div className="p-8 bg-muted/20">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-foreground mb-2">Reflections</h3>
-                <p className="text-muted-foreground text-sm">Post completion of the Unit/Lesson, to help the Teacher plan for better and more effective transaction next time</p>
-              </div>
-              
-              <div className="bg-card border border-border rounded-lg p-6">
-                <div className="h-32 bg-muted/30 rounded border-dashed border-2 border-muted-foreground/20 flex items-center justify-center">
-                  <span className="text-muted-foreground text-sm">Teacher's reflection notes...</span>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

@@ -153,9 +153,33 @@ const ExpectedLearningOutcome = () => {
 
         {/* Skills */}
         <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="text-blue-600" size={20} />
-            <h4 className="font-semibold text-gray-900">Skills</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Target className="text-blue-600" size={20} />
+              <h4 className="font-semibold text-gray-900">Skills</h4>
+            </div>
+            <Button
+              onClick={() => {
+                // Generate 10 AI-powered skills
+                const aiSkills = [
+                  'Critical Analysis',
+                  'Creative Problem Solving',
+                  'Effective Communication',
+                  'Digital Literacy',
+                  'Research Methodology',
+                  'Time Management',
+                  'Collaborative Learning',
+                  'Data Interpretation',
+                  'Scientific Reasoning',
+                  'Presentation Skills'
+                ];
+                setSelectedSkills(aiSkills);
+              }}
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2"
+            >
+              <Bot className="h-4 w-4 mr-2" />
+              Generate Skills
+            </Button>
           </div>
           
           <div className="space-y-4">
@@ -180,6 +204,26 @@ const ExpectedLearningOutcome = () => {
                 </div>
               ))}
             </div>
+
+            {/* AI Generated Skills Display */}
+            {selectedSkills.length > 5 && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <h5 className="text-sm font-medium text-blue-900 mb-2">AI Generated Skills:</h5>
+                <div className="flex flex-wrap gap-2">
+                  {selectedSkills.slice(5).map((skill, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                      {skill}
+                      <button
+                        onClick={() => setSelectedSkills(prev => prev.filter(s => s !== skill))}
+                        className="ml-1 text-blue-600 hover:text-blue-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
              <div className="border-t pt-4">
                <label className="text-sm font-medium text-gray-700 mb-2 block">

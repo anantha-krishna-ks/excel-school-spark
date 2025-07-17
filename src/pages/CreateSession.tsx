@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Save, Target, Lightbulb, Clock } from 'lucide-react';
+import { ArrowLeft, Save, Target, Lightbulb, Clock, BookOpen, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import RichTextEditor from '@/components/RichTextEditor';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -127,7 +127,20 @@ const CreateSession = () => {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-foreground">Create New Session</h1>
-            <p className="text-muted-foreground">For: {lessonPlan.title}</p>
+            <div className="flex items-center gap-6 mt-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-blue-600" />
+                <span className="font-medium">Subject:</span> {lessonPlan.subject}
+              </div>
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-green-600" />
+                <span className="font-medium">Topic:</span> {lessonPlan.title}
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-purple-600" />
+                <span className="font-medium">Class:</span> Grade {lessonPlan.grade}
+              </div>
+            </div>
           </div>
         </div>
 

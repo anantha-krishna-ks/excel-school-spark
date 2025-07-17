@@ -43,8 +43,12 @@ const RoleSelection = () => {
     }
   ];
 
-  const handleRoleSelect = (route: string) => {
-    navigate(route);
+  const handleRoleSelect = (role: string, route: string) => {
+    if (role === 'teacher') {
+      navigate('/login');
+    } else {
+      navigate(route);
+    }
   };
 
   return (
@@ -75,7 +79,7 @@ const RoleSelection = () => {
             return (
               <div
                 key={role.id}
-                onClick={() => handleRoleSelect(role.route)}
+                onClick={() => handleRoleSelect(role.id, role.route)}
                 className="bg-white rounded-3xl p-8 cursor-pointer transition-all duration-500 hover:scale-110 hover:shadow-2xl group border-2 border-gray-100 hover:border-blue-200 relative overflow-hidden"
               >
                 {/* Gradient overlay on hover */}
