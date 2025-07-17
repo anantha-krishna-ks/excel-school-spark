@@ -9,6 +9,8 @@ import RoleSelection from "./pages/RoleSelection";
 import ToolsDashboard from "./pages/ToolsDashboard";
 import LessonPlanAssistant from "./pages/LessonPlanAssistant";
 import LessonPlanOutput from "./pages/LessonPlanOutput";
+import SessionList from "./pages/SessionList";
+import CreateSession from "./pages/CreateSession";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/lesson-plan-assistant" element={<LessonPlanAssistant />} />
           <Route path="/lesson-plan" element={<Index />} />
           <Route path="/lesson-plan-output" element={<LessonPlanOutput />} />
+          <Route path="/session/:id" element={<SessionList />} />
+          <Route path="/session/create/:lessonId" element={<CreateSession />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

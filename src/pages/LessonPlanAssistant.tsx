@@ -173,14 +173,14 @@ const LessonPlanAssistant = () => {
                       <TableCell className="text-muted-foreground">{lesson.grade}</TableCell>
                       <TableCell className="text-muted-foreground">{lesson.subject}</TableCell>
                        <TableCell>
-                         <Button 
-                           variant="link" 
-                           className="p-0 h-auto text-primary hover:text-primary/80 font-medium"
-                           onClick={() => navigate(`/session/${lesson.id}`)}
-                         >
-                           Session ({lesson.session})
-                         </Button>
-                       </TableCell>
+                          <Button 
+                            variant="ghost" 
+                            className="p-2 h-auto text-muted-foreground hover:text-primary hover:bg-muted/50 font-normal text-sm transition-colors"
+                            onClick={() => navigate(`/session/${lesson.id}`)}
+                          >
+                            Session ({lesson.session})
+                          </Button>
+                        </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-purple-50">

@@ -125,9 +125,6 @@ const SelectionPanel = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        
-      </div>
 
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors mb-6">
         <div className="flex items-center justify-between">

@@ -304,9 +304,36 @@ const CoreObjectives = ({
       {/* AI Generated Objectives - First Section */}
       {savedObjectives.length > 0 && (
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="text-blue-600" size={20} />
-            <h4 className="font-semibold text-gray-900">AI Generated Objectives ({savedObjectives.length})</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Target className="text-blue-600" size={20} />
+              <h4 className="font-semibold text-gray-900">AI Generated Objectives ({savedObjectives.length})</h4>
+            </div>
+            <Button
+              onClick={() => {
+                const selected = savedObjectives.filter(obj => shortlistedObjectives.includes(obj.text));
+                if (selected.length > 1) {
+                  const mergedText = selected.map(obj => obj.text).join(' ');
+                  const mergedObjective = {
+                    id: Date.now().toString(),
+                    text: mergedText,
+                    categories: Array.from(new Set(selected.flatMap(obj => obj.categories))),
+                    isValidated: false
+                  };
+                  setSavedObjectives([
+                    ...savedObjectives.filter(obj => !selected.map(s => s.id).includes(obj.id)),
+                    mergedObjective
+                  ]);
+                  triggerCelebration();
+                }
+              }}
+              variant="outline"
+              size="sm"
+              disabled={savedObjectives.filter(obj => shortlistedObjectives.includes(obj.text)).length < 2}
+            >
+              <Merge className="h-4 w-4 mr-1" />
+              Merge Selected
+            </Button>
           </div>
           
           <div className="space-y-4">
@@ -381,24 +408,6 @@ const CoreObjectives = ({
                     
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-2 ml-4">
-                      {/* Shortlist Toggle */}
-                      <Button
-                        onClick={() => toggleShortlist(objective)}
-                        variant="outline"
-                        size="sm"
-                        className={`
-                          ${shortlistedObjectives.includes(objective.text) 
-                            ? 'border-yellow-400 bg-yellow-50 text-yellow-700' 
-                            : 'border-gray-300 text-gray-600 hover:border-yellow-400'
-                          }
-                        `}
-                      >
-                        {shortlistedObjectives.includes(objective.text) ? (
-                          <Star className="h-4 w-4 fill-current" />
-                        ) : (
-                          <StarOff className="h-4 w-4" />
-                        )}
-                      </Button>
                       
                       {/* Edit Actions */}
                       <div className="flex flex-col gap-1">

@@ -126,257 +126,121 @@ const ExpectedLearningOutcome = () => {
       </div>
 
 
-      {/* Recommended and AI Assist Toggle */}
+      {/* Direct content without tabs */}
       <div className="mb-6">
-        <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
-          <button
-            onClick={() => setActiveTab('recommended')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all duration-200 ${
-              activeTab === 'recommended'
-                ? 'bg-white text-purple-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            <Lightbulb size={16} />
-            <span className="font-medium">Recommended</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('aiAssist')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all duration-200 ${
-              activeTab === 'aiAssist'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            <Bot size={16} />
-            <span className="font-medium">AI Assist</span>
-          </button>
-        </div>
-
-        {/* Recommended Tab Content */}
-        {activeTab === 'recommended' && (
-          <div className="space-y-6">
-            {/* Blooms Taxonomy */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Brain className="text-purple-600" size={20} />
-                <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
-              </div>
-              <div className="space-y-3">
-                <select 
-                  value={selectedBlooms[0] || ""} 
-                  onChange={(e) => setSelectedBlooms(e.target.value ? [e.target.value] : [])}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
-                >
-                  <option value="">Select Bloom's level</option>
-                  {bloomsLevels.map((bloom) => (
-                    <option key={bloom.id} value={bloom.label}>
-                      {bloom.icon} {bloom.label} - {bloom.description}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </Card>
-
-            {/* Skills */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Target className="text-blue-600" size={20} />
-                <h4 className="font-semibold text-gray-900">Skills</h4>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {skillsList.map((skill) => (
-                    <div 
-                      key={skill}
-                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                    >
-                      <Checkbox
-                        id={`skill-${skill}`}
-                        checked={selectedSkills.includes(skill)}
-                        onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
-                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                      />
-                      <label 
-                        htmlFor={`skill-${skill}`} 
-                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
-                      >
-                        {skill}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                
-                 <div className="border-t pt-4">
-                   <label className="text-sm font-medium text-gray-700 mb-2 block">
-                     Add custom skills (comma, space, or enter separated)
-                   </label>
-                   <Input
-                     placeholder="e.g., Research skills, Digital literacy, Time management"
-                     value={customSkills}
-                     onChange={(e) => handleCustomSkillsChange(e.target.value)}
-                     className="w-full"
-                   />
-                 </div>
-              </div>
-            </Card>
-
-            {/* Attitudes */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Heart className="text-pink-600" size={20} />
-                <h4 className="font-semibold text-gray-900">Attitudes</h4>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {attitudesList.map((attitude) => (
-                    <div 
-                      key={attitude}
-                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                    >
-                      <Checkbox
-                        id={`attitude-${attitude}`}
-                        checked={selectedAttitudes.includes(attitude)}
-                        onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
-                        className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
-                      />
-                      <label 
-                        htmlFor={`attitude-${attitude}`} 
-                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
-                      >
-                        {attitude}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
+        <div className="space-y-6">
+        {/* Blooms Taxonomy */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Brain className="text-purple-600" size={20} />
+            <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
           </div>
-        )}
-
-        {/* AI Assist Tab Content - Factors for ELO */}
-        {activeTab === 'aiAssist' && (
-          <div className="space-y-6">
-            {/* Blooms Taxonomy */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Brain className="text-purple-600" size={20} />
-                <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
-              </div>
-              <div className="space-y-3">
-                <select 
-                  value={selectedBlooms[0] || ""} 
-                  onChange={(e) => setSelectedBlooms(e.target.value ? [e.target.value] : [])}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
-                >
-                  <option value="">Select Bloom's level</option>
-                  {bloomsLevels.map((bloom) => (
-                    <option key={bloom.id} value={bloom.label}>
-                      {bloom.icon} {bloom.label} - {bloom.description}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </Card>
-
-            {/* Skills */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Target className="text-blue-600" size={20} />
-                <h4 className="font-semibold text-gray-900">Skills</h4>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {skillsList.map((skill) => (
-                    <div 
-                      key={skill}
-                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                    >
-                      <Checkbox
-                        id={`ai-skill-${skill}`}
-                        checked={selectedSkills.includes(skill)}
-                        onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
-                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                      />
-                      <label 
-                        htmlFor={`ai-skill-${skill}`} 
-                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
-                      >
-                        {skill}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                
-                 <div className="border-t pt-4">
-                   <label className="text-sm font-medium text-gray-700 mb-2 block">
-                     Add custom skills (comma, space, or enter separated)
-                   </label>
-                   <Input
-                     placeholder="e.g., Research skills, Digital literacy, Time management"
-                     value={customSkills}
-                     onChange={(e) => handleCustomSkillsChange(e.target.value)}
-                     className="w-full"
-                   />
-                 </div>
-              </div>
-            </Card>
-
-            {/* Attitudes */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Heart className="text-pink-600" size={20} />
-                <h4 className="font-semibold text-gray-900">Attitudes</h4>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {attitudesList.map((attitude) => (
-                    <div 
-                      key={attitude}
-                      className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                    >
-                      <Checkbox
-                        id={`ai-attitude-${attitude}`}
-                        checked={selectedAttitudes.includes(attitude)}
-                        onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
-                        className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
-                      />
-                      <label 
-                        htmlFor={`ai-attitude-${attitude}`} 
-                        className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
-                      >
-                        {attitude}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
+          <div className="space-y-3">
+            <select 
+              value={selectedBlooms[0] || ""} 
+              onChange={(e) => setSelectedBlooms(e.target.value ? [e.target.value] : [])}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+            >
+              <option value="">Select Bloom's level</option>
+              {bloomsLevels.map((bloom) => (
+                <option key={bloom.id} value={bloom.label}>
+                  {bloom.icon} {bloom.label} - {bloom.description}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
+        </Card>
+
+        {/* Skills */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="text-blue-600" size={20} />
+            <h4 className="font-semibold text-gray-900">Skills</h4>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {skillsList.map((skill) => (
+                <div 
+                  key={skill}
+                  className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                >
+                  <Checkbox
+                    id={`skill-${skill}`}
+                    checked={selectedSkills.includes(skill)}
+                    onCheckedChange={(checked) => handleSkillsChange(skill, !!checked)}
+                    className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                  />
+                  <label 
+                    htmlFor={`skill-${skill}`} 
+                    className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                  >
+                    {skill}
+                  </label>
+                </div>
+              ))}
+            </div>
+            
+             <div className="border-t pt-4">
+               <label className="text-sm font-medium text-gray-700 mb-2 block">
+                 Add custom skills (comma, space, or enter separated)
+               </label>
+               <Input
+                 placeholder="e.g., Research skills, Digital literacy, Time management"
+                 value={customSkills}
+                 onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                 className="w-full"
+               />
+             </div>
+          </div>
+        </Card>
+
+        {/* Attitudes */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Heart className="text-pink-600" size={20} />
+            <h4 className="font-semibold text-gray-900">Attitudes</h4>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {attitudesList.map((attitude) => (
+                <div 
+                  key={attitude}
+                  className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                >
+                  <Checkbox
+                    id={`attitude-${attitude}`}
+                    checked={selectedAttitudes.includes(attitude)}
+                    onCheckedChange={(checked) => handleAttitudesChange(attitude, !!checked)}
+                    className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
+                  />
+                  <label 
+                    htmlFor={`attitude-${attitude}`} 
+                    className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900"
+                  >
+                    {attitude}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </div>
+      
       </div>
       
       <div className="text-center mb-6">
         <Button 
           onClick={handleGenerateELO}
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-          disabled={
-            (activeTab === 'recommended' && !customPrompt.trim()) || 
-            (activeTab === 'aiAssist' && selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0)
-          }
+          disabled={selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0}
         >
           <Lightbulb className="mr-2" size={18} />
-          {activeTab === 'recommended' ? 'Use Learning Outcomes' : 'Generate Learning Outcomes'}
+          Generate Learning Outcomes
         </Button>
         <p className="text-xs text-gray-500 mt-2">
-          {activeTab === 'recommended' 
-            ? `${customPrompt.trim() ? 1 : 0} outcome${customPrompt.trim() ? '' : 's'} ready`
-            : `${selectedBlooms.length} Blooms + ${selectedSkills.length} Skills + ${selectedAttitudes.length} Attitudes selected`
-          }
+          {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedAttitudes.length} Attitudes selected
         </p>
       </div>
 
