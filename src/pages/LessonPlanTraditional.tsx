@@ -228,163 +228,187 @@ const LessonPlanTraditional = () => {
               </div>
             </div>
 
-            {/* Expected Learning Outcomes & Learning Progression */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8 bg-muted/20">
-              {/* Expected Learning Outcomes */}
-              <div className="lg:col-span-2">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Expected Learning Outcomes</h3>
-                  <p className="text-muted-foreground text-sm">Please refer to the LO mentioned in the Curriculum document</p>
-                </div>
-                
-                <div className="bg-card border border-border rounded-lg p-6 mb-6">
-                  <p className="font-semibold text-foreground mb-4">Students should be able to:</p>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-foreground">interpret the structure of molecules in different ways</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-foreground">classify and give the nomenclature of organic compounds in trivial and IUPAC system</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-foreground">explain about different types of isomerism exhibited by organic compounds</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-foreground">bring out the effect of electronic displacements on structure and reactivity of organic compounds</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-foreground">understand the methods of purification of organic compounds</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-foreground">explain in detail the qualitative and quantitative aspects of organic compounds</span>
-                    </li>
-                  </ul>
-                </div>
+            {/* Expected Learning Outcomes */}
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Expected Learning Outcomes</h3>
+                <p className="text-muted-foreground text-sm">Please refer to the LO mentioned in the Curriculum document</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <p className="font-semibold text-foreground mb-4">Students should be able to:</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-foreground">interpret the structure of molecules in different ways</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-foreground">classify and give the nomenclature of organic compounds in trivial and IUPAC system</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-foreground">explain about different types of isomerism exhibited by organic compounds</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-foreground">bring out the effect of electronic displacements on structure and reactivity of organic compounds</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-foreground">understand the methods of purification of organic compounds</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-foreground">explain in detail the qualitative and quantitative aspects of organic compounds</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
 
-                <div className="bg-card border border-border rounded-lg p-6 mb-6">
-                  <h4 className="font-semibold text-foreground mb-4">Assessment</h4>
-                  <p className="text-muted-foreground text-sm mb-4">Formative or Summative, with tools, techniques or test items, aligning well with the LO's mentioned above</p>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-sm"><span className="font-semibold text-primary">Stimulus:</span> A student observes that he gets the same result for LCMS analysis of two given compounds. But differs when he has NMR analysis.</p>
+            {/* Learning Progression */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Learning Progression</h3>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-bold text-sm">1</span>
                     </div>
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-sm"><span className="font-semibold text-primary">STEM:</span> Why were the results same in LCMS and different in NMR?</p>
-                    </div>
-                    
-                    <div className="space-y-3 text-sm">
-                      <div className="p-4 border border-border rounded-lg">
-                        <span className="font-semibold text-primary">1.</span> Which of the two: O₂NCH₂CH₂O⁻ or CH₃CH₂O⁻ is expected to be more stable and why?
-                      </div>
-                      <div className="p-4 border border-border rounded-lg">
-                        <span className="font-semibold text-primary">2.</span> Write the correct IUPAC name for the compound: (a) 2,2-Dimethylpentane or 2-Dimethylpentane (b) 2,4,6-Trimethyloctane or 2,5,7-Trimethyloctane (c) 2-Chloro-4-methylpentane or 4-Chloro-2-methylpentane or 2-methyl-4-chloropentane
-                      </div>
+                    <div>
+                      <span className="text-sm text-foreground">Write IUPAC of basic structures, its names and bond length diagram.</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="bg-card border border-border rounded-lg p-6">
-                  <h4 className="font-semibold text-foreground mb-4">Learning Experiences</h4>
-                  <p className="text-muted-foreground text-sm mb-4">3E Model/Experiential Learning/Art-Sports Integrated/Inter-Cross Disciplinary etc. with clear mention of digital tools and resources used</p>
-                  
-                  <h5 className="font-semibold text-primary mb-3">5E Model - Tools used:</h5>
-                  
-                  <div className="space-y-4">
-                    <div className="border-l-4 border-primary pl-4">
-                      <p className="font-semibold text-foreground mb-2">Activity 1: Introduction of nomenclature with an activity of asking the word used for water.</p>
-                      <p className="text-sm text-muted-foreground">Observe the difficulty and understand the requirement of uniformity in the names of chemical structure, Introduce the nomenclature then.</p>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-bold text-sm">2</span>
                     </div>
-                    
-                    <div className="border-l-4 border-primary pl-4">
-                      <p className="font-semibold text-foreground">Activity 2: Placing carbon inside me and carbon around me</p>
+                    <div>
+                      <span className="text-sm text-foreground">Name a structure or draw a structure with two functional groups.</span>
                     </div>
-                    
-                    <div className="border-l-4 border-primary pl-4">
-                      <p className="font-semibold text-foreground">Activity 3: Resonance and reaction intermediates by storytelling</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-bold text-sm">3</span>
                     </div>
-                    
-                    <div className="border-l-4 border-primary pl-4">
-                      <p className="font-semibold text-foreground mb-2">Activity 4: Experience the following using ball and stick models.</p>
-                      <ol className="text-sm text-muted-foreground space-y-1 ml-4">
-                        <li>1. Structures</li>
-                        <li>2. Free rotation in alkanes</li>
-                        <li>3. Restricted rotation in alkenes and alkynes</li>
-                        <li>4. Structures of different functional groups like nitriles, carbonyl compounds.</li>
-                      </ol>
+                    <div>
+                      <span className="text-sm text-foreground">Identify different isomers. Describe types of fission with examples, intermediates, electron movement.</span>
                     </div>
-                    
-                    <div className="border-l-4 border-primary pl-4">
-                      <p className="font-semibold text-foreground">Animated videos on purification techniques and understand the principle of it.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-bold text-sm">4</span>
+                    </div>
+                    <div>
+                      <span className="text-sm text-foreground">Write the resonance structures. Identify the types of reactions with examples.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-bold text-sm">5</span>
+                    </div>
+                    <div>
+                      <span className="text-sm text-foreground">Analyze the influence of different substituents on each other with proper reasoning.</span>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Learning Progression */}
-              <div className="space-y-6">
-                <div className="bg-card border border-border rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-foreground mb-4">Learning Progression</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-bold text-sm">1</span>
-                      </div>
-                      <div>
-                        <span className="text-sm text-foreground">Write IUPAC of basic structures, its names and bond length diagram.</span>
-                      </div>
+            {/* Assessment */}
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Assessment</h3>
+                <p className="text-muted-foreground text-sm">Formative or Summative, with tools, techniques or test items, aligning well with the LO's mentioned above</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="space-y-4">
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <p className="text-sm"><span className="font-semibold text-primary">Stimulus:</span> A student observes that he gets the same result for LCMS analysis of two given compounds. But differs when he has NMR analysis.</p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <p className="text-sm"><span className="font-semibold text-primary">STEM:</span> Why were the results same in LCMS and different in NMR?</p>
+                  </div>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div className="p-4 border border-border rounded-lg">
+                      <span className="font-semibold text-primary">1.</span> Which of the two: O₂NCH₂CH₂O⁻ or CH₃CH₂O⁻ is expected to be more stable and why?
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-bold text-sm">2</span>
-                      </div>
-                      <div>
-                        <span className="text-sm text-foreground">Name a structure or draw a structure with two functional groups.</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-bold text-sm">3</span>
-                      </div>
-                      <div>
-                        <span className="text-sm text-foreground">Identify different isomers. Describe types of fission with examples, intermediates, electron movement.</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-bold text-sm">4</span>
-                      </div>
-                      <div>
-                        <span className="text-sm text-foreground">Write the resonance structures. Identify the types of reactions with examples.</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-bold text-sm">5</span>
-                      </div>
-                      <div>
-                        <span className="text-sm text-foreground">Analyze the influence of different substituents on each other with proper reasoning.</span>
-                      </div>
+                    <div className="p-4 border border-border rounded-lg">
+                      <span className="font-semibold text-primary">2.</span> Write the correct IUPAC name for the compound: (a) 2,2-Dimethylpentane or 2-Dimethylpentane (b) 2,4,6-Trimethyloctane or 2,5,7-Trimethyloctane (c) 2-Chloro-4-methylpentane or 4-Chloro-2-methylpentane or 2-methyl-4-chloropentane
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Assignments */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Assignments</h3>
+                <p className="text-muted-foreground text-sm">During or/and after the completion of the Unit/Lesson</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <p className="text-sm text-foreground">List out the organic compounds around us and their chemical property with structure.</p>
+              </div>
+            </div>
+
+            {/* Learning Experiences */}
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Learning Experiences</h3>
+                <p className="text-muted-foreground text-sm">3E Model/Experiential Learning/Art-Sports Integrated/Inter-Cross Disciplinary etc. with clear mention of digital tools and resources used</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <h5 className="font-semibold text-primary mb-3">5E Model - Tools used:</h5>
                 
-                <div className="bg-card border border-border rounded-lg p-6">
-                  <h4 className="font-semibold text-foreground mb-3">Assignments</h4>
-                  <p className="text-muted-foreground text-sm mb-2">During or/and after the completion of the Unit/Lesson</p>
-                  <p className="text-sm text-foreground">List out the organic compounds around us and their chemical property with structure.</p>
+                <div className="space-y-4">
+                  <div className="border-l-4 border-primary pl-4">
+                    <p className="font-semibold text-foreground mb-2">Activity 1: Introduction of nomenclature with an activity of asking the word used for water.</p>
+                    <p className="text-sm text-muted-foreground">Observe the difficulty and understand the requirement of uniformity in the names of chemical structure, Introduce the nomenclature then.</p>
+                  </div>
+                  
+                  <div className="border-l-4 border-primary pl-4">
+                    <p className="font-semibold text-foreground">Activity 2: Placing carbon inside me and carbon around me</p>
+                  </div>
+                  
+                  <div className="border-l-4 border-primary pl-4">
+                    <p className="font-semibold text-foreground">Activity 3: Resonance and reaction intermediates by storytelling</p>
+                  </div>
+                  
+                  <div className="border-l-4 border-primary pl-4">
+                    <p className="font-semibold text-foreground mb-2">Activity 4: Experience the following using ball and stick models.</p>
+                    <ol className="text-sm text-muted-foreground space-y-1 ml-4">
+                      <li>1. Structures</li>
+                      <li>2. Free rotation in alkanes</li>
+                      <li>3. Restricted rotation in alkenes and alkynes</li>
+                      <li>4. Structures of different functional groups like nitriles, carbonyl compounds.</li>
+                    </ol>
+                  </div>
+                  
+                  <div className="border-l-4 border-primary pl-4">
+                    <p className="font-semibold text-foreground">Animated videos on purification techniques and understand the principle of it.</p>
+                  </div>
                 </div>
-                
-                <div className="bg-card border border-border rounded-lg p-6">
-                  <h4 className="font-semibold text-foreground mb-3">Reflections</h4>
-                  <p className="text-muted-foreground text-sm">Post completion of the Unit/Lesson, to help the Teacher plan for better and more effective transaction next time</p>
-                  <div className="mt-3 h-16 bg-muted/30 rounded border-dashed border-2 border-muted-foreground/20"></div>
+              </div>
+            </div>
+
+            {/* Reflections */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Reflections</h3>
+                <p className="text-muted-foreground text-sm">Post completion of the Unit/Lesson, to help the Teacher plan for better and more effective transaction next time</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="h-32 bg-muted/30 rounded border-dashed border-2 border-muted-foreground/20 flex items-center justify-center">
+                  <span className="text-muted-foreground text-sm">Teacher's reflection notes...</span>
                 </div>
               </div>
             </div>

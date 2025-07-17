@@ -131,123 +131,134 @@ const CreateSession = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-primary" />
-                  Session Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    Session Title *
-                  </label>
-                  <Input
-                    placeholder="Enter session title..."
-                    value={sessionData.title}
-                    onChange={(e) => setSessionData(prev => ({ ...prev, title: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    Duration *
-                  </label>
-                  <Input
-                    placeholder="e.g., 45 minutes"
-                    value={sessionData.duration}
-                    onChange={(e) => setSessionData(prev => ({ ...prev, duration: e.target.value }))}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Instructions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Session Instructions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RichTextEditor
-                  content={sessionData.instructions}
-                  onChange={(content) => setSessionData(prev => ({ ...prev, instructions: content }))}
-                  placeholder="Write detailed instructions for this session..."
-                  className="w-full"
+        <div className="space-y-8">
+          {/* Section 1: Session Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                Session Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Session Title *
+                </label>
+                <Input
+                  placeholder="Enter session title..."
+                  value={sessionData.title}
+                  onChange={(e) => setSessionData(prev => ({ ...prev, title: e.target.value }))}
                 />
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Duration *
+                </label>
+                <Input
+                  placeholder="e.g., 45 minutes"
+                  value={sessionData.duration}
+                  onChange={(e) => setSessionData(prev => ({ ...prev, duration: e.target.value }))}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Core Objectives */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-purple-600" />
-                  Core Objectives *
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {availableCOs.map((co, index) => (
-                  <div key={index} className="flex items-start space-x-2">
-                    <Checkbox
-                      id={`co-${index}`}
-                      checked={sessionData.selectedCOs.includes(co)}
-                      onCheckedChange={() => handleCOToggle(co)}
-                    />
-                    <label
-                      htmlFor={`co-${index}`}
-                      className="text-sm text-foreground leading-tight cursor-pointer"
-                    >
-                      {co}
-                    </label>
-                  </div>
-                ))}
-                <div className="text-xs text-muted-foreground mt-2">
-                  Selected: {sessionData.selectedCOs.length} of {availableCOs.length}
+          {/* Section 2: Session Instructions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Session Instructions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RichTextEditor
+                content={sessionData.instructions}
+                onChange={(content) => setSessionData(prev => ({ ...prev, instructions: content }))}
+                placeholder="Write detailed instructions for this session..."
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Section 3: Core Objectives */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-purple-600" />
+                Core Objectives *
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {availableCOs.map((co, index) => (
+                <div key={index} className="flex items-start space-x-2">
+                  <Checkbox
+                    id={`co-${index}`}
+                    checked={sessionData.selectedCOs.includes(co)}
+                    onCheckedChange={() => handleCOToggle(co)}
+                  />
+                  <label
+                    htmlFor={`co-${index}`}
+                    className="text-sm text-foreground leading-tight cursor-pointer"
+                  >
+                    {co}
+                  </label>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+              <div className="text-xs text-muted-foreground mt-2">
+                Selected: {sessionData.selectedCOs.length} of {availableCOs.length}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Expected Learning Outcomes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-green-600" />
-                  Expected Learning Outcomes
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {availableELOs.map((elo, index) => (
-                  <div key={index} className="flex items-start space-x-2">
-                    <Checkbox
-                      id={`elo-${index}`}
-                      checked={sessionData.selectedELOs.includes(elo)}
-                      onCheckedChange={() => handleELOToggle(elo)}
-                    />
-                    <label
-                      htmlFor={`elo-${index}`}
-                      className="text-sm text-foreground leading-tight cursor-pointer"
-                    >
-                      {elo}
-                    </label>
-                  </div>
-                ))}
-                <div className="text-xs text-muted-foreground mt-2">
-                  Selected: {sessionData.selectedELOs.length} of {availableELOs.length}
+          {/* Section 4: Expected Learning Outcomes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-green-600" />
+                Expected Learning Outcomes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {availableELOs.map((elo, index) => (
+                <div key={index} className="flex items-start space-x-2">
+                  <Checkbox
+                    id={`elo-${index}`}
+                    checked={sessionData.selectedELOs.includes(elo)}
+                    onCheckedChange={() => handleELOToggle(elo)}
+                  />
+                  <label
+                    htmlFor={`elo-${index}`}
+                    className="text-sm text-foreground leading-tight cursor-pointer"
+                  >
+                    {elo}
+                  </label>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+              <div className="text-xs text-muted-foreground mt-2">
+                Selected: {sessionData.selectedELOs.length} of {availableELOs.length}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Save Button */}
+          {/* Action Buttons */}
+          <div className="flex gap-4">
+            <Button
+              onClick={() => {
+                // Draft save logic
+                toast({
+                  title: "Draft Saved",
+                  description: "Your session has been saved as a draft.",
+                });
+              }}
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Save as Draft
+            </Button>
             <Button
               onClick={handleSave}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
               size="lg"
             >
               <Save className="h-4 w-4 mr-2" />

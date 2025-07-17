@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Target, 
   Sparkles, 
@@ -341,8 +342,14 @@ const CoreObjectives = ({
               <Card key={objective.id} className="border-l-4 border-l-blue-500">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="text-gray-800 font-medium mb-2">{objective.text}</p>
+                    <div className="flex items-start gap-3 flex-1">
+                      <Checkbox
+                        id={`merge-${objective.id}`}
+                        checked={shortlistedObjectives.includes(objective.text)}
+                        onCheckedChange={() => toggleShortlist(objective)}
+                      />
+                      <div className="flex-1">
+                        <p className="text-gray-800 font-medium mb-2">{objective.text}</p>
                       
                       {/* Categories */}
                       <div className="flex gap-2 mb-2">
@@ -404,6 +411,7 @@ const CoreObjectives = ({
                           </AlertDescription>
                         </Alert>
                       )}
+                      </div>
                     </div>
                     
                     {/* Action Buttons */}
