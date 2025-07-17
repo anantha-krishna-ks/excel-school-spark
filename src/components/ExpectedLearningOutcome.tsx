@@ -29,13 +29,7 @@ const ExpectedLearningOutcome = () => {
     { id: 'create', label: 'Create', icon: '🎨', description: 'Produce new or original work' }
   ];
 
-  const skillsList = [
-    'Critical Thinking',
-    'Communication',
-    'Collaboration',
-    'Creativity',
-    'Problem Solving'
-  ];
+  const skillsList: string[] = [];
 
   const attitudesList = [
     'Respect',
@@ -160,20 +154,20 @@ const ExpectedLearningOutcome = () => {
             </div>
             <Button
               onClick={() => {
-                // Generate 10 AI-powered skills
-                const aiSkills = [
-                  'Critical Analysis',
-                  'Creative Problem Solving',
-                  'Effective Communication',
-                  'Digital Literacy',
-                  'Research Methodology',
-                  'Time Management',
-                  'Collaborative Learning',
-                  'Data Interpretation',
-                  'Scientific Reasoning',
-                  'Presentation Skills'
+                // Generate 10 AI-powered context-relevant skills
+                const contextSkills = [
+                  'Data Analysis and Interpretation',
+                  'Critical Thinking and Problem Solving',
+                  'Digital Communication and Collaboration',
+                  'Research and Information Literacy',
+                  'Creative Innovation and Design Thinking',
+                  'Scientific Method and Inquiry',
+                  'Mathematical Reasoning and Logic',
+                  'Presentation and Public Speaking',
+                  'Time Management and Organization',
+                  'Ethical Decision Making'
                 ];
-                setSelectedSkills(aiSkills);
+                setSelectedSkills(contextSkills);
               }}
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2"
             >
@@ -206,12 +200,12 @@ const ExpectedLearningOutcome = () => {
             </div>
 
             {/* AI Generated Skills Display */}
-            {selectedSkills.length > 5 && (
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <h5 className="text-sm font-medium text-blue-900 mb-2">AI Generated Skills:</h5>
+            {selectedSkills.length > 0 && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h5 className="text-sm font-medium text-blue-900 mb-3">AI Generated Skills:</h5>
                 <div className="flex flex-wrap gap-2">
-                  {selectedSkills.slice(5).map((skill, index) => (
-                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                  {selectedSkills.map((skill, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-medium">
                       {skill}
                       <button
                         onClick={() => setSelectedSkills(prev => prev.filter(s => s !== skill))}

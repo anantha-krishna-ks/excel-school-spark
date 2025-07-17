@@ -520,36 +520,6 @@ const CoreObjectives = ({
       </div>
 
 
-      {/* Shortlisted Objectives Display */}
-      {shortlistedObjectives.length > 0 && (
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200 mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Star className="text-orange-600 fill-current" size={18} />
-            <h4 className="font-medium text-orange-900">Shortlisted Objectives</h4>
-            <Badge variant="secondary" className="bg-orange-100 text-orange-700">
-              {shortlistedObjectives.length}
-            </Badge>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {shortlistedObjectives.map((objective, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-orange-200 shadow-sm"
-              >
-                <Star className="text-orange-500 fill-current" size={14} />
-                <span className="text-sm text-gray-700">{objective}</span>
-                <button
-                  onClick={() => setShortlistedObjectives && setShortlistedObjectives(shortlistedObjectives.filter(obj => obj !== objective))}
-                  className="text-orange-400 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 size={12} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Action Buttons */}
       <div className="text-center space-y-4">
