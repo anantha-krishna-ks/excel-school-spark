@@ -9,11 +9,13 @@ import Header from '@/components/Header';
 import RichTextEditor from '@/components/RichTextEditor';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { useToast } from '@/hooks/use-toast';
+import { PageLoader } from '@/components/ui/loader';
 
 const CreateSession = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [sessionData, setSessionData] = useState({
     title: '',
@@ -62,7 +64,7 @@ const CreateSession = () => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!sessionData.title || !sessionData.duration || sessionData.selectedCOs.length === 0) {
       toast({
         title: "Missing Information",
@@ -72,15 +74,18 @@ const CreateSession = () => {
       return;
     }
 
-    // Mock save logic
+    setIsLoading(true);
+
+    // Mock save logic with delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     toast({
       title: "Session Created!",
       description: "Your session has been successfully created.",
     });
 
-    setTimeout(() => {
-      navigate(`/session/${lessonId}`);
-    }, 1000);
+    navigate(`/session/${lessonId}`);
+    setIsLoading(false);
   };
 
   return (
@@ -255,16 +260,19 @@ const CreateSession = () => {
           {/* Action Buttons */}
           <div className="flex gap-4">
             <Button
-              onClick={() => {
-                // Draft save logic
+              onClick={async () => {
+                setIsLoading(true);
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 toast({
                   title: "Draft Saved",
                   description: "Your session has been saved as a draft.",
                 });
+                setIsLoading(false);
               }}
               variant="outline"
               className="flex-1"
               size="lg"
+              disabled={isLoading}
             >
               <Save className="h-4 w-4 mr-2" />
               Save as Draft
@@ -273,13 +281,18 @@ const CreateSession = () => {
               onClick={handleSave}
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
               size="lg"
+              disabled={isLoading}
             >
               <Save className="h-4 w-4 mr-2" />
-              Create Session
+              {isLoading ? 'Creating...' : 'Create Session'}
             </Button>
           </div>
         </div>
       </div>
+      
+      {isLoading && (
+        <PageLoader text="Creating your session..." />
+      )}
     </div>
   );
 };

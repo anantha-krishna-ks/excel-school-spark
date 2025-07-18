@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target, Plus, X } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 
 const ExpectedLearningOutcome = () => {
@@ -17,6 +18,8 @@ const ExpectedLearningOutcome = () => {
   const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
   const [customSkills, setCustomSkills] = useState('');
   const [customAttitudes, setCustomAttitudes] = useState('');
+  const [isGeneratingSkills, setIsGeneratingSkills] = useState(false);
+  const [isGeneratingOutcomes, setIsGeneratingOutcomes] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [customPrompt, setCustomPrompt] = useState('');
@@ -96,12 +99,18 @@ const ExpectedLearningOutcome = () => {
     alert(`Verification complete: Your learning outcomes are well-structured and ready to use!`);
   };
 
-  const handleGenerateELO = () => {
+  const handleGenerateELO = async () => {
+    setIsGeneratingOutcomes(true);
+    
+    // Simulate AI generation delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
     const outcomes = activeTab === 'recommended' && customPrompt.trim() 
       ? [customPrompt.trim()]
       : selectedBlooms.map(bloom => `Students will be able to ${bloom.toLowerCase()} concepts effectively`);
     
     setGeneratedOutcomes(outcomes);
+    setIsGeneratingOutcomes(false);
     console.log('Generated ELO:', outcomes);
   };
 
@@ -153,7 +162,11 @@ const ExpectedLearningOutcome = () => {
               <h4 className="font-semibold text-gray-900">Skills</h4>
             </div>
             <Button
-              onClick={() => {
+              onClick={async () => {
+                setIsGeneratingSkills(true);
+                // Simulate AI generation delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
                 // Generate 10 AI-powered context-relevant skills
                 const contextSkills = [
                   'Data Analysis and Interpretation',
@@ -168,11 +181,17 @@ const ExpectedLearningOutcome = () => {
                   'Ethical Decision Making'
                 ];
                 setSelectedSkills(contextSkills);
+                setIsGeneratingSkills(false);
               }}
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2"
+              disabled={isGeneratingSkills}
             >
-              <Bot className="h-4 w-4 mr-2" />
-              Generate Skills
+              {isGeneratingSkills ? (
+                <Loader size="sm" className="h-4 w-4 mr-2" />
+              ) : (
+                <Bot className="h-4 w-4 mr-2" />
+              )}
+              {isGeneratingSkills ? 'Generating...' : 'Generate Skills'}
             </Button>
           </div>
           
@@ -205,7 +224,7 @@ const ExpectedLearningOutcome = () => {
                 <h5 className="text-sm font-medium text-blue-900 mb-3">AI Generated Skills:</h5>
                 <div className="flex flex-wrap gap-2">
                   {selectedSkills.map((skill, index) => (
-                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-medium">
+                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-semibold">
                       {skill}
                       <button
                         onClick={() => setSelectedSkills(prev => prev.filter(s => s !== skill))}
@@ -272,10 +291,14 @@ const ExpectedLearningOutcome = () => {
         <Button 
           onClick={handleGenerateELO}
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-          disabled={selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0}
+          disabled={isGeneratingOutcomes || (selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0)}
         >
-          <Lightbulb className="mr-2" size={18} />
-          Generate Learning Outcomes
+          {isGeneratingOutcomes ? (
+            <Loader size="sm" className="mr-2" />
+          ) : (
+            <Lightbulb className="mr-2" size={18} />
+          )}
+          {isGeneratingOutcomes ? 'Generating...' : 'Generate Learning Outcomes'}
         </Button>
         <p className="text-xs text-gray-500 mt-2">
           {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedAttitudes.length} Attitudes selected

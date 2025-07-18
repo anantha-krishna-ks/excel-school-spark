@@ -464,8 +464,10 @@ const MainStepper = ({
             {/* Prominent CTA Button */}
             <div className="flex justify-center mt-12">
               <Button
-                onClick={() => {
+                onClick={async () => {
                   markStepComplete(4);
+                  // Show loading and redirect
+                  await new Promise(resolve => setTimeout(resolve, 1000));
                   navigate('/lesson-plan-traditional', {
                     state: {
                       lessonData: {

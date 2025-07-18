@@ -1,20 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Download, Save, Edit, RefreshCw } from 'lucide-react';
 import Header from '@/components/Header';
+import { PageLoader } from '@/components/ui/loader';
 
 const LessonPlanTraditional = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   
   const lessonData = location.state?.lessonData || {
     grade: '8',
     subject: 'Science',
     lessonName: 'Understanding Climate Change'
   };
+
+  // Show loading on initial load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-background">
@@ -37,13 +49,16 @@ const LessonPlanTraditional = () => {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => {
-              // Mock regenerate functionality
+            disabled={isRegenerating}
+            onClick={async () => {
+              setIsRegenerating(true);
+              // Mock regenerate functionality with delay
+              await new Promise(resolve => setTimeout(resolve, 3000));
               window.location.reload();
             }}
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Regenerate
+            <RefreshCw className={`mr-2 h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+            {isRegenerating ? 'Regenerating...' : 'Regenerate'}
           </Button>
           <Button 
             variant="outline" 
@@ -417,6 +432,15 @@ const LessonPlanTraditional = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Loading states */}
+      {isLoading && (
+        <PageLoader text="Generating your lesson plan..." />
+      )}
+      
+      {isRegenerating && (
+        <PageLoader text="Regenerating lesson plan with AI..." />
+      )}
     </div>
   );
 };

@@ -22,6 +22,7 @@ import {
   Check,
   X
 } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 interface CoreObjectivesProps {
   onGenerateCO: (objectives: string[]) => void;
@@ -60,6 +61,7 @@ const CoreObjectives = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [validationResults, setValidationResults] = useState<{[key: string]: ValidationResult}>({});
   const [suggestedObjectives, setSuggestedObjectives] = useState<string[]>([]);
+  const [isGeneratingCO, setIsGeneratingCO] = useState(false);
   
   const availableObjectives = [
     { 
@@ -262,10 +264,16 @@ const CoreObjectives = ({
     setCustomObjectives(newObjectives);
   };
 
-  const handleGenerateCO = () => {
+  const handleGenerateCO = async () => {
+    setIsGeneratingCO(true);
+    
+    // Simulate AI generation delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
     const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
     const allObjectives = [...selectedObjectives, ...validCustomObjectives, ...savedObjectives.map(obj => obj.text)];
     onGenerateCO(allObjectives);
+    setIsGeneratingCO(false);
   };
 
   const handleShortlist = () => {
