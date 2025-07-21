@@ -19,8 +19,9 @@ const dummyMappingData = [
       "ELO 1.1: Recognize red, blue, yellow.",
       "ELO 1.2: Differentiate primary from secondary."
     ],
-    bloomsTaxonomy: "Knowledge",
-    skills: ["Observation", "Identification"]
+    bloomsTaxonomy: "Apply",
+    skills: ["Observation", "Identification"],
+    competencies: ["Visual Recognition", "Color Theory"]
   },
   {
     id: 2,
@@ -30,7 +31,8 @@ const dummyMappingData = [
       "ELO 2.2: Summarize the poem's theme."
     ],
     bloomsTaxonomy: "Analysis",
-    skills: ["Critical Thinking", "Interpretation", "Deduction"]
+    skills: ["Critical Thinking", "Interpretation", "Deduction"],
+    competencies: ["Reading Comprehension", "Analytical Reasoning", "Literary Analysis"]
   },
   {
     id: 3,
@@ -40,7 +42,8 @@ const dummyMappingData = [
       "ELO 3.2: Incorporate a clear moral lesson."
     ],
     bloomsTaxonomy: "Creation",
-    skills: ["Creative Writing", "Problem-Solving", "Imagination"]
+    skills: ["Creative Writing", "Problem-Solving", "Imagination"],
+    competencies: ["Storytelling & Writing", "Creative Thinking", "Ethical Reasoning"]
   }
 ];
 
@@ -58,7 +61,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
 
   const getBloomsTaxonomyIcon = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'knowledge': return '📚';
+      case 'apply': return '🔧';
       case 'analysis': return '🔍';
       case 'creation': return '🎨';
       default: return '🧠';
@@ -67,7 +70,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
 
   const getBloomsTaxonomyColor = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'knowledge': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'apply': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'analysis': return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'creation': return 'bg-green-100 text-green-700 border-green-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
@@ -157,7 +160,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
         <div className="overflow-x-auto">
           <div className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
             {/* Table Header */}
-            <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-200">
+            <div className="grid grid-cols-5 bg-gray-50 border-b border-gray-200">
               <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
                 Core Objective (CO)
               </div>
@@ -167,14 +170,17 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
                 Bloom's Taxonomy
               </div>
-              <div className="p-4 font-semibold text-gray-900">
+              <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
                 Skills
+              </div>
+              <div className="p-4 font-semibold text-gray-900">
+                Competencies
               </div>
             </div>
 
             {/* Table Body */}
             {dummyMappingData.map((mapping) => (
-              <div key={mapping.id} className="grid grid-cols-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <div key={mapping.id} className="grid grid-cols-5 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 {/* Core Objective Column */}
                 <div className="p-4 border-r border-gray-200">
                   <div className="flex items-start gap-3">
@@ -219,11 +225,22 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
                 </div>
 
                 {/* Skills Column */}
-                <div className="p-4">
+                <div className="p-4 border-r border-gray-200">
                   <div className="flex flex-wrap gap-1">
                     {mapping.skills.map((skill, index) => (
                       <Badge key={index} variant="secondary" className="text-xs bg-blue-100 text-blue-700">
                         {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Competencies Column */}
+                <div className="p-4">
+                  <div className="flex flex-wrap gap-1">
+                    {mapping.competencies.map((competency, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs bg-green-100 text-green-700">
+                        {competency}
                       </Badge>
                     ))}
                   </div>
