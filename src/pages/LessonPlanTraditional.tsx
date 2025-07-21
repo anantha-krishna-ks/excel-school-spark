@@ -3,7 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Download, Save, Edit, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Download, Save, Edit, RefreshCw, Check, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import Header from '@/components/Header';
 import { PageLoader } from '@/components/ui/loader';
 
@@ -12,12 +14,26 @@ const LessonPlanTraditional = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   const lessonData = location.state?.lessonData || {
     grade: '8',
     subject: 'Science',
     lessonName: 'Understanding Climate Change'
   };
+
+  // Editable content state
+  const [editableContent, setEditableContent] = useState({
+    schoolName: 'Excel Public School, Mysuru',
+    academicYear: '2024-25',
+    grade: lessonData.grade,
+    subject: lessonData.subject,
+    topic: `Unit 8 – ${lessonData.lessonName}`,
+    teacherName: 'Dr. Sriman S Kamath',
+    plannedDate: '28/05/2025',
+    executionPeriod: '03/06/2025 to 31/07/2025',
+    assignment: 'List out the organic compounds around us and their chemical property with structure.'
+  });
 
   // Show loading on initial load
   useEffect(() => {
@@ -60,14 +76,35 @@ const LessonPlanTraditional = () => {
             <RefreshCw className={`mr-2 h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
             {isRegenerating ? 'Regenerating...' : 'Regenerate'}
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => navigate('/lesson-plan-assistant')}
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
+          {!isEditing ? (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setIsEditing(true)}
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsEditing(false)}
+              >
+                <Check className="mr-2 h-4 w-4" />
+                Save Changes
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setIsEditing(false)}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+            </div>
+          )}
           <Button variant="outline" size="sm">
             <Save className="mr-2 h-4 w-4" />
             Save
@@ -89,13 +126,29 @@ const LessonPlanTraditional = () => {
                     <div className="text-primary-foreground font-bold text-xl">EXCEL</div>
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-foreground mb-1">Excel Public School, Mysuru</h1>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.schoolName}
+                        onChange={(e) => setEditableContent({...editableContent, schoolName: e.target.value})}
+                        className="text-2xl font-bold mb-1 bg-background"
+                      />
+                    ) : (
+                      <h1 className="text-2xl font-bold text-foreground mb-1">{editableContent.schoolName}</h1>
+                    )}
                     <h2 className="text-xl font-semibold text-primary tracking-wide">UNIT PLAN</h2>
                   </div>
                 </div>
                 <div className="text-right text-muted-foreground">
                   <div className="text-sm">Academic Year</div>
-                  <div className="font-semibold">2024-25</div>
+                  {isEditing ? (
+                    <Input 
+                      value={editableContent.academicYear}
+                      onChange={(e) => setEditableContent({...editableContent, academicYear: e.target.value})}
+                      className="font-semibold w-24 text-center bg-background"
+                    />
+                  ) : (
+                    <div className="font-semibold">{editableContent.academicYear}</div>
+                  )}
                 </div>
               </div>
             </div>
@@ -106,31 +159,79 @@ const LessonPlanTraditional = () => {
                 <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Class & Section</span>
-                    <span className="text-lg font-semibold text-foreground">{lessonData.grade} A & B</span>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.grade + " A & B"}
+                        onChange={(e) => setEditableContent({...editableContent, grade: e.target.value.replace(" A & B", "")})}
+                        className="text-lg font-semibold bg-background"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-foreground">{editableContent.grade} A & B</span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Subject</span>
-                    <span className="text-lg font-semibold text-foreground">{lessonData.subject}</span>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.subject}
+                        onChange={(e) => setEditableContent({...editableContent, subject: e.target.value})}
+                        className="text-lg font-semibold bg-background"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-foreground">{editableContent.subject}</span>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Topic</span>
-                    <span className="text-lg font-semibold text-foreground">Unit 8 – {lessonData.lessonName}</span>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.topic}
+                        onChange={(e) => setEditableContent({...editableContent, topic: e.target.value})}
+                        className="text-lg font-semibold bg-background"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-foreground">{editableContent.topic}</span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Teacher's Name</span>
-                    <span className="text-lg font-semibold text-foreground">Dr. Sriman S Kamath</span>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.teacherName}
+                        onChange={(e) => setEditableContent({...editableContent, teacherName: e.target.value})}
+                        className="text-lg font-semibold bg-background"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-foreground">{editableContent.teacherName}</span>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Planned Date</span>
-                    <span className="text-lg font-semibold text-foreground">28/05/2025</span>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.plannedDate}
+                        onChange={(e) => setEditableContent({...editableContent, plannedDate: e.target.value})}
+                        className="text-lg font-semibold bg-background"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-foreground">{editableContent.plannedDate}</span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Execution Period</span>
-                    <span className="text-lg font-semibold text-foreground">03/06/2025 to 31/07/2025</span>
+                    {isEditing ? (
+                      <Input 
+                        value={editableContent.executionPeriod}
+                        onChange={(e) => setEditableContent({...editableContent, executionPeriod: e.target.value})}
+                        className="text-lg font-semibold bg-background"
+                      />
+                    ) : (
+                      <span className="text-lg font-semibold text-foreground">{editableContent.executionPeriod}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -384,7 +485,15 @@ const LessonPlanTraditional = () => {
               </div>
               
               <div className="bg-card border border-border rounded-lg p-6 mb-8">
-                <p className="text-sm text-foreground">List out the organic compounds around us and their chemical property with structure.</p>
+                {isEditing ? (
+                  <Textarea 
+                    value={editableContent.assignment}
+                    onChange={(e) => setEditableContent({...editableContent, assignment: e.target.value})}
+                    className="text-sm bg-background min-h-[60px]"
+                  />
+                ) : (
+                  <p className="text-sm text-foreground">{editableContent.assignment}</p>
+                )}
               </div>
             </div>
 
