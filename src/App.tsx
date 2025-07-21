@@ -14,9 +14,7 @@ import LessonPlanOptions from "./pages/LessonPlanOptions";
 import LessonPlanTraditional from "./pages/LessonPlanTraditional";
 import SessionList from "./pages/SessionList";
 import CreateSession from "./pages/CreateSession";
-import SessionPlanPreview from "./pages/SessionPlanPreview";
-import SessionPlanOutput from "./pages/SessionPlanOutput";
-import UnitPlanPreview from "./pages/UnitPlanPreview";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -34,11 +32,8 @@ const App = () => (
           <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />
           <Route path="/lesson-plan-output" element={<LessonPlanOutput />} />
           <Route path="/lesson-plan-traditional" element={<LessonPlanTraditional />} />
-          <Route path="/session/:id/:grade/:subject" element={<SessionList />} />
+          <Route path="/session/:id" element={<SessionList />} />
           <Route path="/session/create/:lessonId" element={<CreateSession />} />
-          <Route path="/session-plan-preview" element={<SessionPlanPreview />} />
-          <Route path="/session-plan-output" element={<SessionPlanOutput />} />
-          <Route path="/unit-plan-preview" element={<UnitPlanPreview />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
