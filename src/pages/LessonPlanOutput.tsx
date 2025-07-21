@@ -199,7 +199,12 @@ const LessonPlanOutput = () => {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <CardTitle className="text-2xl font-bold text-primary mb-4">📚 Lesson Plan Details</CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit lesson plan details')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -248,7 +253,12 @@ const LessonPlanOutput = () => {
                   <Target className="h-5 w-5 text-primary" />
                   Learning Objectives
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit objectives')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -281,7 +291,12 @@ const LessonPlanOutput = () => {
                   <Brain className="h-5 w-5 text-primary" />
                   Mathematical Link Present
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit learning outcomes')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -303,7 +318,12 @@ const LessonPlanOutput = () => {
                   <BookOpen className="h-5 w-5 text-primary" />
                   Key Vocabulary
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit skills')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -327,7 +347,12 @@ const LessonPlanOutput = () => {
                   <Lightbulb className="h-5 w-5 text-primary" />
                   Introduction
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit competencies')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -354,7 +379,12 @@ const LessonPlanOutput = () => {
                   <Image className="h-5 w-5 text-primary" />
                   Visual Aids
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit values/attitudes')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -384,7 +414,12 @@ const LessonPlanOutput = () => {
                   <Activity className="h-5 w-5 text-primary" />
                   Activities
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit activities')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -457,7 +492,12 @@ const LessonPlanOutput = () => {
                   <Globe className="h-5 w-5 text-primary" />
                   Real World Examples
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit real world examples')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -480,7 +520,12 @@ const LessonPlanOutput = () => {
                   <HelpCircle className="h-5 w-5 text-primary" />
                   Discussion Questions
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit discussion questions')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -503,7 +548,12 @@ const LessonPlanOutput = () => {
                   <TrendingUp className="h-5 w-5 text-primary" />
                   Current Events
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit current events')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -528,7 +578,12 @@ const LessonPlanOutput = () => {
                   <Play className="h-5 w-5 text-primary" />
                   Educational Videos
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit educational videos')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -560,7 +615,12 @@ const LessonPlanOutput = () => {
                   <FileText className="h-5 w-5 text-primary" />
                   Assessment
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit assessment')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -594,7 +654,12 @@ const LessonPlanOutput = () => {
                   <Brain className="h-5 w-5 text-primary" />
                   Differentiation
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit differentiation')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
@@ -623,7 +688,12 @@ const LessonPlanOutput = () => {
                   <Globe className="h-5 w-5 text-primary" />
                   Educational Resources
                 </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => console.log('Edit educational resources')}
+                >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
