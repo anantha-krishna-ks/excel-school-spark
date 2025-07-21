@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -40,34 +39,6 @@ const ExpectedLearningOutcome = () => {
   ];
 
   const skillsList: string[] = [];
-
-  const competenciesList = [
-    { name: 'Critical Thinking', description: 'Analyze and evaluate information logically' },
-    { name: 'Problem Solving', description: 'Apply knowledge to resolve real-life challenges' },
-    { name: 'Conceptual Understanding', description: 'Grasp and apply subject concepts meaningfully' },
-    { name: 'Numeracy Skills', description: 'Use mathematical reasoning and operations effectively' },
-    { name: 'Scientific Inquiry', description: 'Observe, hypothesize, and experiment systematically' },
-    { name: 'Reading Comprehension', description: 'Interpret and infer meaning from texts' },
-    { name: 'Effective Communication', description: 'Express ideas clearly in oral and written forms' },
-    { name: 'Self-Awareness', description: 'Understand one\'s emotions, strengths, and limitations' },
-    { name: 'Empathy', description: 'Recognize and respect others\' feelings and perspectives' },
-    { name: 'Collaboration', description: 'Work effectively in teams and contribute positively' },
-    { name: 'Adaptability', description: 'Adjust to new situations and challenges' },
-    { name: 'Responsibility', description: 'Take ownership of actions and decisions' },
-    { name: 'Ethical Reasoning', description: 'Make choices based on values and integrity' },
-    { name: 'Time Management', description: 'Plan and prioritize tasks efficiently' },
-    { name: 'Stress Management', description: 'Handle pressure and maintain emotional balance' },
-    { name: 'Digital Literacy', description: 'Use technology responsibly and effectively' },
-    { name: 'Financial Awareness', description: 'Understand basic money concepts and budgeting' },
-    { name: 'Health & Hygiene', description: 'Maintain personal and community well-being' },
-    { name: 'Creative Thinking', description: 'Generate original ideas and solutions' },
-    { name: 'Artistic Expression', description: 'Communicate through visual and performing arts' },
-    { name: 'Storytelling & Writing', description: 'Use imagination and structure to convey narratives' },
-    { name: 'Analytical Reasoning', description: 'Break down complex problems and synthesize solutions' },
-    { name: 'Decision Making', description: 'Choose appropriate actions based on evidence and context' },
-    { name: 'Leadership', description: 'Motivate and guide peers toward shared goals' },
-    { name: 'Initiative', description: 'Take proactive steps in learning and problem-solving' }
-  ];
 
   const attitudesList = [
     'Respect',
@@ -181,8 +152,6 @@ const ExpectedLearningOutcome = () => {
         </div>
       </div>
 
-
-      {/* Direct content without tabs */}
       <div className="mb-6">
         <div className="space-y-6">
         {/* Blooms Taxonomy */}
@@ -344,7 +313,7 @@ const ExpectedLearningOutcome = () => {
           </div>
         </Card>
 
-        {/* Competencies */}
+        {/* Competencies - Updated to remove checkboxes */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -388,29 +357,6 @@ const ExpectedLearningOutcome = () => {
           </div>
           
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {competenciesList.map((competency) => (
-                <div 
-                  key={competency.name}
-                  className="flex items-start gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                >
-                  <Checkbox
-                    id={`competency-${competency.name}`}
-                    checked={selectedCompetencies.includes(`${competency.name}: ${competency.description}`)}
-                    onCheckedChange={(checked) => handleCompetenciesChange(`${competency.name}: ${competency.description}`, !!checked)}
-                    className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 mt-1"
-                  />
-                  <label 
-                    htmlFor={`competency-${competency.name}`} 
-                    className="text-sm cursor-pointer hover:text-gray-900 flex-1"
-                  >
-                    <div className="font-medium text-gray-900">{competency.name}</div>
-                    <div className="text-gray-600 text-xs mt-1">{competency.description}</div>
-                  </label>
-                </div>
-              ))}
-            </div>
-
             {/* AI Generated Competencies Display */}
             {aiGeneratedCompetencies.length > 0 && (
               <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
