@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -34,9 +33,6 @@ interface CoreObjectivesProps {
 // Types for the enhanced functionality
 interface SavedObjective {
   id: string;
-  title: string;
-  description: string;
-  factor: string;
   text: string;
   categories: string[];
   isValidated: boolean;
@@ -45,12 +41,6 @@ interface SavedObjective {
     feedback: string;
     suggestions?: string[];
   };
-}
-
-interface CustomObjectiveForm {
-  title: string;
-  description: string;
-  factor: string;
 }
 
 interface ValidationResult {
@@ -65,7 +55,7 @@ const CoreObjectives = ({
   setShortlistedObjectives 
 }: CoreObjectivesProps) => {
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
-  const [customObjectives, setCustomObjectives] = useState<CustomObjectiveForm[]>([{ title: '', description: '', factor: '' }]);
+  const [customObjectives, setCustomObjectives] = useState<string[]>(['']);
   const [showCelebration, setShowCelebration] = useState(false);
   const [savedObjectives, setSavedObjectives] = useState<SavedObjective[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -109,9 +99,6 @@ const CoreObjectives = ({
     // Auto-save suggested objectives
     const autoSavedObjectives = suggestions.map(text => ({
       id: `auto_${Date.now()}_${Math.random()}`,
-      title: 'AI Generated',
-      description: text,
-      factor: 'AI Suggested',
       text,
       categories: categorizeObjective(text),
       isValidated: false
@@ -143,16 +130,12 @@ const CoreObjectives = ({
     return categories.length > 0 ? categories : ['General'];
   };
 
-  const saveObjective = (form: CustomObjectiveForm) => {
-    if (form.title.trim() && form.description.trim() && form.factor.trim()) {
-      const text = `${form.factor}: ${form.description}`;
+  const saveObjective = (text: string) => {
+    if (text.trim()) {
       const newObjective: SavedObjective = {
         id: Date.now().toString(),
-        title: form.title.trim(),
-        description: form.description.trim(),
-        factor: form.factor.trim(),
-        text: text,
-        categories: categorizeObjective(text),
+        text: text.trim(),
+        categories: categorizeObjective(text.trim()),
         isValidated: false
       };
       setSavedObjectives([...savedObjectives, newObjective]);
@@ -192,9 +175,6 @@ const CoreObjectives = ({
       
       const newObjective1: SavedObjective = {
         id: Date.now().toString() + '_1',
-        title: 'Split Objective 1',
-        description: firstPart,
-        factor: 'Split',
         text: firstPart,
         categories: categorizeObjective(firstPart),
         isValidated: false
@@ -202,9 +182,6 @@ const CoreObjectives = ({
       
       const newObjective2: SavedObjective = {
         id: Date.now().toString() + '_2',
-        title: 'Split Objective 2',
-        description: secondPart,
-        factor: 'Split',
         text: secondPart,
         categories: categorizeObjective(secondPart),
         isValidated: false
@@ -248,9 +225,6 @@ const CoreObjectives = ({
   const addSuggestedObjective = (suggestion: string) => {
     const newObjective: SavedObjective = {
       id: Date.now().toString(),
-      title: 'AI Suggested',
-      description: suggestion,
-      factor: 'AI Generated',
       text: suggestion,
       categories: categorizeObjective(suggestion),
       isValidated: true,
@@ -275,7 +249,7 @@ const CoreObjectives = ({
   };
 
   const addCustomObjective = () => {
-    setCustomObjectives([...customObjectives, { title: '', description: '', factor: '' }]);
+    setCustomObjectives([...customObjectives, '']);
   };
 
   const removeCustomObjective = (index: number) => {
@@ -284,9 +258,9 @@ const CoreObjectives = ({
     }
   };
 
-  const updateCustomObjective = (index: number, field: keyof CustomObjectiveForm, value: string) => {
+  const updateCustomObjective = (index: number, value: string) => {
     const newObjectives = [...customObjectives];
-    newObjectives[index][field] = value;
+    newObjectives[index] = value;
     setCustomObjectives(newObjectives);
   };
 
@@ -296,22 +270,22 @@ const CoreObjectives = ({
     // Simulate AI generation delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const validCustomObjectives = customObjectives.filter(obj => obj.title.trim() !== '' && obj.description.trim() !== '' && obj.factor.trim() !== '');
-    const allObjectives = [...selectedObjectives, ...validCustomObjectives.map(obj => `${obj.factor}: ${obj.description}`), ...savedObjectives.map(obj => obj.text)];
+    const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
+    const allObjectives = [...selectedObjectives, ...validCustomObjectives, ...savedObjectives.map(obj => obj.text)];
     onGenerateCO(allObjectives);
     setIsGeneratingCO(false);
   };
 
   const handleShortlist = () => {
-    const validCustomObjectives = customObjectives.filter(obj => obj.title.trim() !== '' && obj.description.trim() !== '' && obj.factor.trim() !== '');
-    const allObjectives = [...selectedObjectives, ...validCustomObjectives.map(obj => `${obj.factor}: ${obj.description}`), ...savedObjectives.map(obj => obj.text)];
+    const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
+    const allObjectives = [...selectedObjectives, ...validCustomObjectives, ...savedObjectives.map(obj => obj.text)];
     if (setShortlistedObjectives) {
       setShortlistedObjectives([...shortlistedObjectives, ...allObjectives]);
       triggerCelebration();
     }
   };
 
-  const validCustomObjectives = customObjectives.filter(obj => obj.title.trim() !== '' && obj.description.trim() !== '' && obj.factor.trim() !== '');
+  const validCustomObjectives = customObjectives.filter(obj => obj.trim() !== '');
   const totalSelected = selectedObjectives.length + validCustomObjectives.length + savedObjectives.length;
 
   return (
@@ -349,11 +323,8 @@ const CoreObjectives = ({
                 const selected = savedObjectives.filter(obj => shortlistedObjectives.includes(obj.text));
                 if (selected.length > 1) {
                   const mergedText = selected.map(obj => obj.text).join(' ');
-                  const mergedObjective: SavedObjective = {
+                  const mergedObjective = {
                     id: Date.now().toString(),
-                    title: 'Merged Objective',
-                    description: mergedText,
-                    factor: 'Merged',
                     text: mergedText,
                     categories: Array.from(new Set(selected.flatMap(obj => obj.categories))),
                     isValidated: false
@@ -385,16 +356,8 @@ const CoreObjectives = ({
                         checked={shortlistedObjectives.includes(objective.text)}
                         onCheckedChange={() => toggleShortlist(objective)}
                       />
-                       <div className="flex-1">
-                         <div className="flex items-center gap-2 mb-2">
-                           <p className="text-gray-800 font-medium">{objective.text}</p>
-                           {objective.factor === 'AI Suggested' && (
-                             <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
-                               <Bot className="h-3 w-3" />
-                               <span>AI</span>
-                             </div>
-                           )}
-                         </div>
+                      <div className="flex-1">
+                        <p className="text-gray-800 font-medium mb-2">{objective.text}</p>
                       
                       {/* Categories */}
                       <div className="flex gap-2 mb-2">
@@ -528,67 +491,36 @@ const CoreObjectives = ({
           </Button>
         </div>
         
-        <div className="space-y-6">
+        <div className="space-y-3">
           {customObjectives.map((objective, index) => (
-            <div key={index} className="bg-white rounded-lg p-4 border border-orange-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Title</label>
-                  <Input
-                    placeholder="e.g., Environmental Awareness"
-                    value={objective.title}
-                    onChange={(e) => updateCustomObjective(index, 'title', e.target.value)}
-                    className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Factor</label>
-                  <select
-                    value={objective.factor}
-                    onChange={(e) => updateCustomObjective(index, 'factor', e.target.value)}
-                    className="w-full p-2 border border-orange-200 rounded-lg focus:border-orange-400 focus:ring-orange-400"
+            <div key={index} className="flex gap-2">
+              <Textarea
+                placeholder="Type your objective here (e.g., 'Relevance to daily life: Students gain a holistic understanding of food production and its socio-economic impact in the country.')"
+                value={objective}
+                onChange={(e) => updateCustomObjective(index, e.target.value)}
+                className="flex-1 min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400 bg-white"
+              />
+              <div className="flex flex-col gap-2">
+                {objective.trim() && (
+                  <Button
+                    onClick={() => saveObjective(objective)}
+                    variant="outline"
+                    size="sm"
+                    className="border-green-300 text-green-700 hover:bg-green-50"
                   >
-                    <option value="">Select Factor</option>
-                    <option value="Life Skill">Life Skill</option>
-                    <option value="Timeless Values">Timeless Values</option>
-                    <option value="Relevance to life">Relevance to life</option>
-                    <option value="Social Awareness">Social Awareness</option>
-                    <option value="Environmental Consciousness">Environmental Consciousness</option>
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <div className="flex gap-2 w-full">
-                    {objective.title.trim() && objective.description.trim() && objective.factor.trim() && (
-                      <Button
-                        onClick={() => saveObjective(objective)}
-                        variant="outline"
-                        size="sm"
-                        className="border-green-300 text-green-700 hover:bg-green-50 flex-1"
-                      >
-                        💾 Save
-                      </Button>
-                    )}
-                    {customObjectives.length > 1 && (
-                      <Button
-                        onClick={() => removeCustomObjective(index)}
-                        variant="outline"
-                        size="sm"
-                        className="border-red-300 text-red-700 hover:bg-red-50"
-                      >
-                        ✕
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Description</label>
-                <Textarea
-                  placeholder="e.g., Students gain a holistic understanding of food production and its socio-economic impact in the country."
-                  value={objective.description}
-                  onChange={(e) => updateCustomObjective(index, 'description', e.target.value)}
-                  className="w-full min-h-[80px] resize-none border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                />
+                    💾 Save
+                  </Button>
+                )}
+                {customObjectives.length > 1 && (
+                  <Button
+                    onClick={() => removeCustomObjective(index)}
+                    variant="outline"
+                    size="sm"
+                    className="border-red-300 text-red-700 hover:bg-red-50"
+                  >
+                    ✕
+                  </Button>
+                )}
               </div>
             </div>
           ))}
@@ -603,19 +535,13 @@ const CoreObjectives = ({
         {/* Generate/Continue Button */}
         <Button 
           onClick={handleGenerateCO}
-          disabled={totalSelected === 0 || isGeneratingCO}
+          disabled={totalSelected === 0}
           className={`px-8 py-3 rounded-lg font-medium shadow-lg transition-all duration-200 ${
-            totalSelected > 0 && !isGeneratingCO ? '' : 'opacity-50 cursor-not-allowed'
+            totalSelected > 0 ? '' : 'opacity-50 cursor-not-allowed'
           }`}
         >
-          {isGeneratingCO ? (
-            <Loader size="sm" className="mr-2" />
-          ) : (
-            <Sparkles className="mr-2" size={20} />
-          )}
-          {isGeneratingCO ? 'Generating COs...' : 
-           totalSelected === 0 ? 'Choose at least one objective' : 
-           `Continue with ${totalSelected} objective${totalSelected > 1 ? 's' : ''}! 🚀`}
+          <Sparkles className="mr-2" size={20} />
+          {totalSelected === 0 ? 'Choose at least one objective' : `Continue with ${totalSelected} objective${totalSelected > 1 ? 's' : ''}! 🚀`}
         </Button>
         
         {totalSelected > 0 && (
