@@ -20,6 +20,10 @@ const ExpectedLearningOutcome = () => {
   const [customSkills, setCustomSkills] = useState('');
   const [customCompetencies, setCustomCompetencies] = useState('');
   const [customAttitudes, setCustomAttitudes] = useState('');
+  const [aiGeneratedSkills, setAiGeneratedSkills] = useState<string[]>([]);
+  const [aiGeneratedCompetencies, setAiGeneratedCompetencies] = useState<string[]>([]);
+  const [customSkillsList, setCustomSkillsList] = useState<string[]>([]);
+  const [customCompetenciesList, setCustomCompetenciesList] = useState<string[]>([]);
   const [isGeneratingSkills, setIsGeneratingSkills] = useState(false);
   const [isGeneratingCompetencies, setIsGeneratingCompetencies] = useState(false);
   const [isGeneratingOutcomes, setIsGeneratingOutcomes] = useState(false);
@@ -118,13 +122,17 @@ const ExpectedLearningOutcome = () => {
   const handleCustomSkillsChange = (value: string) => {
     setCustomSkills(value);
     const parsedSkills = parseCustomInput(value);
-    setSelectedSkills([...new Set([...selectedSkills.filter(skill => !parseCustomInput(customSkills).includes(skill)), ...parsedSkills])]);
+    setCustomSkillsList(parsedSkills);
+    // Update selected skills with both AI and custom
+    setSelectedSkills([...aiGeneratedSkills, ...parsedSkills]);
   };
 
   const handleCustomCompetenciesChange = (value: string) => {
     setCustomCompetencies(value);
     const parsedCompetencies = parseCustomInput(value);
-    setSelectedCompetencies([...new Set([...selectedCompetencies.filter(competency => !parseCustomInput(customCompetencies).includes(competency)), ...parsedCompetencies])]);
+    setCustomCompetenciesList(parsedCompetencies);
+    // Update selected competencies with both AI and custom
+    setSelectedCompetencies([...aiGeneratedCompetencies, ...parsedCompetencies]);
   };
 
   const handleCustomAttitudesChange = (value: string) => {
@@ -225,7 +233,9 @@ const ExpectedLearningOutcome = () => {
                   'Time Management and Organization',
                   'Ethical Decision Making'
                 ];
-                setSelectedSkills(contextSkills);
+                setAiGeneratedSkills(contextSkills);
+                // Combine AI skills with existing custom skills
+                setSelectedSkills([...contextSkills, ...customSkillsList]);
                 setIsGeneratingSkills(false);
               }}
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2"
@@ -264,19 +274,53 @@ const ExpectedLearningOutcome = () => {
             </div>
 
             {/* AI Generated Skills Display */}
-            {selectedSkills.length > 0 && (
+            {aiGeneratedSkills.length > 0 && (
               <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-center gap-2 mb-3">
                   <Bot className="h-4 w-4 text-blue-600" />
                   <h5 className="text-sm font-medium text-blue-900">AI Generated Skills:</h5>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {selectedSkills.map((skill, index) => (
+                  {aiGeneratedSkills.map((skill, index) => (
                     <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      <Bot className="h-3 w-3 mr-1" />
                       {skill}
                       <button
-                        onClick={() => setSelectedSkills(prev => prev.filter(s => s !== skill))}
+                        onClick={() => {
+                          const newAiSkills = aiGeneratedSkills.filter(s => s !== skill);
+                          setAiGeneratedSkills(newAiSkills);
+                          setSelectedSkills([...newAiSkills, ...customSkillsList]);
+                        }}
                         className="ml-1 text-blue-600 hover:text-blue-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Custom Skills Display */}
+            {customSkillsList.length > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Plus className="h-4 w-4 text-gray-600" />
+                  <h5 className="text-sm font-medium text-gray-900">Custom Skills:</h5>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {customSkillsList.map((skill, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      {skill}
+                      <button
+                        onClick={() => {
+                          const newCustomSkills = customSkillsList.filter(s => s !== skill);
+                          setCustomSkillsList(newCustomSkills);
+                          setSelectedSkills([...aiGeneratedSkills, ...newCustomSkills]);
+                          // Update the input field
+                          setCustomSkills(newCustomSkills.join(', '));
+                        }}
+                        className="ml-1 text-gray-600 hover:text-gray-800"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -326,7 +370,9 @@ const ExpectedLearningOutcome = () => {
                   'Time Management: Plan and prioritize tasks efficiently',
                   'Digital Literacy: Use technology responsibly and effectively'
                 ];
-                setSelectedCompetencies(contextCompetencies);
+                setAiGeneratedCompetencies(contextCompetencies);
+                // Combine AI competencies with existing custom competencies
+                setSelectedCompetencies([...contextCompetencies, ...customCompetenciesList]);
                 setIsGeneratingCompetencies(false);
               }}
               className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm px-4 py-2"
@@ -366,19 +412,53 @@ const ExpectedLearningOutcome = () => {
             </div>
 
             {/* AI Generated Competencies Display */}
-            {selectedCompetencies.length > 0 && (
+            {aiGeneratedCompetencies.length > 0 && (
               <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
                 <div className="flex items-center gap-2 mb-3">
                   <Bot className="h-4 w-4 text-green-600" />
                   <h5 className="text-sm font-medium text-green-900">AI Generated Competencies:</h5>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {selectedCompetencies.map((competency, index) => (
+                  {aiGeneratedCompetencies.map((competency, index) => (
                     <div key={index} className="flex items-center gap-1 bg-green-100 text-green-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      <Bot className="h-3 w-3 mr-1" />
                       {competency}
                       <button
-                        onClick={() => setSelectedCompetencies(prev => prev.filter(c => c !== competency))}
+                        onClick={() => {
+                          const newAiCompetencies = aiGeneratedCompetencies.filter(c => c !== competency);
+                          setAiGeneratedCompetencies(newAiCompetencies);
+                          setSelectedCompetencies([...newAiCompetencies, ...customCompetenciesList]);
+                        }}
                         className="ml-1 text-green-600 hover:text-green-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Custom Competencies Display */}
+            {customCompetenciesList.length > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Plus className="h-4 w-4 text-gray-600" />
+                  <h5 className="text-sm font-medium text-gray-900">Custom Competencies:</h5>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {customCompetenciesList.map((competency, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      {competency}
+                      <button
+                        onClick={() => {
+                          const newCustomCompetencies = customCompetenciesList.filter(c => c !== competency);
+                          setCustomCompetenciesList(newCustomCompetencies);
+                          setSelectedCompetencies([...aiGeneratedCompetencies, ...newCustomCompetencies]);
+                          // Update the input field
+                          setCustomCompetencies(newCustomCompetencies.join(', '));
+                        }}
+                        className="ml-1 text-gray-600 hover:text-gray-800"
                       >
                         <X className="h-3 w-3" />
                       </button>
