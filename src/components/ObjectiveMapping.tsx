@@ -5,11 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Target, Brain, Users, Heart, Link, ArrowRight, Eye, Lightbulb } from 'lucide-react';
 
+// interface ObjectiveMappingProps {
+//   coreObjectives?: string[];
+//   learningOutcomes?: string[];
+// }
 interface ObjectiveMappingProps {
-  coreObjectives?: string[];
-  learningOutcomes?: string[];
+  data: {
+    co_id: string;
+    co_title: string;
+    co_description: string;
+    factor: string;
+    skills: string[];
+    elos: string[];
+    bloomsTaxonomy: string;
+  }[];
 }
-
 // Dummy data structure as specified
 const dummyMappingData = [
   {
@@ -44,7 +54,7 @@ const dummyMappingData = [
   }
 ];
 
-const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: ObjectiveMappingProps) => {
+const ObjectiveMapping = ({ data }: ObjectiveMappingProps) => {
   const [selectedMappings, setSelectedMappings] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'edit' | 'view'>('view');
 
@@ -57,7 +67,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
   };
 
   const getBloomsTaxonomyIcon = (level: string) => {
-    switch (level.toLowerCase()) {
+    switch (level[0].toLowerCase()) {
       case 'knowledge': return '📚';
       case 'analysis': return '🔍';
       case 'creation': return '🎨';
@@ -66,7 +76,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
   };
 
   const getBloomsTaxonomyColor = (level: string) => {
-    switch (level.toLowerCase()) {
+    switch (level[0].toLowerCase()) {
       case 'knowledge': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'analysis': return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'creation': return 'bg-green-100 text-green-700 border-green-200';
@@ -173,24 +183,24 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
             </div>
 
             {/* Table Body */}
-            {dummyMappingData.map((mapping) => (
-              <div key={mapping.id} className="grid grid-cols-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            {data.map((mapping, idx) => (
+              <div key={mapping.co_id} className="grid grid-cols-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 {/* Core Objective Column */}
                 <div className="p-4 border-r border-gray-200">
                   <div className="flex items-start gap-3">
                     {viewMode === 'edit' && (
                       <Checkbox
-                        checked={selectedMappings.includes(mapping.id)}
-                        onCheckedChange={() => toggleMapping(mapping.id)}
+                        checked={selectedMappings.includes(idx)}
+                        onCheckedChange={() => toggleMapping(idx)}
                         className="mt-1"
                       />
                     )}
                     <div className="flex-1">
                       <div className="font-medium text-gray-900 mb-2">
-                        {mapping.coreObjective}
+                        {mapping.co_title}
                       </div>
                       <Badge variant="outline" className="text-xs">
-                        {mapping.learningOutcomes.length} ELO{mapping.learningOutcomes.length > 1 ? 's' : ''} linked
+                        {mapping.elos.length} ELO{mapping.elos.length > 1 ? 's' : ''} linked
                       </Badge>
                     </div>
                   </div>
@@ -199,7 +209,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
                 {/* Expected Learning Outcomes Column */}
                 <div className="p-4 border-r border-gray-200">
                   <div className="space-y-2">
-                    {mapping.learningOutcomes.map((elo, index) => (
+                    {mapping.elos.map((elo, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-sm text-gray-700">{elo}</p>
@@ -240,7 +250,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               <CardTitle className="text-sm font-medium text-gray-600">Total Mappings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{dummyMappingData.length}</div>
+              <div className="text-2xl font-bold text-blue-600">{data.length}</div>
               <p className="text-xs text-gray-500">Core objectives mapped</p>
             </CardContent>
           </Card>
@@ -251,7 +261,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {dummyMappingData.reduce((total, item) => total + item.learningOutcomes.length, 0)}
+                {data.reduce((total, item) => total + item.elos.length, 0)}
               </div>
               <p className="text-xs text-gray-500">Total ELOs defined</p>
             </CardContent>

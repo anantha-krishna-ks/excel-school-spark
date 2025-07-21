@@ -6,25 +6,40 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target, Plus, X } from 'lucide-react';
-import { Loader } from '@/components/ui/loader';
+import axios from 'axios';
+import { set } from 'date-fns';
+import { PageLoader } from "@/components/ui/loader"
 
 
-const ExpectedLearningOutcome = () => {
+type ExpectedLearningOutcomeProps = {
+  board: string;
+  grade: string;
+  subject: string;
+  chapter: string;
+  generatedCOs: any[];
+  onEloGenerated?: (data: any) => void;
+};
+const ExpectedLearningOutcome = ({
+  board,
+  grade,
+  subject,
+  chapter,
+  generatedCOs,
+  onEloGenerated
+}: ExpectedLearningOutcomeProps) => {
   const [selectedBlooms, setSelectedBlooms] = useState<string[]>([
-    'Apply',
-    'Analyse'
+    'Apply'
   ]);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
   const [customSkills, setCustomSkills] = useState('');
   const [customAttitudes, setCustomAttitudes] = useState('');
-  const [isGeneratingSkills, setIsGeneratingSkills] = useState(false);
-  const [isGeneratingOutcomes, setIsGeneratingOutcomes] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [customPrompt, setCustomPrompt] = useState('');
   const [generatedOutcomes, setGeneratedOutcomes] = useState<string[]>([]);
-
+  const [EloPayload, setEloPayload] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
   const bloomsLevels = [
     { id: 'apply', label: 'Apply', icon: '🔧', description: 'Use knowledge in new situations' },
     { id: 'analyse', label: 'Analyse', icon: '🔍', description: 'Break down information into parts' },
@@ -99,23 +114,108 @@ const ExpectedLearningOutcome = () => {
     alert(`Verification complete: Your learning outcomes are well-structured and ready to use!`);
   };
 
-  const handleGenerateELO = async () => {
-    setIsGeneratingOutcomes(true);
+  // const handleGenerateELO = () => {
+  //   const outcomes = activeTab === 'recommended' && customPrompt.trim() 
+  //     ? [customPrompt.trim()]
+  //     : selectedBlooms.map(bloom => `Students will be able to ${bloom.toLowerCase()} concepts effectively`);
     
-    // Simulate AI generation delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const outcomes = activeTab === 'recommended' && customPrompt.trim() 
-      ? [customPrompt.trim()]
-      : selectedBlooms.map(bloom => `Students will be able to ${bloom.toLowerCase()} concepts effectively`);
-    
-    setGeneratedOutcomes(outcomes);
-    setIsGeneratingOutcomes(false);
+  //   setGeneratedOutcomes(outcomes);
+  //   console.log('Generated ELO:', outcomes);
+  // };
+
+  const handleGenerateSkills = async () => {
+    setLoading(true);
+    if (!board || !grade || !subject || !chapter || generatedCOs.length === 0) {
+      //setError("Missing required fields or course outcomes.");
+      return;
+    }
+
+    //setLoadingSkills(true);
+    //setError(null);
+
+    try {
+      const payload = {
+        board,
+        grade,
+        subject,
+        chapter,
+        total_outcomes: generatedCOs.length,
+        course_outcomes: generatedCOs,
+      };
+
+      const response = await axios.post(
+        `https://ai.excelsoftcorp.com/aiapps/AIToolKit/UnitPlanGen/generate-skills-per-co`,
+        payload
+      );
+      setEloPayload(response.data);   
+      const outcomes = response.data?.course_outcomes;
+      if (Array.isArray(outcomes)) {
+      
+      const allSkills: string[] = outcomes.flatMap(co => co.skills ?? []);
+      const uniqueSkills = Array.from(new Set(allSkills)); // remove duplicates
+      setSelectedSkills(uniqueSkills);
+      setLoading(false);
+    }  else {
+        setEloPayload(null);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      //setError("Failed to fetch skills.");
+    } finally {
+      //setLoadingSkills(false);
+    }
+  };
+
+   const handleGenerateELO = async () => {
+    setLoading(true);
+    if (!board || !grade || !subject || !chapter || generatedCOs.length === 0) {
+      return;
+    }
+
+    try {
+      const Colist = EloPayload?.course_outcomes;
+      Colist.forEach(co => {
+        co['Attitudes'] = selectedAttitudes;
+      })
+      const payload = EloPayload || {};
+      const response = await axios.post(
+        `https://ai.excelsoftcorp.com/aiapps/AIToolKit/UnitPlanGen/generate-elos`,
+        payload
+      );
+      //setEloPayload(response.data);
+      const outcomes = response.data?.course_outcomes;
+      if (Array.isArray(outcomes)) {
+        outcomes.forEach(co => {
+          co['bloomsTaxonomy'] = selectedBlooms;
+          co['Attitudes'] = selectedAttitudes;
+        });
+      const allElos: string[] = outcomes.flatMap(co => co.elos ?? []);
+      const uniqueElos = Array.from(new Set(allElos)); 
+    setGeneratedOutcomes(uniqueElos);
+     if (onEloGenerated) {
+        onEloGenerated(response.data);
+      }
+      setLoading(false);
     console.log('Generated ELO:', outcomes);
+    }  else {
+        setEloPayload(null);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      //setError("Failed to fetch skills.");
+    } finally {
+      //setLoadingSkills(false);
+    }
   };
 
   return (
+     
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
+      {loading && <PageLoader text="Please wait..." />}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-teal-500"></div>
       
       <div className="flex items-center gap-3 mb-6">
@@ -162,36 +262,11 @@ const ExpectedLearningOutcome = () => {
               <h4 className="font-semibold text-gray-900">Skills</h4>
             </div>
             <Button
-              onClick={async () => {
-                setIsGeneratingSkills(true);
-                // Simulate AI generation delay
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Generate 10 AI-powered context-relevant skills
-                const contextSkills = [
-                  'Data Analysis and Interpretation',
-                  'Critical Thinking and Problem Solving',
-                  'Digital Communication and Collaboration',
-                  'Research and Information Literacy',
-                  'Creative Innovation and Design Thinking',
-                  'Scientific Method and Inquiry',
-                  'Mathematical Reasoning and Logic',
-                  'Presentation and Public Speaking',
-                  'Time Management and Organization',
-                  'Ethical Decision Making'
-                ];
-                setSelectedSkills(contextSkills);
-                setIsGeneratingSkills(false);
-              }}
+               onClick={handleGenerateSkills}
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2"
-              disabled={isGeneratingSkills}
             >
-              {isGeneratingSkills ? (
-                <Loader size="sm" className="h-4 w-4 mr-2" />
-              ) : (
-                <Bot className="h-4 w-4 mr-2" />
-              )}
-              {isGeneratingSkills ? 'Generating...' : 'Generate Skills'}
+              <Bot className="h-4 w-4 mr-2" />
+              Generate Skills
             </Button>
           </div>
           
@@ -224,7 +299,7 @@ const ExpectedLearningOutcome = () => {
                 <h5 className="text-sm font-medium text-blue-900 mb-3">AI Generated Skills:</h5>
                 <div className="flex flex-wrap gap-2">
                   {selectedSkills.map((skill, index) => (
-                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-semibold">
+                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-medium">
                       {skill}
                       <button
                         onClick={() => setSelectedSkills(prev => prev.filter(s => s !== skill))}
@@ -291,14 +366,10 @@ const ExpectedLearningOutcome = () => {
         <Button 
           onClick={handleGenerateELO}
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-          disabled={isGeneratingOutcomes || (selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0)}
+          disabled={selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0}
         >
-          {isGeneratingOutcomes ? (
-            <Loader size="sm" className="mr-2" />
-          ) : (
-            <Lightbulb className="mr-2" size={18} />
-          )}
-          {isGeneratingOutcomes ? 'Generating...' : 'Generate Learning Outcomes'}
+          <Lightbulb className="mr-2" size={18} />
+          Generate Learning Outcomes
         </Button>
         <p className="text-xs text-gray-500 mt-2">
           {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedAttitudes.length} Attitudes selected
