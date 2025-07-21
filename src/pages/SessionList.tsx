@@ -244,8 +244,8 @@ const SessionList = () => {
   };
 
   const handleEditSession = (session: any) => {
-    // Navigate to edit page
-    navigate(`/session/edit/${session.id}`);
+    // For now, navigate to the main lesson plan page (edit mode)
+    navigate('/lesson-plan-traditional');
   };
 
   const handleDeleteSession = (sessionId: number) => {
@@ -375,7 +375,7 @@ const SessionList = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleViewSession(session)}
-                    className="flex-1"
+                    className="flex-1 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     Preview
@@ -384,7 +384,7 @@ const SessionList = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEditSession(session)}
-                    className="flex-1"
+                    className="flex-1 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
                   >
                     <Edit className="h-4 w-4 mr-2" />
                     Edit

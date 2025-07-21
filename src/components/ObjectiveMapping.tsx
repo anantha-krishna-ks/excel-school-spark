@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Target, Brain, Users, Heart, Link, ArrowRight, Eye, Lightbulb } from 'lucide-react';
+import { Target, Brain, Users, Heart, Link, ArrowRight, Eye, Lightbulb, Edit } from 'lucide-react';
 
 interface ObjectiveMappingProps {
   coreObjectives?: string[];
@@ -206,9 +206,21 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
                 <div className="p-4 border-r border-gray-200">
                   <div className="space-y-2">
                     {mapping.learningOutcomes.map((elo, index) => (
-                      <div key={index} className="flex items-start gap-2">
+                      <div key={index} className="flex items-start gap-2 group">
                         <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-sm text-gray-700">{elo}</p>
+                        <div className="flex-1 flex items-start justify-between">
+                          <p className="text-sm text-gray-700 flex-1">{elo}</p>
+                          {viewMode === 'edit' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => console.log('Edit ELO:', elo)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
