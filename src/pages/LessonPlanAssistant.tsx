@@ -7,9 +7,12 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Edit, Eye, Trash2 } from 'lucide-react';
 import Header from '@/components/Header';
+import UnitPlanView from '@/components/UnitPlanView';
 
 const LessonPlanAssistant = () => {
   const navigate = useNavigate();
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [filters, setFilters] = useState({
     grade: "all",
     subject: "all",
@@ -65,6 +68,73 @@ const LessonPlanAssistant = () => {
   const handleCreateNew = () => {
     navigate("/lesson-plan");
   };
+
+  const handlePreviewLesson = (lesson: any) => {
+    setSelectedLesson(lesson);
+    setShowPreview(true);
+  };
+
+  const handleEditLesson = (lesson: any) => {
+    navigate('/lesson-plan-traditional');
+  };
+
+  // Mock unit plan data (same as in SessionList)
+  const unitPlanData = {
+    assessment: {
+      stem: "How can your understanding of microorganisms help explain the increase in food poisoning and plant diseases? What steps would you recommend to prevent further outbreaks?",
+      stimulus: "A local newspaper has reported an increase in cases of food poisoning and plant diseases in your community. The community health center is seeking student volunteers to investigate the causes and suggest solutions.",
+      questions: [
+        {
+          text: "Identify possible microorganisms responsible for food spoilage and plant diseases in the community. Explain their characteristics and how they spread.",
+          type: "Application"
+        },
+        {
+          text: "Analyze the role of hygiene and environmental conditions in the recent increase of microbial diseases. What practices may have contributed to the problem?",
+          type: "Analysis"
+        }
+      ]
+    },
+    assignments: [
+      {
+        title: "Microbe Hunters: Classification Challenge",
+        purpose: "To develop observation and classification skills by identifying and grouping microorganisms from images, prepared slides, and case studies."
+      }
+    ],
+    coreObjectives: [
+      {
+        text: "Students will identify major groups of microorganisms, understanding their characteristics and habitats.",
+        label: { value: "Knowledge; Classification skills; Scientific curiosity" }
+      }
+    ],
+    learningExperiences: [
+      {
+        phase: "Engage",
+        activities: ["Brainstorming session: 'Where have you seen microorganisms at work?'"]
+      }
+    ],
+    learningProgression: [
+      {
+        step: "Introduction to Microorganisms",
+        example: "Discussing why bread becomes moldy",
+        rationale: "Builds foundational understanding",
+        connection: "Prepares students to recognize presence of microbes"
+      }
+    ],
+    expectedLearningOutcomes: [
+      "Define microorganisms and explain why they are called microbes, with examples from daily life.",
+      "List and classify the major groups of microorganisms using observable features."
+    ]
+  };
+
+  if (showPreview && selectedLesson) {
+    return (
+      <UnitPlanView
+        unitPlan={unitPlanData}
+        onBack={() => setShowPreview(false)}
+        onEdit={() => handleEditLesson(selectedLesson)}
+      />
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-background">
@@ -183,10 +253,20 @@ const LessonPlanAssistant = () => {
                         </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-purple-50">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-purple-50"
+                            onClick={() => handleEditLesson(lesson)}
+                          >
                             <Edit className="h-4 w-4 text-purple-600" />
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-50">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-green-50"
+                            onClick={() => handlePreviewLesson(lesson)}
+                          >
                             <Eye className="h-4 w-4 text-green-600" />
                           </Button>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-50">
