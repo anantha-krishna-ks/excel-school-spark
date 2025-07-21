@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   ArrowLeft, 
   BookOpen, 
@@ -20,6 +22,8 @@ import {
   TrendingUp,
   Home,
   Edit3,
+  Check,
+  X,
   Calendar,
   GraduationCap,
   Image,
@@ -34,6 +38,10 @@ import Header from '@/components/Header';
 const LessonPlanOutput = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Edit state management
+  const [editingSections, setEditingSections] = useState<Record<string, boolean>>({});
+  const [editData, setEditData] = useState<Record<string, any>>({});
   
   // Get lesson data from navigation state or use defaults
   const lessonData = location.state?.lessonData || {
@@ -152,6 +160,34 @@ const LessonPlanOutput = () => {
     }
   ];
 
+  // Edit functions
+  const startEditing = (section: string, currentData?: any) => {
+    setEditingSections(prev => ({ ...prev, [section]: true }));
+    if (currentData) {
+      setEditData(prev => ({ ...prev, [section]: currentData }));
+    }
+  };
+
+  const saveEdit = (section: string) => {
+    setEditingSections(prev => ({ ...prev, [section]: false }));
+    console.log('Saved changes for section:', section, editData[section]);
+  };
+
+  const cancelEdit = (section: string) => {
+    setEditingSections(prev => ({ ...prev, [section]: false }));
+    setEditData(prev => ({ ...prev, [section]: undefined }));
+  };
+
+  const updateEditData = (section: string, field: string, value: any) => {
+    setEditData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value
+      }
+    }));
+  };
+
   return (
     <div className="w-full min-h-screen bg-background">
       <Header />
@@ -203,7 +239,7 @@ const LessonPlanOutput = () => {
                   variant="ghost" 
                   size="sm" 
                   className="text-muted-foreground hover:text-primary"
-                  onClick={() => console.log('Edit lesson plan details')}
+                  onClick={() => startEditing('lessonDetails', lessonData)}
                 >
                   <Edit3 className="h-4 w-4" />
                 </Button>
@@ -212,36 +248,81 @@ const LessonPlanOutput = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <BookOpen className="h-5 w-5 text-primary" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground">Lesson Title</p>
-                      <p className="font-semibold">{lessonData.lessonName}</p>
+                      {editingSections.lessonDetails ? (
+                        <Input
+                          value={editData.lessonDetails?.lessonName || lessonData.lessonName}
+                          onChange={(e) => updateEditData('lessonDetails', 'lessonName', e.target.value)}
+                          className="font-semibold mt-1"
+                        />
+                      ) : (
+                        <p className="font-semibold">{lessonData.lessonName}</p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <GraduationCap className="h-5 w-5 text-primary" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground">Grade</p>
-                      <p className="font-semibold">{lessonData.grade}th Grade</p>
+                      {editingSections.lessonDetails ? (
+                        <Input
+                          value={editData.lessonDetails?.grade || lessonData.grade}
+                          onChange={(e) => updateEditData('lessonDetails', 'grade', e.target.value)}
+                          className="font-semibold mt-1"
+                        />
+                      ) : (
+                        <p className="font-semibold">{lessonData.grade}th Grade</p>
+                      )}
                     </div>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-primary" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground">Duration</p>
-                      <p className="font-semibold">60 minutes</p>
+                      {editingSections.lessonDetails ? (
+                        <Input
+                          value={editData.lessonDetails?.duration || '60 minutes'}
+                          onChange={(e) => updateEditData('lessonDetails', 'duration', e.target.value)}
+                          className="font-semibold mt-1"
+                        />
+                      ) : (
+                        <p className="font-semibold">60 minutes</p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-primary" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground">Subject</p>
-                      <p className="font-semibold">{lessonData.subject}</p>
+                      {editingSections.lessonDetails ? (
+                        <Input
+                          value={editData.lessonDetails?.subject || lessonData.subject}
+                          onChange={(e) => updateEditData('lessonDetails', 'subject', e.target.value)}
+                          className="font-semibold mt-1"
+                        />
+                      ) : (
+                        <p className="font-semibold">{lessonData.subject}</p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
+              
+              {editingSections.lessonDetails && (
+                <div className="flex gap-2 mt-4 pt-4 border-t">
+                  <Button onClick={() => saveEdit('lessonDetails')} size="sm">
+                    <Check className="h-4 w-4 mr-2" />
+                    Save
+                  </Button>
+                  <Button onClick={() => cancelEdit('lessonDetails')} variant="outline" size="sm">
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                </div>
+              )}
             </CardHeader>
           </Card>
 
@@ -257,29 +338,52 @@ const LessonPlanOutput = () => {
                   variant="ghost" 
                   size="sm" 
                   className="text-muted-foreground hover:text-primary"
-                  onClick={() => console.log('Edit objectives')}
+                  onClick={() => startEditing('objectives')}
                 >
                   <Edit3 className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                <p>Students will understand the basic concept of climate change and its causes.</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                <p>Students will identify greenhouse gases and explain their role in global warming.</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                <p>Students will demonstrate understanding through hands-on experiments and discussions.</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-                <p>Students will analyze real-world examples of climate change impacts.</p>
-              </div>
+              {editingSections.objectives ? (
+                <div className="space-y-4">
+                  <Textarea
+                    placeholder="Enter learning objectives (one per line)"
+                    value={editData.objectives || "Students will understand the basic concept of climate change and its causes.\nStudents will identify greenhouse gases and explain their role in global warming.\nStudents will demonstrate understanding through hands-on experiments and discussions.\nStudents will analyze real-world examples of climate change impacts."}
+                    onChange={(e) => setEditData(prev => ({...prev, objectives: e.target.value}))}
+                    rows={6}
+                  />
+                  <div className="flex gap-2">
+                    <Button onClick={() => saveEdit('objectives')} size="sm">
+                      <Check className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                    <Button onClick={() => cancelEdit('objectives')} variant="outline" size="sm">
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                    <p>Students will understand the basic concept of climate change and its causes.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                    <p>Students will identify greenhouse gases and explain their role in global warming.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                    <p>Students will demonstrate understanding through hands-on experiments and discussions.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                    <p>Students will analyze real-world examples of climate change impacts.</p>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
