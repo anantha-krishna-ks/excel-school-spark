@@ -15,10 +15,13 @@ const ExpectedLearningOutcome = () => {
     'Analyse'
   ]);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [selectedCompetencies, setSelectedCompetencies] = useState<string[]>([]);
   const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
   const [customSkills, setCustomSkills] = useState('');
+  const [customCompetencies, setCustomCompetencies] = useState('');
   const [customAttitudes, setCustomAttitudes] = useState('');
   const [isGeneratingSkills, setIsGeneratingSkills] = useState(false);
+  const [isGeneratingCompetencies, setIsGeneratingCompetencies] = useState(false);
   const [isGeneratingOutcomes, setIsGeneratingOutcomes] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
@@ -33,6 +36,34 @@ const ExpectedLearningOutcome = () => {
   ];
 
   const skillsList: string[] = [];
+
+  const competenciesList = [
+    { name: 'Critical Thinking', description: 'Analyze and evaluate information logically' },
+    { name: 'Problem Solving', description: 'Apply knowledge to resolve real-life challenges' },
+    { name: 'Conceptual Understanding', description: 'Grasp and apply subject concepts meaningfully' },
+    { name: 'Numeracy Skills', description: 'Use mathematical reasoning and operations effectively' },
+    { name: 'Scientific Inquiry', description: 'Observe, hypothesize, and experiment systematically' },
+    { name: 'Reading Comprehension', description: 'Interpret and infer meaning from texts' },
+    { name: 'Effective Communication', description: 'Express ideas clearly in oral and written forms' },
+    { name: 'Self-Awareness', description: 'Understand one\'s emotions, strengths, and limitations' },
+    { name: 'Empathy', description: 'Recognize and respect others\' feelings and perspectives' },
+    { name: 'Collaboration', description: 'Work effectively in teams and contribute positively' },
+    { name: 'Adaptability', description: 'Adjust to new situations and challenges' },
+    { name: 'Responsibility', description: 'Take ownership of actions and decisions' },
+    { name: 'Ethical Reasoning', description: 'Make choices based on values and integrity' },
+    { name: 'Time Management', description: 'Plan and prioritize tasks efficiently' },
+    { name: 'Stress Management', description: 'Handle pressure and maintain emotional balance' },
+    { name: 'Digital Literacy', description: 'Use technology responsibly and effectively' },
+    { name: 'Financial Awareness', description: 'Understand basic money concepts and budgeting' },
+    { name: 'Health & Hygiene', description: 'Maintain personal and community well-being' },
+    { name: 'Creative Thinking', description: 'Generate original ideas and solutions' },
+    { name: 'Artistic Expression', description: 'Communicate through visual and performing arts' },
+    { name: 'Storytelling & Writing', description: 'Use imagination and structure to convey narratives' },
+    { name: 'Analytical Reasoning', description: 'Break down complex problems and synthesize solutions' },
+    { name: 'Decision Making', description: 'Choose appropriate actions based on evidence and context' },
+    { name: 'Leadership', description: 'Motivate and guide peers toward shared goals' },
+    { name: 'Initiative', description: 'Take proactive steps in learning and problem-solving' }
+  ];
 
   const attitudesList = [
     'Respect',
@@ -61,6 +92,14 @@ const ExpectedLearningOutcome = () => {
     }
   };
 
+  const handleCompetenciesChange = (competency: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCompetencies([...selectedCompetencies, competency]);
+    } else {
+      setSelectedCompetencies(selectedCompetencies.filter(c => c !== competency));
+    }
+  };
+
   const handleAttitudesChange = (attitude: string, checked: boolean) => {
     if (checked) {
       setSelectedAttitudes([...selectedAttitudes, attitude]);
@@ -80,6 +119,12 @@ const ExpectedLearningOutcome = () => {
     setCustomSkills(value);
     const parsedSkills = parseCustomInput(value);
     setSelectedSkills([...new Set([...selectedSkills.filter(skill => !parseCustomInput(customSkills).includes(skill)), ...parsedSkills])]);
+  };
+
+  const handleCustomCompetenciesChange = (value: string) => {
+    setCustomCompetencies(value);
+    const parsedCompetencies = parseCustomInput(value);
+    setSelectedCompetencies([...new Set([...selectedCompetencies.filter(competency => !parseCustomInput(customCompetencies).includes(competency)), ...parsedCompetencies])]);
   };
 
   const handleCustomAttitudesChange = (value: string) => {
@@ -221,7 +266,10 @@ const ExpectedLearningOutcome = () => {
             {/* AI Generated Skills Display */}
             {selectedSkills.length > 0 && (
               <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h5 className="text-sm font-medium text-blue-900 mb-3">AI Generated Skills:</h5>
+                <div className="flex items-center gap-2 mb-3">
+                  <Bot className="h-4 w-4 text-blue-600" />
+                  <h5 className="text-sm font-medium text-blue-900">AI Generated Skills:</h5>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {selectedSkills.map((skill, index) => (
                     <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-semibold">
@@ -246,6 +294,108 @@ const ExpectedLearningOutcome = () => {
                  placeholder="e.g., Research skills, Digital literacy, Time management"
                  value={customSkills}
                  onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                 className="w-full"
+               />
+             </div>
+          </div>
+        </Card>
+
+        {/* Competencies */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Brain className="text-green-600" size={20} />
+              <h4 className="font-semibold text-gray-900">Competencies</h4>
+            </div>
+            <Button
+              onClick={async () => {
+                setIsGeneratingCompetencies(true);
+                // Simulate AI generation delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate 10 AI-powered context-relevant competencies
+                const contextCompetencies = [
+                  'Critical Thinking: Analyze and evaluate information logically',
+                  'Problem Solving: Apply knowledge to resolve real-life challenges',
+                  'Conceptual Understanding: Grasp and apply subject concepts meaningfully',
+                  'Effective Communication: Express ideas clearly in oral and written forms',
+                  'Self-Awareness: Understand one\'s emotions, strengths, and limitations',
+                  'Collaboration: Work effectively in teams and contribute positively',
+                  'Adaptability: Adjust to new situations and challenges',
+                  'Creative Thinking: Generate original ideas and solutions',
+                  'Time Management: Plan and prioritize tasks efficiently',
+                  'Digital Literacy: Use technology responsibly and effectively'
+                ];
+                setSelectedCompetencies(contextCompetencies);
+                setIsGeneratingCompetencies(false);
+              }}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm px-4 py-2"
+              disabled={isGeneratingCompetencies}
+            >
+              {isGeneratingCompetencies ? (
+                <Loader size="sm" className="h-4 w-4 mr-2" />
+              ) : (
+                <Bot className="h-4 w-4 mr-2" />
+              )}
+              {isGeneratingCompetencies ? 'Generating...' : 'Generate Competencies'}
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {competenciesList.map((competency) => (
+                <div 
+                  key={competency.name}
+                  className="flex items-start gap-2 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                >
+                  <Checkbox
+                    id={`competency-${competency.name}`}
+                    checked={selectedCompetencies.includes(`${competency.name}: ${competency.description}`)}
+                    onCheckedChange={(checked) => handleCompetenciesChange(`${competency.name}: ${competency.description}`, !!checked)}
+                    className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 mt-1"
+                  />
+                  <label 
+                    htmlFor={`competency-${competency.name}`} 
+                    className="text-sm cursor-pointer hover:text-gray-900 flex-1"
+                  >
+                    <div className="font-medium text-gray-900">{competency.name}</div>
+                    <div className="text-gray-600 text-xs mt-1">{competency.description}</div>
+                  </label>
+                </div>
+              ))}
+            </div>
+
+            {/* AI Generated Competencies Display */}
+            {selectedCompetencies.length > 0 && (
+              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bot className="h-4 w-4 text-green-600" />
+                  <h5 className="text-sm font-medium text-green-900">AI Generated Competencies:</h5>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCompetencies.map((competency, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-green-100 text-green-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      {competency}
+                      <button
+                        onClick={() => setSelectedCompetencies(prev => prev.filter(c => c !== competency))}
+                        className="ml-1 text-green-600 hover:text-green-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+             <div className="border-t pt-4">
+               <label className="text-sm font-medium text-gray-700 mb-2 block">
+                 Add custom competencies (comma, space, or enter separated)
+               </label>
+               <Input
+                 placeholder="e.g., Leadership skills, Innovation thinking, Cultural awareness"
+                 value={customCompetencies}
+                 onChange={(e) => handleCustomCompetenciesChange(e.target.value)}
                  className="w-full"
                />
              </div>
@@ -301,7 +451,7 @@ const ExpectedLearningOutcome = () => {
           {isGeneratingOutcomes ? 'Generating...' : 'Generate Learning Outcomes'}
         </Button>
         <p className="text-xs text-gray-500 mt-2">
-          {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedAttitudes.length} Attitudes selected
+          {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedCompetencies.length} Competencies + {selectedAttitudes.length} Attitudes selected
         </p>
       </div>
 
