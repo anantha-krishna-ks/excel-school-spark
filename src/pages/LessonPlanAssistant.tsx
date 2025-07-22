@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Edit, Eye, Trash2 } from 'lucide-react';
 import Header from '@/components/Header';
-import UnitPlanView from '@/components/UnitPlanView';
+import LessonPlanPreview from '@/components/LessonPlanPreview';
 
 const LessonPlanAssistant = () => {
   const navigate = useNavigate();
@@ -128,7 +128,8 @@ const LessonPlanAssistant = () => {
 
   if (showPreview && selectedLesson) {
     return (
-      <UnitPlanView
+      <LessonPlanPreview
+        lessonPlan={selectedLesson}
         unitPlan={unitPlanData}
         onBack={() => setShowPreview(false)}
         onEdit={() => handleEditLesson(selectedLesson)}
