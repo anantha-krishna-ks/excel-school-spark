@@ -92,36 +92,30 @@ const MainStepper = ({
     },
     {
       number: 2,
-      title: 'Manage Objectives',
-      description: 'Select learning objectives',
-      icon: Target
-    },
-    {
-      number: 3,
       title: 'Expected Learning Outcomes',
       description: 'Define learning outcomes',
       icon: FileCheck
     },
     {
-      number: 4,
-      title: 'Objective Mapping',
+      number: 3,
+      title: 'Mapping',
       description: 'Connect objectives to outcomes',
       icon: Target
     },
     {
-      number: 5,
+      number: 4,
       title: 'Assessment',
       description: 'Create assessment items for ELOs',
       icon: FileBarChart
     },
     {
-      number: 6,
+      number: 5,
       title: 'Learning Experience',
       description: 'Design learning activities',
       icon: Lightbulb
     },
     {
-      number: 7,
+      number: 6,
       title: 'Review & Create',
       description: 'Finalize your lesson plan',
       icon: CheckCircle2
@@ -156,17 +150,15 @@ const MainStepper = ({
       case 1:
         return board && grade && subject;
       case 2:
-        return shortlistedObjectives.length > 0;
-      case 3:
         return false; // Add logic based on your ExpectedLearningOutcome component
-      case 4:
+      case 3:
         return false; // Add logic for mapping completion
-      case 5:
+      case 4:
         return false; // Add logic for assessment completion
-      case 6:
+      case 5:
         return false; // Add logic for learning experience completion
-      case 7:
-        return board && grade && subject && shortlistedObjectives.length > 0;
+      case 6:
+        return board && grade && subject;
       default:
         return false;
     }
@@ -175,7 +167,7 @@ const MainStepper = ({
   // Update completed steps based on section completion
   useEffect(() => {
     const newCompletedSteps: number[] = [];
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 6; i++) {
       if (isSectionCompleted(i)) {
         newCompletedSteps.push(i);
       }
@@ -303,38 +295,9 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 2: Manage Objectives */}
+        {/* Section 2: Expected Learning Outcomes */}
         <section 
           ref={(el) => { if (el) sectionRefs.current[1] = el; }}
-          className="relative bg-gradient-to-br from-purple-50/50 to-white py-16"
-        >
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent"></div>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center space-y-6 mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-purple-500/25">
-                <Target className="h-10 w-10 text-white drop-shadow-sm" />
-              </div>
-              <div className="space-y-2">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                  Manage Objectives
-                </h1>
-                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-                  Choose and customize learning objectives for your lesson
-                </p>
-              </div>
-            </div>
-            
-            <CoreObjectives 
-              onGenerateCO={onGenerateCO}
-              shortlistedObjectives={shortlistedObjectives}
-              setShortlistedObjectives={setShortlistedObjectives}
-            />
-          </div>
-        </section>
-
-        {/* Section 3: Expected Learning Outcomes */}
-        <section 
-          ref={(el) => { if (el) sectionRefs.current[2] = el; }}
           className="relative bg-gradient-to-br from-emerald-50/50 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
@@ -357,9 +320,9 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 4: Objective Mapping */}
+        {/* Section 3: Mapping */}
         <section 
-          ref={(el) => { if (el) sectionRefs.current[3] = el; }}
+          ref={(el) => { if (el) sectionRefs.current[2] = el; }}
           className="relative bg-gradient-to-br from-indigo-50/50 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-200 to-transparent"></div>
@@ -370,7 +333,7 @@ const MainStepper = ({
               </div>
               <div className="space-y-2">
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-800 bg-clip-text text-transparent">
-                  Objective Mapping
+                  Mapping
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-lg mx-auto">
                   Connect Core Objectives with Expected Learning Outcomes
@@ -385,9 +348,9 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 5: Assessment */}
+        {/* Section 4: Assessment */}
         <section 
-          ref={(el) => { if (el) sectionRefs.current[4] = el; }}
+          ref={(el) => { if (el) sectionRefs.current[3] = el; }}
           className="relative bg-gradient-to-br from-rose-50/50 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-200 to-transparent"></div>
@@ -410,9 +373,9 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 6: Learning Experience */}
+        {/* Section 5: Learning Experience */}
         <section 
-          ref={(el) => { if (el) sectionRefs.current[5] = el; }}
+          ref={(el) => { if (el) sectionRefs.current[4] = el; }}
           className="relative bg-gradient-to-br from-teal-50/50 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-200 to-transparent"></div>
@@ -435,9 +398,9 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 7: Review & Create - Enhanced */}
+        {/* Section 6: Review & Create - Enhanced */}
         <section 
-          ref={(el) => { if (el) sectionRefs.current[6] = el; }}
+          ref={(el) => { if (el) sectionRefs.current[5] = el; }}
           className="relative bg-gradient-to-br from-amber-50/50 via-yellow-50/30 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent"></div>
