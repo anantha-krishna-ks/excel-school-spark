@@ -3,44 +3,36 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Plus, Upload, BookOpen, Target, X } from 'lucide-react';
-import { Grade, Subject, Chapter } from '@/pages/api';
-
 interface SelectionPanelProps {
   board: string;
   setBoard: (value: string) => void;
   grade: string;
+  setGrade: (value: string) => void;
   subject: string;
-  onSubjectChange: (value: string) => void;
+  setSubject: (value: string) => void;
   chapters: string;
   setChapters: (value: string) => void;
-  
-  grades: Grade[];
-  subjects: Subject[];
-  chaptersData: Chapter[];
-  onGradeChange: (value: string) => void;
-  isLoadingGrades: boolean;
-  isLoadingSubjects: boolean;
-  isLoadingChapters: boolean;
-  onGenerateCOs: () => void;
 }
-
 const SelectionPanel = ({
   board,
   setBoard,
   grade,
+  setGrade,
   subject,
+  setSubject,
   chapters,
-  setChapters,
-  grades,
-  subjects,
-  chaptersData,
-  onGradeChange,
-  isLoadingGrades,
-  isLoadingSubjects,
-  isLoadingChapters,
-  onGenerateCOs,
-  onSubjectChange
+  setChapters
 }: SelectionPanelProps) => {
+  const chapterOptions = [
+    { value: 'chapter1', label: 'Chapter 1: Introduction to Science' },
+    { value: 'chapter2', label: 'Chapter 2: Matter and Materials' },
+    { value: 'chapter3', label: 'Chapter 3: Energy and Motion' },
+    { value: 'chapter4', label: 'Chapter 4: Living Things' },
+    { value: 'chapter5', label: 'Chapter 5: Earth and Space' },
+    { value: 'unit1', label: 'Unit 1: Numbers and Operations' },
+    { value: 'unit2', label: 'Unit 2: Geometry and Measurement' },
+    { value: 'unit3', label: 'Unit 3: Data and Probability' }
+  ];
 
   return <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-green-500"></div>
@@ -78,20 +70,16 @@ const SelectionPanel = ({
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             <label className="text-sm font-medium text-gray-700">Grade</label>
           </div>
-          <Select value={grade} onValueChange={onGradeChange}>
+          <Select value={grade} onValueChange={setGrade}>
             <SelectTrigger className="h-11 bg-gray-50 border-gray-300 hover:bg-white transition-colors">
-              <SelectValue placeholder="Select Grade" />
+              <SelectValue placeholder="Grade 2" />
             </SelectTrigger>
             <SelectContent>
-              {isLoadingGrades ? (
-                <SelectItem value="loading" disabled>Loading...</SelectItem>
-              ) : (
-                grades.map((g) => (
-                  <SelectItem key={g.ClassId} value={String(g.ClassId)}>
-                    {g.ClassName}
-                  </SelectItem>
-                ))
-              )}
+              <SelectItem value="1">Grade 1</SelectItem>
+              <SelectItem value="2">Grade 2</SelectItem>
+              <SelectItem value="3">Grade 3</SelectItem>
+              <SelectItem value="4">Grade 4</SelectItem>
+              <SelectItem value="5">Grade 5</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -101,20 +89,15 @@ const SelectionPanel = ({
             <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
             <label className="text-sm font-medium text-gray-700">Subject</label>
           </div>
-          <Select value={subject} onValueChange={onSubjectChange}>
+          <Select value={subject} onValueChange={setSubject}>
             <SelectTrigger className="h-11 bg-gray-50 border-gray-300 hover:bg-white transition-colors">
-              <SelectValue placeholder="Select Subject" />
+              <SelectValue placeholder="English" />
             </SelectTrigger>
             <SelectContent>
-              {isLoadingSubjects ? (
-                <SelectItem value="loading" disabled>Loading...</SelectItem>
-              ) : (
-                subjects.map((s) => (
-                  <SelectItem key={s.SubjectId} value={String(s.SubjectId)}>
-                    {s.SubjectName}
-                  </SelectItem>
-                ))
-              )}
+              <SelectItem value="math">Mathematics</SelectItem>
+              <SelectItem value="science">Science</SelectItem>
+              <SelectItem value="english">English</SelectItem>
+              <SelectItem value="social">Social Studies</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -132,15 +115,11 @@ const SelectionPanel = ({
               <SelectValue placeholder="Select chapter/unit..." />
             </SelectTrigger>
             <SelectContent>
-              {isLoadingChapters ? (
-                <SelectItem value="loading" disabled>Loading...</SelectItem>
-              ) : (
-                chaptersData.map((c) => (
-                  <SelectItem key={c.chapterId} value={c.chapterId}>
-                    {c.chapterName}
-                  </SelectItem>
-                ))
-              )}
+              {chapterOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -166,10 +145,7 @@ const SelectionPanel = ({
 
       {/* Generate COs Button */}
       <div className="text-center">
-        <Button 
-          onClick={onGenerateCOs}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-        >
+        <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200">
           <Target className="mr-2" size={18} />
           Generate COs
         </Button>

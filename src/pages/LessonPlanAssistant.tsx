@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,187 +7,138 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Edit, Eye, Trash2 } from 'lucide-react';
 import Header from '@/components/Header';
-import { getGrades, getSubjects, Grade, Subject,getUnitPlanDetails } from './api';
-import { PageLoader } from "@/components/ui/loader"
+import LessonPlanPreview from '@/components/LessonPlanPreview';
 
 const LessonPlanAssistant = () => {
   const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [filters, setFilters] = useState({
     grade: "all",
     subject: "all",
     lessonName: ""
   });
-  const [grades, setGrades] = useState<Grade[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [isLoadingGrades, setIsLoadingGrades] = useState(false);
-  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [lessonPlans,setlessonPlans]=useState([]);
 
-  useEffect(() => {
-    const fetchGrades = async () => {
-      setIsLoadingGrades(true);
-      setError(null);
-      try {
-        const gradesData = await getGrades('eps');
-        setGrades(gradesData);
-        GetUnitPlans(0,0,'');
-      } catch (error) {
-        setError('Failed to fetch grades');
-      } finally {
-        setIsLoadingGrades(false);
-      }
-    };
-    fetchGrades();
-  }, []);
-
-  const handleGradeChange = async (value: string) => {
-    setLoading(true);
-    setFilters({ ...filters, grade: value, subject: 'all' });
-    if (value === 'all') {
-      setSubjects([]);
-      return;
-    }
-    setIsLoadingSubjects(true);
-    setError(null);
-    try {
-      const subjectsData = await getSubjects('eps', parseInt(value, 10));
-      setSubjects(subjectsData);
-      GetUnitPlans(parseInt(value, 10),0,filters.lessonName);
-    } catch (error) {
-      setError('Failed to fetch subjects');
-    } finally {
-      setIsLoadingSubjects(false);
-    }
-  };
- 
-  const handleSubjectChange = async (value: string) => {
-    setLoading(true);
-    setFilters({...filters, subject: value})
-    setIsLoadingSubjects(true);
-    setError(null);
-    try {
-      GetUnitPlans(parseInt(filters.grade, 10),parseInt(value, 10),filters.lessonName);
-    } catch (error) {
-      setError('Failed to fetch subjects');
-    } finally {
-      setIsLoadingSubjects(false);
-    }
-  };
-
-    const searchUnitPlan = async (value: string) => {
-    setLoading(true);
-    setFilters({...filters, lessonName: value}) 
-    setIsLoadingSubjects(true);
-    setError(null);
-    try {     
-      GetUnitPlans(parseInt(filters.grade, 10),parseInt(filters.subject, 10),value);
-    } catch (error) {
-      setError('Failed to fetch subjects');
-    } finally {
-      setIsLoadingSubjects(false);
-    }
-  };
-
-  const GetUnitPlans=async (classid:any,subjectid:any,searchtext:string)=>{
-      try {
-          const payload = {
-          OrgCode: 'OR01',
-          AppCode: 'AP01',
-          CustCode: 'CU01',
-          UserCode: 'UO01',
-          ClassID: classid,
-          SubjectId: subjectid,
-          ChapterId: 0,
-          SearchText: searchtext,
-          UserType: 0,
-        }
-        const data = await getUnitPlanDetails(payload);
-        setlessonPlans(data['unit_plans']);
-        setLoading(false);
-        console.log(data.unit_plans);
-      } catch (err) {
-        console.error(err);
-      }
-  }
   // Sample lesson plans data - extended to match the reference image
-  // const lessonPlans = [
-  //   {
-  //     id: 1,
-  //     title: "Understanding Photosynthesis: The Food Factory of Plants",
-  //     grade: "VII",
-  //     subject: "General Science",
-  //     session: 1
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Understanding Photosynthesis: The Powerhouse of Plant Life",
-  //     grade: "6",
-  //     subject: "Science",
-  //     session: 2
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Understanding Heat: Transfer, Effects, and Applications",
-  //     grade: "9",
-  //     subject: "General Science",
-  //     session: 1
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Exploring the World of Plants: Structure, Functions, and Importance",
-  //     grade: "8",
-  //     subject: "General Science",
-  //     session: 3
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Exploring the Wonders of Light",
-  //     grade: "VII",
-  //     subject: "Science",
-  //     session: 1
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "Journey Through the Digestive System",
-  //     grade: "7",
-  //     subject: "Science",
-  //     session: 2
-  //   }
-  // ];
+  const lessonPlans = [
+    {
+      id: 1,
+      title: "Understanding Photosynthesis: The Food Factory of Plants",
+      grade: "VII",
+      subject: "General Science",
+      session: 1
+    },
+    {
+      id: 2,
+      title: "Understanding Photosynthesis: The Powerhouse of Plant Life",
+      grade: "6",
+      subject: "Science",
+      session: 2
+    },
+    {
+      id: 3,
+      title: "Understanding Heat: Transfer, Effects, and Applications",
+      grade: "9",
+      subject: "General Science",
+      session: 1
+    },
+    {
+      id: 4,
+      title: "Exploring the World of Plants: Structure, Functions, and Importance",
+      grade: "8",
+      subject: "General Science",
+      session: 3
+    },
+    {
+      id: 5,
+      title: "Exploring the Wonders of Light",
+      grade: "VII",
+      subject: "Science",
+      session: 1
+    },
+    {
+      id: 6,
+      title: "Journey Through the Digestive System",
+      grade: "7",
+      subject: "Science",
+      session: 2
+    }
+  ];
 
   const handleCreateNew = () => {
     navigate("/lesson-plan");
   };
 
-  const PreviewunitPlan = async (Lessondata:any) => {
-       
-        try {
-        console.log(Lessondata);
-          navigate('/unit-plan-preview', {
-            state: {
-              lessonData: {
-                grade:Lessondata.classname,
-                subject:Lessondata.subjectname,
-                lessonName: `${Lessondata.subjectname} Lesson Plan`,
-                gradeid:Lessondata.classid,
-                subjectid:Lessondata.subjectid,
-                PlanClassId: Lessondata.PlanClassId,
-                chapterid:Lessondata.chapterid,
-                unitplandata: Lessondata.unitplanjson
-              }
-            }
-          });
-        } catch (error) {
-          console.error('Error navigating to lesson plan preview:', error);
+  const handlePreviewLesson = (lesson: any) => {
+    setSelectedLesson(lesson);
+    setShowPreview(true);
+  };
+
+  const handleEditLesson = (lesson: any) => {
+    navigate('/lesson-plan-traditional');
+  };
+
+  // Mock unit plan data (same as in SessionList)
+  const unitPlanData = {
+    assessment: {
+      stem: "How can your understanding of microorganisms help explain the increase in food poisoning and plant diseases? What steps would you recommend to prevent further outbreaks?",
+      stimulus: "A local newspaper has reported an increase in cases of food poisoning and plant diseases in your community. The community health center is seeking student volunteers to investigate the causes and suggest solutions.",
+      questions: [
+        {
+          text: "Identify possible microorganisms responsible for food spoilage and plant diseases in the community. Explain their characteristics and how they spread.",
+          type: "Application"
+        },
+        {
+          text: "Analyze the role of hygiene and environmental conditions in the recent increase of microbial diseases. What practices may have contributed to the problem?",
+          type: "Analysis"
         }
-      };
+      ]
+    },
+    assignments: [
+      {
+        title: "Microbe Hunters: Classification Challenge",
+        purpose: "To develop observation and classification skills by identifying and grouping microorganisms from images, prepared slides, and case studies."
+      }
+    ],
+    coreObjectives: [
+      {
+        text: "Students will identify major groups of microorganisms, understanding their characteristics and habitats.",
+        label: { value: "Knowledge; Classification skills; Scientific curiosity" }
+      }
+    ],
+    learningExperiences: [
+      {
+        phase: "Engage",
+        activities: ["Brainstorming session: 'Where have you seen microorganisms at work?'"]
+      }
+    ],
+    learningProgression: [
+      {
+        step: "Introduction to Microorganisms",
+        example: "Discussing why bread becomes moldy",
+        rationale: "Builds foundational understanding",
+        connection: "Prepares students to recognize presence of microbes"
+      }
+    ],
+    expectedLearningOutcomes: [
+      "Define microorganisms and explain why they are called microbes, with examples from daily life.",
+      "List and classify the major groups of microorganisms using observable features."
+    ]
+  };
+
+  if (showPreview && selectedLesson) {
+    return (
+      <LessonPlanPreview
+        lessonPlan={selectedLesson}
+        unitPlan={unitPlanData}
+        onBack={() => setShowPreview(false)}
+        onEdit={() => handleEditLesson(selectedLesson)}
+      />
+    );
+  }
 
   return (
-      
     <div className="w-full min-h-screen bg-background">
-        {loading && <PageLoader text="Please wait..." />}
       <Header />
       
       <div className="container mx-auto px-4 py-8">
@@ -209,46 +160,50 @@ const LessonPlanAssistant = () => {
 
         <Card className="w-full border border-border/50 shadow-sm">
           <CardHeader className="pb-6">
-            {error && <p className="text-red-500 text-center col-span-3">Error: {error}</p>}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-foreground">Grade</label>
-                <Select value={filters.grade} onValueChange={handleGradeChange}>
+                <Select value={filters.grade} onValueChange={(value) => setFilters({...filters, grade: value})}>
                   <SelectTrigger className="h-11 bg-background">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All</SelectItem>
-                    {isLoadingGrades ? (
-                      <SelectItem value="loading" disabled>Loading...</SelectItem>
-                    ) : (
-                      grades.map((grade) => (
-                        <SelectItem key={grade.ClassId} value={String(grade.ClassId)}>
-                          {grade.ClassName}
-                        </SelectItem>
-                      ))
-                    )}
+                    <SelectItem value="1">Grade 1</SelectItem>
+                    <SelectItem value="2">Grade 2</SelectItem>
+                    <SelectItem value="3">Grade 3</SelectItem>
+                    <SelectItem value="4">Grade 4</SelectItem>
+                    <SelectItem value="5">Grade 5</SelectItem>
+                    <SelectItem value="6">Grade 6</SelectItem>
+                    <SelectItem value="7">Grade 7</SelectItem>
+                    <SelectItem value="VII">Grade VII</SelectItem>
+                    <SelectItem value="8">Grade 8</SelectItem>
+                    <SelectItem value="9">Grade 9</SelectItem>
+                    <SelectItem value="10">Grade 10</SelectItem>
+                    <SelectItem value="11">Grade 11</SelectItem>
+                    <SelectItem value="12">Grade 12</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-foreground">Subject</label>
-                <Select value={filters.subject} onValueChange={handleSubjectChange}>
+                <Select value={filters.subject} onValueChange={(value) => setFilters({...filters, subject: value})}>
                   <SelectTrigger className="h-11 bg-background">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All</SelectItem>
-                    {isLoadingSubjects ? (
-                      <SelectItem value="loading" disabled>Loading...</SelectItem>
-                    ) : (
-                      subjects.map((subject) => (
-                        <SelectItem key={subject.SubjectId} value={String(subject.SubjectId)}>
-                          {subject.SubjectName}
-                        </SelectItem>
-                      ))
-                    )}
+                    <SelectItem value="mathematics">Mathematics</SelectItem>
+                    <SelectItem value="science">Science</SelectItem>
+                    <SelectItem value="general-science">General Science</SelectItem>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="social-studies">Social Studies</SelectItem>
+                    <SelectItem value="history">History</SelectItem>
+                    <SelectItem value="geography">Geography</SelectItem>
+                    <SelectItem value="physics">Physics</SelectItem>
+                    <SelectItem value="chemistry">Chemistry</SelectItem>
+                    <SelectItem value="biology">Biology</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -260,7 +215,7 @@ const LessonPlanAssistant = () => {
                   <Input
                     placeholder="Enter lesson name"
                     value={filters.lessonName}
-                    onChange={(e) => searchUnitPlan(e.target.value)}
+                    onChange={(e) => setFilters({...filters, lessonName: e.target.value})}
                     className="pl-10 h-11 bg-background"
                   />
                 </div>
@@ -285,30 +240,34 @@ const LessonPlanAssistant = () => {
                   {lessonPlans.map((lesson, index) => (
                     <TableRow key={lesson.id} className="border-b border-border/50 hover:bg-muted/20">
                       <TableCell className="font-medium text-muted-foreground">{index + 1}</TableCell>
-                      <TableCell className="font-medium text-foreground">{lesson.unitplantitle}</TableCell>
-                      <TableCell className="text-muted-foreground">{lesson.classname}</TableCell>
-                      <TableCell className="text-muted-foreground">{lesson.subjectname}</TableCell>
+                      <TableCell className="font-medium text-foreground">{lesson.title}</TableCell>
+                      <TableCell className="text-muted-foreground">{lesson.grade}</TableCell>
+                      <TableCell className="text-muted-foreground">{lesson.subject}</TableCell>
                        <TableCell>
                           <Button 
                             variant="ghost" 
                             className="p-2 h-auto text-muted-foreground hover:text-primary hover:bg-muted/50 font-normal text-sm transition-colors"
-                            onClick={() => navigate(`/session/${lesson.unitplanid}/${lesson.classid}/${lesson.subjectid}`,{
-                              state: {
-                                selectedGrade: lesson.classname,
-                                selectedsubject: lesson.subjectname,
-                                Selectedunittitle: lesson.unitplantitle,    
-                              }
-                            })}
+                            onClick={() => navigate(`/session/${lesson.id}`)}
                           >
-                            Session ({lesson.sessioncount})
+                            Session ({lesson.session})
                           </Button>
                         </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-purple-50">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-purple-50"
+                            onClick={() => handleEditLesson(lesson)}
+                          >
                             <Edit className="h-4 w-4 text-purple-600" />
                           </Button>
-                          <Button onClick={()=>PreviewunitPlan(lesson)} variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-50">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-green-50"
+                            onClick={() => handlePreviewLesson(lesson)}
+                          >
                             <Eye className="h-4 w-4 text-green-600" />
                           </Button>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-50">

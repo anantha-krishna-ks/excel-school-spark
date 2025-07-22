@@ -2,18 +2,20 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import MainStepper from '@/components/MainStepper';
-import { CourseOutcome } from './api';
 
 const Index = () => {
-  const [board, setBoard] = useState('cbse');
+  const [board, setBoard] = useState('');
   const [grade, setGrade] = useState('');
   const [subject, setSubject] = useState('');
   const [chapters, setChapters] = useState<string>('');
-  const [generatedCOs, setGeneratedCOs] = useState<CourseOutcome[]>([]);
+  const [generatedCOs, setGeneratedCOs] = useState<string[]>([]);
 
-  const handleGenerateCO = (objectives: any[]) => {
-    setGeneratedCOs(objectives);
-    console.log('Generated Course Objectives:', objectives);
+  const handleGenerateCO = (objectives: string[]) => {
+    // Simulate generating course objectives based on selected core objectives
+    const cos = objectives.map(obj => `Learning Objective: Students will ${obj.toLowerCase()} through engaging activities and real-world applications`);
+    setGeneratedCOs(cos);
+    
+    console.log('Generated Course Objectives:', cos);
   };
 
   return (
@@ -29,7 +31,6 @@ const Index = () => {
         chapters={chapters}
         setChapters={setChapters}
         onGenerateCO={handleGenerateCO}
-        generatedCOs={generatedCOs}
       />
     </div>
   );

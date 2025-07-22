@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,40 +5,32 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Lightbulb, Bot, CheckCircle, Brain, Heart, Target, Plus, X } from 'lucide-react';
-import axios from 'axios';
-import { set } from 'date-fns';
-import { PageLoader } from "@/components/ui/loader"
+import { Loader } from '@/components/ui/loader';
 
 
-type ExpectedLearningOutcomeProps = {
-  board: string;
-  grade: string;
-  subject: string;
-  chapter: string;
-  generatedCOs: any[];
-  onEloGenerated?: (data: any) => void;
-};
-const ExpectedLearningOutcome = ({
-  board,
-  grade,
-  subject,
-  chapter,
-  generatedCOs,
-  onEloGenerated
-}: ExpectedLearningOutcomeProps) => {
+const ExpectedLearningOutcome = () => {
   const [selectedBlooms, setSelectedBlooms] = useState<string[]>([
-    'Apply'
+    'Apply',
+    'Analyse'
   ]);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [selectedCompetencies, setSelectedCompetencies] = useState<string[]>([]);
   const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
   const [customSkills, setCustomSkills] = useState('');
+  const [customCompetencies, setCustomCompetencies] = useState('');
   const [customAttitudes, setCustomAttitudes] = useState('');
+  const [aiGeneratedSkills, setAiGeneratedSkills] = useState<string[]>([]);
+  const [aiGeneratedCompetencies, setAiGeneratedCompetencies] = useState<string[]>([]);
+  const [customSkillsList, setCustomSkillsList] = useState<string[]>([]);
+  const [customCompetenciesList, setCustomCompetenciesList] = useState<string[]>([]);
+  const [isGeneratingSkills, setIsGeneratingSkills] = useState(false);
+  const [isGeneratingCompetencies, setIsGeneratingCompetencies] = useState(false);
+  const [isGeneratingOutcomes, setIsGeneratingOutcomes] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'recommended' | 'aiAssist'>('recommended');
   const [customPrompt, setCustomPrompt] = useState('');
   const [generatedOutcomes, setGeneratedOutcomes] = useState<string[]>([]);
-  const [EloPayload, setEloPayload] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+
   const bloomsLevels = [
     { id: 'apply', label: 'Apply', icon: '🔧', description: 'Use knowledge in new situations' },
     { id: 'analyse', label: 'Analyse', icon: '🔍', description: 'Break down information into parts' },
@@ -76,6 +67,14 @@ const ExpectedLearningOutcome = ({
     }
   };
 
+  const handleCompetenciesChange = (competency: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCompetencies([...selectedCompetencies, competency]);
+    } else {
+      setSelectedCompetencies(selectedCompetencies.filter(c => c !== competency));
+    }
+  };
+
   const handleAttitudesChange = (attitude: string, checked: boolean) => {
     if (checked) {
       setSelectedAttitudes([...selectedAttitudes, attitude]);
@@ -94,7 +93,17 @@ const ExpectedLearningOutcome = ({
   const handleCustomSkillsChange = (value: string) => {
     setCustomSkills(value);
     const parsedSkills = parseCustomInput(value);
-    setSelectedSkills([...new Set([...selectedSkills.filter(skill => !parseCustomInput(customSkills).includes(skill)), ...parsedSkills])]);
+    setCustomSkillsList(parsedSkills);
+    // Update selected skills with both AI and custom
+    setSelectedSkills([...aiGeneratedSkills, ...parsedSkills]);
+  };
+
+  const handleCustomCompetenciesChange = (value: string) => {
+    setCustomCompetencies(value);
+    const parsedCompetencies = parseCustomInput(value);
+    setCustomCompetenciesList(parsedCompetencies);
+    // Update selected competencies with both AI and custom
+    setSelectedCompetencies([...aiGeneratedCompetencies, ...parsedCompetencies]);
   };
 
   const handleCustomAttitudesChange = (value: string) => {
@@ -114,108 +123,23 @@ const ExpectedLearningOutcome = ({
     alert(`Verification complete: Your learning outcomes are well-structured and ready to use!`);
   };
 
-  // const handleGenerateELO = () => {
-  //   const outcomes = activeTab === 'recommended' && customPrompt.trim() 
-  //     ? [customPrompt.trim()]
-  //     : selectedBlooms.map(bloom => `Students will be able to ${bloom.toLowerCase()} concepts effectively`);
+  const handleGenerateELO = async () => {
+    setIsGeneratingOutcomes(true);
     
-  //   setGeneratedOutcomes(outcomes);
-  //   console.log('Generated ELO:', outcomes);
-  // };
-
-  const handleGenerateSkills = async () => {
-    setLoading(true);
-    if (!board || !grade || !subject || !chapter || generatedCOs.length === 0) {
-      //setError("Missing required fields or course outcomes.");
-      return;
-    }
-
-    //setLoadingSkills(true);
-    //setError(null);
-
-    try {
-      const payload = {
-        board,
-        grade,
-        subject,
-        chapter,
-        total_outcomes: generatedCOs.length,
-        course_outcomes: generatedCOs,
-      };
-
-      const response = await axios.post(
-        `https://ai.excelsoftcorp.com/aiapps/AIToolKit/UnitPlanGen/generate-skills-per-co`,
-        payload
-      );
-      setEloPayload(response.data);   
-      const outcomes = response.data?.course_outcomes;
-      if (Array.isArray(outcomes)) {
-      
-      const allSkills: string[] = outcomes.flatMap(co => co.skills ?? []);
-      const uniqueSkills = Array.from(new Set(allSkills)); // remove duplicates
-      setSelectedSkills(uniqueSkills);
-      setLoading(false);
-    }  else {
-        setEloPayload(null);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      //setError("Failed to fetch skills.");
-    } finally {
-      //setLoadingSkills(false);
-    }
-  };
-
-   const handleGenerateELO = async () => {
-    setLoading(true);
-    if (!board || !grade || !subject || !chapter || generatedCOs.length === 0) {
-      return;
-    }
-
-    try {
-      const Colist = EloPayload?.course_outcomes;
-      Colist.forEach(co => {
-        co['Attitudes'] = selectedAttitudes;
-      })
-      const payload = EloPayload || {};
-      const response = await axios.post(
-        `https://ai.excelsoftcorp.com/aiapps/AIToolKit/UnitPlanGen/generate-elos`,
-        payload
-      );
-      //setEloPayload(response.data);
-      const outcomes = response.data?.course_outcomes;
-      if (Array.isArray(outcomes)) {
-        outcomes.forEach(co => {
-          co['bloomsTaxonomy'] = selectedBlooms;
-          co['Attitudes'] = selectedAttitudes;
-        });
-      const allElos: string[] = outcomes.flatMap(co => co.elos ?? []);
-      const uniqueElos = Array.from(new Set(allElos)); 
-    setGeneratedOutcomes(uniqueElos);
-     if (onEloGenerated) {
-        onEloGenerated(response.data);
-      }
-      setLoading(false);
+    // Simulate AI generation delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const outcomes = activeTab === 'recommended' && customPrompt.trim() 
+      ? [customPrompt.trim()]
+      : selectedBlooms.map(bloom => `Students will be able to ${bloom.toLowerCase()} concepts effectively`);
+    
+    setGeneratedOutcomes(outcomes);
+    setIsGeneratingOutcomes(false);
     console.log('Generated ELO:', outcomes);
-    }  else {
-        setEloPayload(null);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      //setError("Failed to fetch skills.");
-    } finally {
-      //setLoadingSkills(false);
-    }
   };
 
   return (
-     
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
-      {loading && <PageLoader text="Please wait..." />}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-teal-500"></div>
       
       <div className="flex items-center gap-3 mb-6">
@@ -228,8 +152,6 @@ const ExpectedLearningOutcome = ({
         </div>
       </div>
 
-
-      {/* Direct content without tabs */}
       <div className="mb-6">
         <div className="space-y-6">
         {/* Blooms Taxonomy */}
@@ -262,11 +184,38 @@ const ExpectedLearningOutcome = ({
               <h4 className="font-semibold text-gray-900">Skills</h4>
             </div>
             <Button
-               onClick={handleGenerateSkills}
+              onClick={async () => {
+                setIsGeneratingSkills(true);
+                // Simulate AI generation delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate 10 AI-powered context-relevant skills
+                const contextSkills = [
+                  'Data Analysis and Interpretation',
+                  'Critical Thinking and Problem Solving',
+                  'Digital Communication and Collaboration',
+                  'Research and Information Literacy',
+                  'Creative Innovation and Design Thinking',
+                  'Scientific Method and Inquiry',
+                  'Mathematical Reasoning and Logic',
+                  'Presentation and Public Speaking',
+                  'Time Management and Organization',
+                  'Ethical Decision Making'
+                ];
+                setAiGeneratedSkills(contextSkills);
+                // Combine AI skills with existing custom skills
+                setSelectedSkills([...contextSkills, ...customSkillsList]);
+                setIsGeneratingSkills(false);
+              }}
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm px-4 py-2"
+              disabled={isGeneratingSkills}
             >
-              <Bot className="h-4 w-4 mr-2" />
-              Generate Skills
+              {isGeneratingSkills ? (
+                <Loader size="sm" className="h-4 w-4 mr-2" />
+              ) : (
+                <Bot className="h-4 w-4 mr-2" />
+              )}
+              {isGeneratingSkills ? 'Generating...' : 'Generate Skills'}
             </Button>
           </div>
           
@@ -294,16 +243,53 @@ const ExpectedLearningOutcome = ({
             </div>
 
             {/* AI Generated Skills Display */}
-            {selectedSkills.length > 0 && (
+            {aiGeneratedSkills.length > 0 && (
               <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h5 className="text-sm font-medium text-blue-900 mb-3">AI Generated Skills:</h5>
+                <div className="flex items-center gap-2 mb-3">
+                  <Bot className="h-4 w-4 text-blue-600" />
+                  <h5 className="text-sm font-medium text-blue-900">AI Generated Skills:</h5>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {selectedSkills.map((skill, index) => (
-                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-medium">
+                  {aiGeneratedSkills.map((skill, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      <Bot className="h-3 w-3 mr-1" />
                       {skill}
                       <button
-                        onClick={() => setSelectedSkills(prev => prev.filter(s => s !== skill))}
+                        onClick={() => {
+                          const newAiSkills = aiGeneratedSkills.filter(s => s !== skill);
+                          setAiGeneratedSkills(newAiSkills);
+                          setSelectedSkills([...newAiSkills, ...customSkillsList]);
+                        }}
                         className="ml-1 text-blue-600 hover:text-blue-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Custom Skills Display */}
+            {customSkillsList.length > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Plus className="h-4 w-4 text-gray-600" />
+                  <h5 className="text-sm font-medium text-gray-900">Custom Skills:</h5>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {customSkillsList.map((skill, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      {skill}
+                      <button
+                        onClick={() => {
+                          const newCustomSkills = customSkillsList.filter(s => s !== skill);
+                          setCustomSkillsList(newCustomSkills);
+                          setSelectedSkills([...aiGeneratedSkills, ...newCustomSkills]);
+                          // Update the input field
+                          setCustomSkills(newCustomSkills.join(', '));
+                        }}
+                        className="ml-1 text-gray-600 hover:text-gray-800"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -321,6 +307,121 @@ const ExpectedLearningOutcome = ({
                  placeholder="e.g., Research skills, Digital literacy, Time management"
                  value={customSkills}
                  onChange={(e) => handleCustomSkillsChange(e.target.value)}
+                 className="w-full"
+               />
+             </div>
+          </div>
+        </Card>
+
+        {/* Competencies - Updated to remove checkboxes */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Brain className="text-green-600" size={20} />
+              <h4 className="font-semibold text-gray-900">Competencies</h4>
+            </div>
+            <Button
+              onClick={async () => {
+                setIsGeneratingCompetencies(true);
+                // Simulate AI generation delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate 10 AI-powered context-relevant competencies
+                const contextCompetencies = [
+                  'Critical Thinking: Analyze and evaluate information logically',
+                  'Problem Solving: Apply knowledge to resolve real-life challenges',
+                  'Conceptual Understanding: Grasp and apply subject concepts meaningfully',
+                  'Effective Communication: Express ideas clearly in oral and written forms',
+                  'Self-Awareness: Understand one\'s emotions, strengths, and limitations',
+                  'Collaboration: Work effectively in teams and contribute positively',
+                  'Adaptability: Adjust to new situations and challenges',
+                  'Creative Thinking: Generate original ideas and solutions',
+                  'Time Management: Plan and prioritize tasks efficiently',
+                  'Digital Literacy: Use technology responsibly and effectively'
+                ];
+                setAiGeneratedCompetencies(contextCompetencies);
+                // Combine AI competencies with existing custom competencies
+                setSelectedCompetencies([...contextCompetencies, ...customCompetenciesList]);
+                setIsGeneratingCompetencies(false);
+              }}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm px-4 py-2"
+              disabled={isGeneratingCompetencies}
+            >
+              {isGeneratingCompetencies ? (
+                <Loader size="sm" className="h-4 w-4 mr-2" />
+              ) : (
+                <Bot className="h-4 w-4 mr-2" />
+              )}
+              {isGeneratingCompetencies ? 'Generating...' : 'Generate Competencies'}
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            {/* AI Generated Competencies Display */}
+            {aiGeneratedCompetencies.length > 0 && (
+              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bot className="h-4 w-4 text-green-600" />
+                  <h5 className="text-sm font-medium text-green-900">AI Generated Competencies:</h5>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {aiGeneratedCompetencies.map((competency, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-green-100 text-green-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      <Bot className="h-3 w-3 mr-1" />
+                      {competency}
+                      <button
+                        onClick={() => {
+                          const newAiCompetencies = aiGeneratedCompetencies.filter(c => c !== competency);
+                          setAiGeneratedCompetencies(newAiCompetencies);
+                          setSelectedCompetencies([...newAiCompetencies, ...customCompetenciesList]);
+                        }}
+                        className="ml-1 text-green-600 hover:text-green-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Custom Competencies Display */}
+            {customCompetenciesList.length > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Plus className="h-4 w-4 text-gray-600" />
+                  <h5 className="text-sm font-medium text-gray-900">Custom Competencies:</h5>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {customCompetenciesList.map((competency, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-gray-100 text-gray-800 px-3 py-2 rounded-md text-sm font-semibold">
+                      {competency}
+                      <button
+                        onClick={() => {
+                          const newCustomCompetencies = customCompetenciesList.filter(c => c !== competency);
+                          setCustomCompetenciesList(newCustomCompetencies);
+                          setSelectedCompetencies([...aiGeneratedCompetencies, ...newCustomCompetencies]);
+                          // Update the input field
+                          setCustomCompetencies(newCustomCompetencies.join(', '));
+                        }}
+                        className="ml-1 text-gray-600 hover:text-gray-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+             <div className="border-t pt-4">
+               <label className="text-sm font-medium text-gray-700 mb-2 block">
+                 Add custom competencies (comma, space, or enter separated)
+               </label>
+               <Input
+                 placeholder="e.g., Leadership skills, Innovation thinking, Cultural awareness"
+                 value={customCompetencies}
+                 onChange={(e) => handleCustomCompetenciesChange(e.target.value)}
                  className="w-full"
                />
              </div>
@@ -366,13 +467,17 @@ const ExpectedLearningOutcome = ({
         <Button 
           onClick={handleGenerateELO}
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-          disabled={selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0}
+          disabled={isGeneratingOutcomes || (selectedBlooms.length === 0 && selectedSkills.length === 0 && selectedAttitudes.length === 0)}
         >
-          <Lightbulb className="mr-2" size={18} />
-          Generate Learning Outcomes
+          {isGeneratingOutcomes ? (
+            <Loader size="sm" className="mr-2" />
+          ) : (
+            <Lightbulb className="mr-2" size={18} />
+          )}
+          {isGeneratingOutcomes ? 'Generating...' : 'Generate Learning Outcomes'}
         </Button>
         <p className="text-xs text-gray-500 mt-2">
-          {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedAttitudes.length} Attitudes selected
+          {selectedBlooms.length} Blooms + {selectedSkills.length} Skills + {selectedCompetencies.length} Competencies + {selectedAttitudes.length} Attitudes selected
         </p>
       </div>
 
