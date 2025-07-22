@@ -80,31 +80,41 @@ const LessonPlanPreview: React.FC<LessonPlanPreviewProps> = ({
 
             {/* Basic Information */}
             <div className="p-8 bg-muted/30">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="space-y-4">
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Class & Section</span>
-                    <span className="text-lg font-semibold text-foreground">{lessonPlan.grade} A & B</span>
+                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Board/Standard</span>
+                    <span className="text-lg font-semibold text-foreground">CBSE</span>
                   </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Grade</span>
+                    <span className="text-lg font-semibold text-foreground">{lessonPlan.grade}</span>
+                  </div>
+                </div>
+                <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Subject</span>
                     <span className="text-lg font-semibold text-foreground">{lessonPlan.subject}</span>
                   </div>
-                </div>
-                <div className="space-y-4">
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Topic</span>
+                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Chapter/Unit</span>
                     <span className="text-lg font-semibold text-foreground">{lessonPlan.title}</span>
                   </div>
+                </div>
+                <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Teacher's Name</span>
                     <span className="text-lg font-semibold text-foreground">Dr. Sriman S Kamath</span>
                   </div>
-                </div>
-                <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Planned Date</span>
                     <span className="text-lg font-semibold text-foreground">28/05/2025</span>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Class & Section</span>
+                    <span className="text-lg font-semibold text-foreground">{lessonPlan.grade} A & B</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Execution Period</span>
@@ -140,6 +150,35 @@ const LessonPlanPreview: React.FC<LessonPlanPreviewProps> = ({
               </div>
             </div>
 
+            {/* List of COs */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">List of COs</h3>
+                <p className="text-muted-foreground text-sm">Curriculum Objectives aligned with the lesson</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium text-primary">CO 1:</span>
+                    <p className="text-sm text-foreground">Understand the basic structure and bonding in organic compounds</p>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium text-primary">CO 2:</span>
+                    <p className="text-sm text-foreground">Classify organic compounds based on functional groups</p>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium text-primary">CO 3:</span>
+                    <p className="text-sm text-foreground">Analyze isomerism in organic compounds</p>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium text-primary">CO 4:</span>
+                    <p className="text-sm text-foreground">Apply knowledge to real-world organic chemistry problems</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Expected Learning Outcomes */}
             <div className="p-8">
               <div className="mb-6">
@@ -157,6 +196,262 @@ const LessonPlanPreview: React.FC<LessonPlanPreviewProps> = ({
                     </li>
                   ))}
                 </ul>
+              </div>
+            </div>
+
+            {/* Bloom's Taxonomy - Higher Order Thinking Skills */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Bloom's Taxonomy - Higher Order Thinking Skills</h3>
+                <p className="text-muted-foreground text-sm">Focus on Analysis, Synthesis, and Evaluation levels</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="space-y-4">
+                  <div className="border border-border rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="font-semibold text-green-700">Analyze</span>
+                    </div>
+                    <p className="text-sm text-foreground">Break down organic compounds into their structural components and identify functional groups</p>
+                  </div>
+                  <div className="border border-border rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="font-semibold text-blue-700">Evaluate</span>
+                    </div>
+                    <p className="text-sm text-foreground">Assess the stability and reactivity of different organic compounds based on their structure</p>
+                  </div>
+                  <div className="border border-border rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="font-semibold text-purple-700">Create</span>
+                    </div>
+                    <p className="text-sm text-foreground">Design synthesis pathways for organic compounds using knowledge of reactions and mechanisms</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Skills */}
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Skills</h3>
+                <p className="text-muted-foreground text-sm">21st Century Skills developed through this lesson</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold text-primary mb-2">Critical Thinking</h4>
+                    <p className="text-xs text-muted-foreground">Analyzing molecular structures and predicting properties</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold text-primary mb-2">Problem Solving</h4>
+                    <p className="text-xs text-muted-foreground">Identifying unknown compounds using structural clues</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold text-primary mb-2">Scientific Communication</h4>
+                    <p className="text-xs text-muted-foreground">Explaining concepts using proper chemical terminology</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold text-primary mb-2">Digital Literacy</h4>
+                    <p className="text-xs text-muted-foreground">Using molecular modeling software and databases</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold text-primary mb-2">Collaboration</h4>
+                    <p className="text-xs text-muted-foreground">Working in teams on laboratory experiments</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <h4 className="font-semibold text-primary mb-2">Data Analysis</h4>
+                    <p className="text-xs text-muted-foreground">Interpreting spectroscopic data for structure determination</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Competencies */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Competencies</h3>
+                <p className="text-muted-foreground text-sm">Key competencies developed in this lesson</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-primary font-bold text-xs">1</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Scientific Inquiry</h4>
+                      <p className="text-sm text-muted-foreground">Ability to formulate hypotheses and design experiments to test organic chemistry concepts</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-primary font-bold text-xs">2</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Mathematical Reasoning</h4>
+                      <p className="text-sm text-muted-foreground">Applying mathematical concepts to understand molecular geometry and reaction kinetics</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-primary font-bold text-xs">3</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Environmental Awareness</h4>
+                      <p className="text-sm text-muted-foreground">Understanding the environmental impact of organic compounds and sustainable chemistry practices</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Attitudes */}
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Attitudes</h3>
+                <p className="text-muted-foreground text-sm">Values and attitudes fostered through learning</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="font-medium text-foreground">Curiosity</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-4">Developing inquisitive nature about molecular structures and their properties</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="font-medium text-foreground">Perseverance</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-4">Persistence in solving complex organic chemistry problems</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span className="font-medium text-foreground">Precision</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-4">Attention to detail in laboratory work and structural analysis</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="font-medium text-foreground">Ethical Responsibility</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-4">Understanding responsible use of chemical knowledge and environmental stewardship</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Generated Learning Outcomes */}
+            <div className="p-8 bg-muted/20">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Generated Learning Outcomes</h3>
+                <p className="text-muted-foreground text-sm">AI-generated specific learning outcomes for this lesson</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="space-y-4">
+                  <div className="border-l-4 border-primary pl-4">
+                    <h4 className="font-semibold text-primary mb-1">Knowledge Outcomes</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary">•</span>
+                        <span>Define and distinguish between different types of organic compounds</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary">•</span>
+                        <span>Explain the concept of covalent bonding in carbon compounds</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary">•</span>
+                        <span>Identify functional groups in organic molecules</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="border-l-4 border-green-500 pl-4">
+                    <h4 className="font-semibold text-green-700 mb-1">Application Outcomes</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">•</span>
+                        <span>Predict properties of organic compounds based on their structure</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">•</span>
+                        <span>Draw structural formulas for given organic compounds</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-500">•</span>
+                        <span>Relate molecular structure to real-world applications</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Objective Mapping */}
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Objective Mapping</h3>
+                <p className="text-muted-foreground text-sm">Alignment between curriculum objectives, learning outcomes, and assessment</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-6 mb-8">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-3 font-semibold text-foreground">Curriculum Objective</th>
+                        <th className="text-left p-3 font-semibold text-foreground">Learning Outcome</th>
+                        <th className="text-left p-3 font-semibold text-foreground">Assessment Method</th>
+                        <th className="text-left p-3 font-semibold text-foreground">Bloom's Level</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-border">
+                        <td className="p-3 text-muted-foreground">CO1: Basic structure understanding</td>
+                        <td className="p-3 text-foreground">Identify functional groups</td>
+                        <td className="p-3 text-muted-foreground">Formative Quiz</td>
+                        <td className="p-3">
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Understand</span>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-border">
+                        <td className="p-3 text-muted-foreground">CO2: Classification of compounds</td>
+                        <td className="p-3 text-foreground">Categorize organic molecules</td>
+                        <td className="p-3 text-muted-foreground">Laboratory Activity</td>
+                        <td className="p-3">
+                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Apply</span>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-border">
+                        <td className="p-3 text-muted-foreground">CO3: Isomerism analysis</td>
+                        <td className="p-3 text-foreground">Analyze structural differences</td>
+                        <td className="p-3 text-muted-foreground">Problem Solving</td>
+                        <td className="p-3">
+                          <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Analyze</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 text-muted-foreground">CO4: Real-world application</td>
+                        <td className="p-3 text-foreground">Connect to daily life</td>
+                        <td className="p-3 text-muted-foreground">Project Work</td>
+                        <td className="p-3">
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">Evaluate</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
