@@ -8,16 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { X, Brain } from 'lucide-react';
 
 const LearningExperience = () => {
-  const [selectedApproaches, setSelectedApproaches] = useState<string[]>([
-    'Constructivism',
-    'Collaborative', 
-    'Reflective',
-    'Integrity',
-    'Inquiry',
-    'Contextual',
-    'Inclusive',
-    'Art Integrated'
-  ]);
+  const [selectedApproaches, setSelectedApproaches] = useState<string[]>([]);
   
   const [customSkills, setCustomSkills] = useState<string>('');
   const [selectedIntelligenceTypes, setSelectedIntelligenceTypes] = useState<string[]>([]);
@@ -98,7 +89,19 @@ const LearningExperience = () => {
         <p className="text-sm text-gray-600 mb-4">By default, all ELOs are selected</p>
         
         <div className="flex justify-end mb-6">
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2">
+          <Button 
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2"
+            onClick={() => setSelectedApproaches([
+              'Constructivism',
+              'Collaborative', 
+              'Reflective',
+              'Integrity',
+              'Inquiry',
+              'Contextual',
+              'Inclusive',
+              'Art Integrated'
+            ])}
+          >
             Generate Pedagogical Approaches
           </Button>
         </div>

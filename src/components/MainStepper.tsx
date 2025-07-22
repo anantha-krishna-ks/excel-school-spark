@@ -195,7 +195,8 @@ const MainStepper = ({
         } py-3 transition-all duration-300`}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-center space-x-8">
+          <div className="flex items-center justify-center space-x-4 overflow-x-auto scrollbar-hide">
+            <div className="flex items-center space-x-4 min-w-max px-4">
             {steps.map((step, index) => {
               const StepIcon = step.icon;
               return (
@@ -226,8 +227,8 @@ const MainStepper = ({
                       )}
                     </div>
 
-                    {/* Step Title and Description */}
-                    <div className={`text-center transition-all duration-200 ${isSticky ? 'max-w-24' : 'max-w-32'}`}>
+                     {/* Step Title and Description */}
+                     <div className={`text-center transition-all duration-200 ${isSticky ? 'max-w-20' : 'max-w-32'}`}>
                       <div className={`text-sm font-medium transition-colors duration-200 ${
                         isStepActive(step.number)
                           ? 'text-blue-600'
@@ -245,20 +246,21 @@ const MainStepper = ({
                     </div>
                   </div>
 
-                  {/* Enhanced Connector Line */}
-                  {index < steps.length - 1 && (
-                    <div className={`${isSticky ? 'w-12 mx-4 mb-6' : 'w-16 mx-6 mb-8'} h-0.5 transition-all duration-300 ${
-                      isStepCompleted(step.number) 
-                        ? 'bg-gradient-to-r from-green-400 to-green-500' 
-                        : isStepActive(step.number)
-                        ? 'bg-gradient-to-r from-blue-400 to-blue-500'
-                        : 'bg-gray-200'
-                    }`} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                   {/* Enhanced Connector Line */}
+                   {index < steps.length - 1 && (
+                     <div className={`${isSticky ? 'w-8 mx-2 mb-6' : 'w-12 mx-4 mb-8'} h-0.5 transition-all duration-300 ${
+                       isStepCompleted(step.number) 
+                         ? 'bg-gradient-to-r from-green-400 to-green-500' 
+                         : isStepActive(step.number)
+                         ? 'bg-gradient-to-r from-blue-400 to-blue-500'
+                         : 'bg-gray-200'
+                     }`} />
+                   )}
+                 </div>
+               );
+             })}
+            </div>
+           </div>
         </div>
       </div>
 
