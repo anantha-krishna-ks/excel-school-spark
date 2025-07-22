@@ -6,97 +6,58 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, FileCheck } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, Trash2, FileCheck, ChevronDown, ChevronRight, X } from 'lucide-react';
 
-interface AssessmentItem {
+interface AssessmentItemRow {
   id: string;
-  question: string;
+  noOfItems: string;
   itemType: string;
-  eloName: string;
+  includeLOTS: boolean;
 }
 
 interface ELOAssessment {
   id: string;
   name: string;
-  items: AssessmentItem[];
-  formData: {
-    noOfItems: string;
-    itemType: string;
-    includeLOTS: boolean;
-  };
+  assessmentRows: AssessmentItemRow[];
+  isExpanded: boolean;
+}
+
+interface BloomsTaxonomy {
+  level: string;
+  numberOfELOs: string;
 }
 
 const Assessment = () => {
   const [elos, setElos] = useState<ELOAssessment[]>([
     {
       id: '1',
-      name: 'ELO 1',
-      items: [],
-      formData: {
-        noOfItems: '',
-        itemType: '',
-        includeLOTS: false
-      }
+      name: 'ELO 1: Students will understand the basic concepts',
+      assessmentRows: [],
+      isExpanded: false
+    },
+    {
+      id: '2',
+      name: 'ELO 2: Students will be able to apply knowledge',
+      assessmentRows: [],
+      isExpanded: false
+    },
+    {
+      id: '3',
+      name: 'ELO 3: Students will analyze complex problems',
+      assessmentRows: [],
+      isExpanded: false
     }
   ]);
 
-  const addELO = () => {
-    const newELO: ELOAssessment = {
-      id: Date.now().toString(),
-      name: `ELO ${elos.length + 1}`,
-      items: [],
-      formData: {
-        noOfItems: '',
-        itemType: '',
-        includeLOTS: false
-      }
-    };
-    setElos([...elos, newELO]);
-  };
-
-  const updateELOFormData = (eloId: string, field: string, value: any) => {
-    setElos(elos.map(elo => 
-      elo.id === eloId 
-        ? { ...elo, formData: { ...elo.formData, [field]: value } }
-        : elo
-    ));
-  };
-
-  const generateItems = (eloId: string) => {
-    const elo = elos.find(e => e.id === eloId);
-    if (!elo || !elo.formData.noOfItems || !elo.formData.itemType) return;
-
-    const numberOfItems = parseInt(elo.formData.noOfItems);
-    const newItems: AssessmentItem[] = [];
-
-    for (let i = 1; i <= numberOfItems; i++) {
-      newItems.push({
-        id: `${eloId}-item-${Date.now()}-${i}`,
-        question: `Item Question ${i}`,
-        itemType: elo.formData.itemType,
-        eloName: elo.name
-      });
-    }
-
-    setElos(elos.map(e => 
-      e.id === eloId 
-        ? { ...e, items: [...e.items, ...newItems] }
-        : e
-    ));
-  };
-
-  const editItem = (eloId: string, itemId: string) => {
-    // Implementation for editing items
-    console.log('Edit item:', itemId, 'in ELO:', eloId);
-  };
-
-  const deleteItem = (eloId: string, itemId: string) => {
-    setElos(elos.map(elo => 
-      elo.id === eloId 
-        ? { ...elo, items: elo.items.filter(item => item.id !== itemId) }
-        : elo
-    ));
-  };
+  const [bloomsTaxonomy, setBloomsTaxonomy] = useState<BloomsTaxonomy[]>([
+    { level: 'Remember', numberOfELOs: '' },
+    { level: 'Understand', numberOfELOs: '' },
+    { level: 'Apply', numberOfELOs: '' },
+    { level: 'Analyze', numberOfELOs: '' },
+    { level: 'Evaluate', numberOfELOs: '' },
+    { level: 'Create', numberOfELOs: '' }
+  ]);
 
   const itemTypes = [
     { value: 'mcq', label: 'MCQ' },
@@ -105,159 +66,212 @@ const Assessment = () => {
     { value: 'long-description', label: 'Long description' }
   ];
 
+  const toggleELOExpansion = (eloId: string) => {
+    setElos(elos.map(elo => 
+      elo.id === eloId 
+        ? { ...elo, isExpanded: !elo.isExpanded }
+        : elo
+    ));
+  };
+
+  const addAssessmentRow = (eloId: string) => {
+    const newRow: AssessmentItemRow = {
+      id: Date.now().toString(),
+      noOfItems: '',
+      itemType: '',
+      includeLOTS: false
+    };
+
+    setElos(elos.map(elo => 
+      elo.id === eloId 
+        ? { ...elo, assessmentRows: [...elo.assessmentRows, newRow] }
+        : elo
+    ));
+  };
+
+  const removeAssessmentRow = (eloId: string, rowId: string) => {
+    setElos(elos.map(elo => 
+      elo.id === eloId 
+        ? { ...elo, assessmentRows: elo.assessmentRows.filter(row => row.id !== rowId) }
+        : elo
+    ));
+  };
+
+  const updateAssessmentRow = (eloId: string, rowId: string, field: keyof AssessmentItemRow, value: any) => {
+    setElos(elos.map(elo => 
+      elo.id === eloId 
+        ? {
+            ...elo,
+            assessmentRows: elo.assessmentRows.map(row =>
+              row.id === rowId ? { ...row, [field]: value } : row
+            )
+          }
+        : elo
+    ));
+  };
+
+  const updateBloomsTaxonomy = (level: string, numberOfELOs: string) => {
+    setBloomsTaxonomy(prev => 
+      prev.map(item => 
+        item.level === level ? { ...item, numberOfELOs } : item
+      )
+    );
+  };
+
   return (
     <div className="space-y-8">
-      {elos.map((elo) => (
-        <Card key={elo.id} className="border-2 border-primary/20 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <FileCheck className="h-5 w-5" />
-              {elo.name}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {/* Assessment Form */}
-            <div className="space-y-4">
-              <h4 className="font-semibold text-lg">Assessment:</h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor={`items-${elo.id}`} className="text-sm font-medium">
-                    Item Details:
-                  </Label>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                  <div>
-                    <Label htmlFor={`no-items-${elo.id}`} className="text-sm">
-                      No Of Items
-                    </Label>
-                    <Input
-                      id={`no-items-${elo.id}`}
-                      type="number"
-                      min="1"
-                      value={elo.formData.noOfItems}
-                      onChange={(e) => updateELOFormData(elo.id, 'noOfItems', e.target.value)}
-                      placeholder="Enter number"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`item-type-${elo.id}`} className="text-sm">
-                      Item Type
-                    </Label>
-                    <Select 
-                      value={elo.formData.itemType} 
-                      onValueChange={(value) => updateELOFormData(elo.id, 'itemType', value)}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {itemTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`lots-${elo.id}`}
-                      checked={elo.formData.includeLOTS}
-                      onCheckedChange={(checked) => updateELOFormData(elo.id, 'includeLOTS', checked)}
-                    />
-                    <Label htmlFor={`lots-${elo.id}`} className="text-sm font-medium">
-                      Include LOTS
-                    </Label>
-                  </div>
-
-                  <Button
-                    onClick={() => generateItems(elo.id)}
-                    disabled={!elo.formData.noOfItems || !elo.formData.itemType}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    Generate Item(s)
-                  </Button>
+      {/* Bloom's Taxonomy Section */}
+      <Card className="border-2 border-primary/20 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
+          <CardTitle className="flex items-center gap-2 text-primary">
+            <FileCheck className="h-5 w-5" />
+            Bloom's Taxonomy - Higher Order Thinking Skills
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {bloomsTaxonomy.map((item) => (
+              <div key={item.level} className="space-y-2">
+                <Label className="text-sm font-medium">{item.level}</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Number of ELOs"
+                    value={item.numberOfELOs}
+                    onChange={(e) => updateBloomsTaxonomy(item.level, e.target.value)}
+                    className="flex-1"
+                  />
+                  <Badge variant="outline" className="text-xs">
+                    ELOs
+                  </Badge>
                 </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-            {/* Generated Items Table */}
-            {elo.items.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="font-semibold text-lg">Generated Item(s)</h4>
-                
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="bg-muted/50 px-6 py-3 border-b">
-                    <div className="grid grid-cols-4 gap-4 font-medium text-sm">
-                      <span>Item Question</span>
-                      <span>Item Type</span>
-                      <span>ELO Name</span>
-                      <span>Actions</span>
+      {/* ELOs Section */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold">Expected Learning Outcomes (ELOs)</h3>
+        
+        {elos.map((elo) => (
+          <Collapsible
+            key={elo.id}
+            open={elo.isExpanded}
+            onOpenChange={() => toggleELOExpansion(elo.id)}
+          >
+            <Card className="border-2 border-primary/20 shadow-lg">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 cursor-pointer hover:from-primary/10 hover:to-primary/15 transition-colors">
+                  <CardTitle className="flex items-center justify-between text-primary">
+                    <div className="flex items-center gap-2">
+                      <FileCheck className="h-5 w-5" />
+                      {elo.name}
                     </div>
+                    {elo.isExpanded ? (
+                      <ChevronDown className="h-5 w-5" />
+                    ) : (
+                      <ChevronRight className="h-5 w-5" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent>
+                <CardContent className="p-6 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-lg">Assessment Items</h4>
+                    <Button
+                      onClick={() => addAssessmentRow(elo.id)}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Item Row
+                    </Button>
                   </div>
-                  
-                  <div className="divide-y">
-                    {elo.items.map((item, index) => (
-                      <div key={item.id} className="px-6 py-4 hover:bg-muted/30 transition-colors">
-                        <div className="grid grid-cols-4 gap-4 items-center">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">{index + 1}.</span>
-                            <span>{item.question}</span>
+
+                  {elo.assessmentRows.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>No assessment items added yet.</p>
+                      <p className="text-sm">Click "Add Item Row" to get started.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Header Row */}
+                      <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-muted/50 rounded-lg font-medium text-sm">
+                        <div className="col-span-3">No Of Items</div>
+                        <div className="col-span-4">Item Type</div>
+                        <div className="col-span-3">Include LOTS</div>
+                        <div className="col-span-2">Actions</div>
+                      </div>
+
+                      {/* Assessment Rows */}
+                      {elo.assessmentRows.map((row) => (
+                        <div key={row.id} className="grid grid-cols-12 gap-4 px-4 py-3 border rounded-lg hover:bg-muted/30 transition-colors">
+                          <div className="col-span-3">
+                            <Input
+                              type="number"
+                              min="1"
+                              placeholder="Enter number"
+                              value={row.noOfItems}
+                              onChange={(e) => updateAssessmentRow(elo.id, row.id, 'noOfItems', e.target.value)}
+                            />
                           </div>
-                          <div>
-                            <Badge variant="secondary" className="capitalize">
-                              {item.itemType.replace('-', ' ')}
-                            </Badge>
-                          </div>
-                          <div>
-                            <Badge variant="outline">
-                              {item.eloName}
-                            </Badge>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => editItem(elo.id, item.id)}
+                          
+                          <div className="col-span-4">
+                            <Select 
+                              value={row.itemType} 
+                              onValueChange={(value) => updateAssessmentRow(elo.id, row.id, 'itemType', value)}
                             >
-                              <Edit className="h-3 w-3 mr-1" />
-                              Edit
-                            </Button>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {itemTypes.map((type) => (
+                                  <SelectItem key={type.value} value={type.value}>
+                                    {type.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="col-span-3 flex items-center">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`lots-${row.id}`}
+                                checked={row.includeLOTS}
+                                onCheckedChange={(checked) => updateAssessmentRow(elo.id, row.id, 'includeLOTS', checked)}
+                              />
+                              <Label htmlFor={`lots-${row.id}`} className="text-sm">
+                                Include LOTS
+                              </Label>
+                            </div>
+                          </div>
+
+                          <div className="col-span-2">
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => deleteItem(elo.id, item.id)}
+                              onClick={() => removeAssessmentRow(elo.id, row.id)}
                               className="text-destructive hover:text-destructive"
                             >
-                              <Trash2 className="h-3 w-3 mr-1" />
-                              Delete
+                              <X className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-
-      {/* Add More ELO Button */}
-      <Button
-        onClick={addELO}
-        variant="outline"
-        className="w-full border-dashed border-2 py-8 text-muted-foreground hover:text-primary hover:border-primary/50"
-      >
-        <Plus className="h-5 w-5 mr-2" />
-        Add More +
-      </Button>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        ))}
+      </div>
     </div>
   );
 };
