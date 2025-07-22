@@ -335,15 +335,6 @@ const Assessment = () => {
         ))}
       </Accordion>
 
-      {/* Add More ELO Button */}
-      <Button
-        onClick={addELO}
-        variant="outline"
-        className="w-full border-dashed border-2 py-8 text-muted-foreground hover:text-primary hover:border-primary/50"
-      >
-        <Plus className="h-5 w-5 mr-2" />
-        Add More ELO
-      </Button>
     </div>
   );
 };

@@ -184,11 +184,11 @@ const MainStepper = ({
           isSticky 
             ? `fixed top-[110px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm bg-white/95 backdrop-blur-md` 
             : 'bg-white border-b border-gray-200'
-        } py-3 transition-all duration-300`}
+        } py-4 transition-all duration-300`}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-center space-x-4 overflow-x-auto scrollbar-hide">
-            <div className="flex items-center space-x-4 min-w-max px-4">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center space-x-6 w-full max-w-4xl">
             {steps.map((step, index) => {
               const StepIcon = step.icon;
               return (
@@ -240,7 +240,7 @@ const MainStepper = ({
 
                    {/* Enhanced Connector Line */}
                    {index < steps.length - 1 && (
-                     <div className={`${isSticky ? 'w-8 mx-2 mb-6' : 'w-12 mx-4 mb-8'} h-0.5 transition-all duration-300 ${
+                     <div className={`${isSticky ? 'w-12 mx-3 mb-6' : 'w-16 mx-4 mb-8'} h-0.5 transition-all duration-300 ${
                        isStepCompleted(step.number) 
                          ? 'bg-gradient-to-r from-green-400 to-green-500' 
                          : isStepActive(step.number)
@@ -257,7 +257,7 @@ const MainStepper = ({
       </div>
 
       {/* Spacer for sticky stepper */}
-      {isSticky && <div className="h-[76px]"></div>}
+      {isSticky && <div className="h-[84px]"></div>}
 
       {/* Sections Container with Enhanced Visual Separation */}
       <div className="relative">
