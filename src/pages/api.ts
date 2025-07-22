@@ -44,7 +44,7 @@ const API_BASE_URLAI =
     
 
 export const getGrades = async (orgcode: string): Promise<Grade[]> => {
-  const response = await fetch(`${API_BASE_URL}/api//GetClassData`, {
+  const response = await fetch(`${API_BASE_URL}/api/GetClassData`, {
     method: 'GET',
     headers: {
       'Accept': '*',
@@ -66,7 +66,7 @@ export const getGrades = async (orgcode: string): Promise<Grade[]> => {
 };
 
 export const getSubjects = async (orgcode: string, classId: number): Promise<Subject[]> => {
-  const response = await fetch(`${API_BASE_URL}/api//GetSujectData?ClassId=${classId}`, {
+  const response = await fetch(`${API_BASE_URL}/api/GetSujectData?ClassId=${classId}`, {
     method: 'GET',
     headers: {
       'accept': '*/*',
@@ -89,7 +89,7 @@ export const getSubjects = async (orgcode: string, classId: number): Promise<Sub
 };
 
 export const getChapters = async (orgcode: string, planClassId: string): Promise<Chapter[]> => {
-  const response = await fetch(`${API_BASE_URL}/api//GetClassesData?PlanClassId=${planClassId}`, {
+  const response = await fetch(`${API_BASE_URL}/api/GetClassesData?PlanClassId=${planClassId}`, {
     method: 'GET',
     headers: {
       'accept': '*/*',
