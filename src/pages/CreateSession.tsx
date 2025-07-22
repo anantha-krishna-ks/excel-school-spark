@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,14 +9,18 @@ import Header from '@/components/Header';
 import RichTextEditor from '@/components/RichTextEditor';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { useToast } from '@/hooks/use-toast';
-import { PageLoader } from '@/components/ui/loader';
+import axios from 'axios';
+import config from '@/config';
 
 const CreateSession = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [lessonPlanData, setLessonPlanData] = useState(null);
+  const location = useLocation();
+      const {
+      selectedsubject,Selectedunittitle,selectedGrade,selectedGradeId,selectedSubjectId
+    } = location.state || {};
   const [sessionData, setSessionData] = useState({
     title: '',
     duration: '',
@@ -27,9 +31,9 @@ const CreateSession = () => {
 
   // Mock data - in real app this would come from API
   const lessonPlan = {
-    title: "Understanding Photosynthesis: The Food Factory of Plants",
-    grade: "VII",
-    subject: "General Science"
+    title: Selectedunittitle,
+    grade: selectedGrade,
+    subject: selectedsubject
   };
 
   const availableCOs = [
@@ -64,7 +68,7 @@ const CreateSession = () => {
     }));
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!sessionData.title || !sessionData.duration || sessionData.selectedCOs.length === 0) {
       toast({
         title: "Missing Information",
@@ -74,20 +78,81 @@ const CreateSession = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    // Mock save logic with delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
+    // Mock save logic
     toast({
       title: "Session Created!",
       description: "Your session has been successfully created.",
     });
-
-    navigate(`/session/${lessonId}`);
-    setIsLoading(false);
+    GetLessonPlanData();
+    // setTimeout(() => {
+    //   navigate(`/session-plan-output`);
+    // }, 1000);
   };
 
+   const GetLessonPlanData = async()=>{
+    try {
+      // Use the duration as provided by the user
+      const getDuration = (durationStr) => {
+        return durationStr || '45'; 
+      };
+      const topic=lessonPlan.title;
+      const subject = lessonPlan.subject;
+      const grade = lessonPlan.grade; 
+      const duration = sessionData.duration; 
+      const keyVocabulary = ''; 
+      const supportingMaterials = ''; 
+      const currentTopic = lessonPlan.title || '';
+      const currentSubject = lessonPlan.subject || '';
+      const currentGrade = String(lessonPlan.grade || '');
+
+      const payload = {
+        "promptType": "lesson_plan",
+        "subject": currentSubject,
+        "grade": currentGrade,
+        "lessonTitle": topic,
+        "duration": duration,
+        "keyVocabulary": keyVocabulary,
+        "supportingMaterials": supportingMaterials
+      };
+  
+      const response = await axios.post(config.ENDPOINTS.GENERATE_LESSON_PLAN, payload);
+      const parsedLesson = JSON.parse(response.data.lessonPlan);
+  
+      const inputToken = response.data.inputtoken || 0;
+      const responseToken = response.data.responsetoken || 0;
+  
+      const newLessonPlanData = {
+        structuredData: {
+          ...parsedLesson,
+          currentAffairs: parsedLesson.additionalSections?.currentAffairs || [],
+          educationalVideos: parsedLesson.additionalSections?.educationalVideos || []
+        },
+        markdown: response.data.markdown || '',
+        inputtoken: inputToken,
+        responsetoken: responseToken,
+        ailessonplan: parsedLesson
+      };
+
+      setLessonPlanData(newLessonPlanData);
+
+      navigate('/session-plan-output', {
+        state: {
+          lessonPlanData: newLessonPlanData,
+          originalTopic: topic,
+          onSaveSuccess: true,
+          UnitId: lessonId,
+        }
+      });     
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Please check your input and try again.';
+      let displayMessage = 'Failed to generate lesson plan.';
+      if (errorMessage.includes('topic') && errorMessage.includes('subject')) {
+        displayMessage = 'The topic does not match the selected subject.';
+      }        
+      console.error('Error generating lesson plan:', err);
+    } finally {
+    }
+  }
   return (
     <div className="w-full min-h-screen bg-background">
       <Header />
@@ -125,7 +190,7 @@ const CreateSession = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/session/${lessonId}`)}
+            onClick={() => navigate(-1)}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Sessions
@@ -260,19 +325,16 @@ const CreateSession = () => {
           {/* Action Buttons */}
           <div className="flex gap-4">
             <Button
-              onClick={async () => {
-                setIsLoading(true);
-                await new Promise(resolve => setTimeout(resolve, 1000));
+              onClick={() => {
+                // Draft save logic
                 toast({
                   title: "Draft Saved",
                   description: "Your session has been saved as a draft.",
                 });
-                setIsLoading(false);
               }}
               variant="outline"
               className="flex-1"
               size="lg"
-              disabled={isLoading}
             >
               <Save className="h-4 w-4 mr-2" />
               Save as Draft
@@ -281,18 +343,13 @@ const CreateSession = () => {
               onClick={handleSave}
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
               size="lg"
-              disabled={isLoading}
             >
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? 'Creating...' : 'Create Session'}
+              Create Session
             </Button>
           </div>
         </div>
       </div>
-      
-      {isLoading && (
-        <PageLoader text="Creating your session..." />
-      )}
     </div>
   );
 };

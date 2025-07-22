@@ -6,19 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, LogIn, Mail, Lock, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { PageLoader } from '@/components/ui/loader';
+import { PageLoader } from "@/components/ui/loader"
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
+
     e.preventDefault();
     
     // Simple validation
@@ -30,25 +31,24 @@ const Login = () => {
       });
       return;
     }
-
-    setIsLoading(true);
-
-    // Mock login delay - in real app this would call an API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
+setLoading(true); 
+    // Mock login - in real app this would call an API
+   setTimeout(() => {
     toast({
       title: "Welcome back!",
       description: "Successfully logged in.",
     });
 
-    // Redirect to tools page
     navigate('/tools');
-    setIsLoading(false);
+  }, 1500);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
-      {/* Floating background elements */}
+    
+   
+    {loading && <PageLoader text="Signing you in..." />}
+       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200/20 rounded-full blur-xl animate-float"></div>
         <div className="absolute top-40 right-20 w-32 h-32 bg-indigo-200/20 rounded-full blur-xl animate-float animation-delay-2s"></div>
@@ -132,12 +132,12 @@ const Login = () => {
               {/* Login Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50"
+                className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium shadow-lg shadow-blue-500/25 transition-all duration-200"
               >
                 <LogIn className="h-4 w-4 mr-2" />
-                {isLoading ? 'Signing In...' : 'Sign In'}
+                Sign In
               </Button>
+             
             </form>
 
             {/* Footer Links */}
@@ -160,11 +160,8 @@ const Login = () => {
           Powered by Excel School AI Platform
         </div>
       </div>
-      
-      {isLoading && (
-        <PageLoader text="Signing you in..." />
-      )}
     </div>
+    
   );
 };
 

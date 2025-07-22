@@ -11,7 +11,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { PageLoader } from "@/components/ui/loader"
 
-const LessonPlanTraditional = () => {
+
+const UnitPlanPreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -62,7 +63,7 @@ const LessonPlanTraditional = () => {
   };
 
   const downloadPDF = async () => {
-    setLoading(true);
+      setLoading(true);
   if (!unitPlanRef.current) return;
 
   const element = unitPlanRef.current;
@@ -80,13 +81,13 @@ const LessonPlanTraditional = () => {
   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
   pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-  setLoading(false);
+    setLoading(false);
   pdf.save(`${lessonData.lessonName || 'unit-plan'}.pdf`);
 };
 
   return (
     <div className="w-full min-h-screen bg-background">
-        {loading && <PageLoader text="Please wait..." />}
+       {loading && <PageLoader text="Please wait..." />}
       <Header />
 {saveSuccess && (
      <Dialog
@@ -107,12 +108,12 @@ const LessonPlanTraditional = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <Button
-            onClick={() => navigate("/lesson-plan")}
+            onClick={() => navigate("/lesson-plan-assistant")}
             variant="ghost"
             className="mb-4 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Create Lesson Plan
+            Back to Lesson Plan Repository
           </Button>
         </div>
 
@@ -134,12 +135,7 @@ const LessonPlanTraditional = () => {
           >
             <Edit className="mr-2 h-4 w-4" />
             Edit
-          </Button>
-          {!issaved && (
-          <Button onClick={SaveUnitPlan} variant="outline" size="sm">
-            <Save className="mr-2 h-4 w-4" />
-            Save
-          </Button>)}
+          </Button>         
          <Button onClick={downloadPDF} variant="outline" size="sm">
           <Download className="mr-2 h-4 w-4" />
           Download PDF
@@ -318,4 +314,4 @@ const LessonPlanTraditional = () => {
   );
 };
 
-export default LessonPlanTraditional;
+export default UnitPlanPreview;

@@ -1,12 +1,15 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, BookOpen, Target, FileCheck, Sparkles, Award, Clock, Users } from 'lucide-react';
 import SelectionPanel from './SelectionPanel';
+import { getGrades, getSubjects, getChapters, generateCourseOutcomes, Grade, Subject, Chapter, CourseOutcome } from '@/pages/api';
 import CoreObjectives from './CoreObjectives';
 import ExpectedLearningOutcome from './ExpectedLearningOutcome';
 import ObjectiveMapping from './ObjectiveMapping';
+import axios from 'axios';
+import { PageLoader } from "@/components/ui/loader"
+// import {PageLoader} from '@/components/ui/Loader';
 
 interface MainStepperProps {
   board: string;
@@ -17,7 +20,8 @@ interface MainStepperProps {
   setSubject: (subject: string) => void;
   chapters: string;
   setChapters: (chapters: string) => void;
-  onGenerateCO: (objectives: string[]) => void;
+  onGenerateCO: (objectives: any[]) => void;
+  generatedCOs: any[];
 }
 
 const MainStepper = ({ 
@@ -29,7 +33,8 @@ const MainStepper = ({
   setSubject, 
   chapters,
   setChapters,
-  onGenerateCO 
+  onGenerateCO,
+  generatedCOs
 }: MainStepperProps) => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -37,28 +42,33 @@ const MainStepper = ({
   const [shortlistedObjectives, setShortlistedObjectives] = useState<string[]>([]);
   const [isSticky, setIsSticky] = useState(false);
   const [scrolledBeyondHeader, setScrolledBeyondHeader] = useState(false);
-  
+  const [loading, setLoading] = useState(true);
+  const [grades, setGrades] = useState<Grade[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [isLoadingGrades, setIsLoadingGrades] = useState(false);
+  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false);
+  const [chapterList, setChapterList] = useState<Chapter[]>([]);
+  const [isLoadingChapters, setIsLoadingChapters] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [unitPlan, setUnitPlan] = useState<any>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const stepperRef = useRef<HTMLDivElement>(null);
+  const [eloApiResponse, setEloApiResponse] = useState<any>(null);
   const canProceedFromStep1 = board && grade && subject;
 
-  // Auto-detect current step based on scroll position and sticky behavior
   useEffect(() => {
     const handleScroll = () => {
       const sections = sectionRefs.current;
       const stepperElement = stepperRef.current;
       const scrollPosition = window.scrollY;
-      const headerHeight = 110; // Header + some padding
+      const headerHeight = 110;
       
-      // Check if stepper should be sticky
       if (stepperElement) {
         const stepperTop = stepperElement.offsetTop;
         setIsSticky(scrollPosition > stepperTop - headerHeight);
-        // Check if we've scrolled significantly beyond the header
         setScrolledBeyondHeader(scrollPosition > headerHeight + 50);
       }
       
-      // Update current step based on scroll position
       const adjustedScrollPosition = scrollPosition + headerHeight + 100;
       
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -74,49 +84,123 @@ const MainStepper = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Auto-complete step 1 when basic setup is done
   useEffect(() => {
     if (canProceedFromStep1 && !completedSteps.includes(1)) {
       setCompletedSteps(prev => [...prev, 1]);
     }
   }, [board, grade, subject, canProceedFromStep1, completedSteps]);
 
-  const steps = [
-    {
-      number: 1,
-      title: 'Basic Setup & Content',
-      description: 'Configure your lesson basics and upload materials',
-      icon: BookOpen
-    },
-    {
-      number: 2,
-      title: 'Manage Objectives',
-      description: 'Select learning objectives',
-      icon: Target
-    },
-    {
-      number: 3,
-      title: 'Expected Learning Outcomes',
-      description: 'Define learning outcomes',
-      icon: FileCheck
-    },
-    {
-      number: 4,
-      title: 'Objective Mapping',
-      description: 'Connect objectives to outcomes',
-      icon: Target
-    },
-    {
-      number: 5,
-      title: 'Review & Create',
-      description: 'Finalize your lesson plan',
-      icon: CheckCircle2
+  useEffect(() => {
+    const fetchGrades = async () => {
+      setLoading(true);
+      setIsLoadingGrades(true);
+      setError(null);
+      try {
+        const gradesData = await getGrades('eps');
+        setGrades(gradesData);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch grades');
+        console.error(err);
+      } finally {
+        setIsLoadingGrades(false);
+      }
+    };
+    fetchGrades();
+  }, []);
+
+  const handleGradeChange = async (value: string) => {
+    setLoading(true);
+    setGrade(value);
+    setSubject('');
+    setChapters('');
+    setSubjects([]);
+    setChapterList([]);
+    if (!value || value === 'all') {
+      setLoading(false);
+      return;
     }
+    setIsLoadingSubjects(true);
+    setError(null);
+    try {
+      const subjectsData = await getSubjects('eps', parseInt(value, 10));
+      setSubjects(subjectsData);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch subjects');
+      console.error(err);
+    } finally {
+      setIsLoadingSubjects(false);
+    }
+  };
+
+  const handleSubjectChange = async (value: string) => {
+    setLoading(true);
+    setSubject(value);
+    setChapters('');
+    setChapterList([]);
+    const selectedSubject = subjects.find(s => String(s.SubjectId) === value);
+    if (!selectedSubject) {
+      setLoading(false);
+      return;
+    }
+    setIsLoadingChapters(true);
+    setError(null);
+    try {
+      const chaptersData = await getChapters('eps', selectedSubject.PlanClassId);
+      setChapterList(chaptersData);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch chapters');
+      console.error(err);
+    } finally {
+      setIsLoadingChapters(false);
+    }
+  };
+
+  const handleGenerateCOs = async () => {
+    setLoading(true);
+    const gradeName = grades.find(g => String(g.ClassId) === grade)?.ClassName;
+    const subjectName = subjects.find(s => String(s.SubjectId) === subject)?.SubjectName;
+    const chapterName = chapterList.find(c => c.chapterId === chapters)?.chapterName;
+
+    if (!board || !gradeName || !subjectName || !chapterName) {
+      setError("Please select a board, grade, subject, and chapter.");
+      setLoading(false);
+      return;
+    }
+
+    setError(null);
+    try {
+      const result = await generateCourseOutcomes(board, gradeName, subjectName, chapterName);
+      if (result.course_outcomes) {
+        onGenerateCO(result.course_outcomes);
+        const nextStep = steps.find(s => s.number === 2);
+        if(nextStep) {
+          scrollToSection(nextStep.number);
+        }
+        setLoading(false);
+      } else {
+        setLoading(false);
+        throw new Error("Invalid response structure from CO generation API");
+      }
+    } catch (err) {
+      setLoading(false);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      console.error(err);
+    }
+  };
+
+  const steps = [
+    { number: 1, title: 'Basic Setup & Content', description: 'Configure your lesson basics and upload materials', icon: BookOpen },
+    { number: 2, title: 'Manage Objectives', description: 'Select learning objectives', icon: Target },
+    { number: 3, title: 'Expected Learning Outcomes', description: 'Define learning outcomes', icon: FileCheck },
+    { number: 4, title: 'Objective Mapping', description: 'Connect objectives to outcomes', icon: Target },
+    { number: 5, title: 'Review & Create', description: 'Finalize your lesson plan', icon: CheckCircle2 }
   ];
 
   const isStepCompleted = (stepNumber: number) => completedSteps.includes(stepNumber);
   const isStepActive = (stepNumber: number) => currentStep === stepNumber;
-  const isStepAccessible = (stepNumber: number) => stepNumber <= currentStep;
 
   const scrollToSection = (stepNumber: number) => {
     const section = sectionRefs.current[stepNumber - 1];
@@ -135,125 +219,109 @@ const MainStepper = ({
       setCompletedSteps([...completedSteps, stepNumber]);
     }
   };
-
-  // Check section completion status
-  const isSectionCompleted = (stepNumber: number) => {
-    switch (stepNumber) {
-      case 1:
-        return board && grade && subject;
-      case 2:
-        return shortlistedObjectives.length > 0;
-      case 3:
-        return false; // Add logic based on your ExpectedLearningOutcome component
-      case 4:
-        return false; // Add logic for mapping completion
-      case 5:
-        return board && grade && subject && shortlistedObjectives.length > 0;
-      default:
-        return false;
-    }
-  };
-
-  // Update completed steps based on section completion
   useEffect(() => {
     const newCompletedSteps: number[] = [];
-    for (let i = 1; i <= 5; i++) {
-      if (isSectionCompleted(i)) {
-        newCompletedSteps.push(i);
-      }
-    }
+    if (board && grade && subject) newCompletedSteps.push(1);
+    if (shortlistedObjectives.length > 0) newCompletedSteps.push(2);
     setCompletedSteps(newCompletedSteps);
   }, [board, grade, subject, shortlistedObjectives]);
 
+   const generateUnitPlan = async () => {
+    setLoading(true);
+     const gradeName = grades.find(g => String(g.ClassId) === grade)?.ClassName;
+    const subjectName = subjects.find(s => String(s.SubjectId) === subject)?.SubjectName;
+    const PlanClassId = subjects.find(s => String(s.SubjectId) === subject)?.PlanClassId;
+    const chapterName = chapterList.find(c => c.chapterId === chapters)?.chapterName;
+      try {
+       let uniqueElos :string[]  = [];;
+       let uniqueSkills:string[]  = [];
+       let coreObjectives: string[] = [];
+       let attitudes: string[] = [];
+      const outcomes =  eloApiResponse?.course_outcomes
+      if (Array.isArray(outcomes)) {      
+      const allElos: string[]= outcomes.flatMap(co => co.elos ?? []);
+      uniqueElos = Array.from(new Set(allElos));
+      const allSkills: string[] = outcomes.flatMap(co => co.skills ?? []);
+     uniqueSkills = Array.from(new Set(allSkills)); 
+     const allcos: string[]= outcomes.flatMap(co => co.co_description ?? []);
+      coreObjectives = Array.from(new Set(allcos));
+      const allattitudes: string[] = outcomes.flatMap(co => co.Attitudes ?? []);
+      attitudes = Array.from(new Set(allattitudes));
+      }
+        const payload = {
+          board: 'CBSE',
+          grade: gradeName,
+          subject: subjectName,
+          chapter: chapterName,
+          core_objectives: coreObjectives,
+          skills: uniqueSkills,
+          attitudes: attitudes,
+          learning_outcomes: uniqueElos,
+          taxonomy_levels: outcomes[0]?.bloomsTaxonomy[0]?.toLowerCase() || 'knowledge' // Default to 'knowledge' if not available
+        };
+  
+        const response = await axios.post(
+          'https://ai.excelsoftcorp.com/aiapps/AIToolKit/UnitPlanGen/generate-unit-plan',
+          JSON.stringify(payload),
+          {
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+  
+        setUnitPlan(JSON.parse(response.data['unit_plan']));
+        setLoading(false);
+        navigate('/lesson-plan-traditional', {
+                    state: {
+                      lessonData: {
+                        grade:gradeName,
+                        subject:subjectName,
+                        lessonName: `${subjectName} Lesson Plan`,
+                        gradeid:grade,
+                        subjectid:subject,
+                        PlanClassId: PlanClassId,
+                        chapterid:chapters,
+                        unitplandata: JSON.parse(response.data['unit_plan'])
+                      }
+                    }
+                  });
+      } catch (error) {
+        console.error('Failed to fetch unit plan:', error);
+      }
+    };
+
   return (
+    
     <div className="w-full bg-background">
-      {/* Sticky Stepper */}
-      <div 
-        ref={stepperRef}
-        className={`${
-          isSticky 
-            ? `fixed top-[110px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm bg-white/95 backdrop-blur-md` 
-            : 'bg-white border-b border-gray-200'
-        } py-3 transition-all duration-300`}
-      >
+      {loading && <PageLoader text="Please wait..." />}
+      <div ref={stepperRef} className={`${isSticky ? `fixed top-[110px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm bg-white/95 backdrop-blur-md` : 'bg-white border-b border-gray-200'} py-3 transition-all duration-300`}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-center space-x-8">
             {steps.map((step, index) => {
               const StepIcon = step.icon;
               return (
                 <div key={step.number} className="flex items-center">
-                  <div 
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => handleStepClick(step.number)}
-                  >
-                    {/* Enhanced Step Circle with Icon */}
-                    <div className={`
-                      relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-2
-                      ${isStepActive(step.number)
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110 ring-4 ring-blue-100'
-                        : isStepCompleted(step.number)
-                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30'
-                        : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 group-hover:scale-105'
-                      }
-                    `}>
-                      {isStepCompleted(step.number) ? (
-                        <CheckCircle2 size={20} className="drop-shadow-sm" />
-                      ) : (
-                        <StepIcon size={20} className={isStepActive(step.number) ? 'drop-shadow-sm' : ''} />
-                      )}
-                      
-                      {/* Active Pulse */}
-                      {isStepActive(step.number) && (
-                        <div className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-20"></div>
-                      )}
+                  <div className="flex flex-col items-center cursor-pointer group" onClick={() => handleStepClick(step.number)}>
+                    <div className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-2 ${isStepActive(step.number) ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110 ring-4 ring-blue-100' : isStepCompleted(step.number) ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30' : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 group-hover:scale-105'}`}>
+                      {isStepCompleted(step.number) ? <CheckCircle2 size={20} className="drop-shadow-sm" /> : <StepIcon size={20} className={isStepActive(step.number) ? 'drop-shadow-sm' : ''} />}
+                      {isStepActive(step.number) && <div className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-20"></div>}
                     </div>
-
-                    {/* Step Title and Description */}
                     <div className={`text-center transition-all duration-200 ${isSticky ? 'max-w-24' : 'max-w-32'}`}>
-                      <div className={`text-sm font-medium transition-colors duration-200 ${
-                        isStepActive(step.number)
-                          ? 'text-blue-600'
-                          : isStepCompleted(step.number)
-                          ? 'text-green-600'
-                          : 'text-gray-500'
-                      }`}>
+                      <div className={`text-sm font-medium transition-colors duration-200 ${isStepActive(step.number) ? 'text-blue-600' : isStepCompleted(step.number) ? 'text-green-600' : 'text-gray-500'}`}>
                         {isSticky ? step.title.split(' ')[0] : step.title}
                       </div>
-                      {!isSticky && (
-                        <div className="text-xs text-gray-400 mt-1">
-                          {step.description}
-                        </div>
-                      )}
+                      {!isSticky && <div className="text-xs text-gray-400 mt-1">{step.description}</div>}
                     </div>
                   </div>
-
-                  {/* Enhanced Connector Line */}
-                  {index < steps.length - 1 && (
-                    <div className={`${isSticky ? 'w-12 mx-4 mb-6' : 'w-16 mx-6 mb-8'} h-0.5 transition-all duration-300 ${
-                      isStepCompleted(step.number) 
-                        ? 'bg-gradient-to-r from-green-400 to-green-500' 
-                        : isStepActive(step.number)
-                        ? 'bg-gradient-to-r from-blue-400 to-blue-500'
-                        : 'bg-gray-200'
-                    }`} />
-                  )}
+                  {index < steps.length - 1 && <div className={`${isSticky ? 'w-12 mx-4 mb-6' : 'w-16 mx-6 mb-8'} h-0.5 transition-all duration-300 ${isStepCompleted(step.number) ? 'bg-gradient-to-r from-green-400 to-green-500' : isStepActive(step.number) ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-gray-200'}`} />}
                 </div>
               );
             })}
           </div>
         </div>
       </div>
-
-      {/* Spacer for sticky stepper */}
       {isSticky && <div className="h-[76px]"></div>}
-
-      {/* Sections Container with Enhanced Visual Separation */}
       <div className="relative">
-        {/* Section 1: Basic Setup & Content */}
-        <section 
-          ref={(el) => { if (el) sectionRefs.current[0] = el; }}
-          className="relative bg-gradient-to-br from-blue-50/50 to-white py-16"
-        >
+        <section ref={(el) => { if (el) sectionRefs.current[0] = el; }} className="relative bg-gradient-to-br from-blue-50/50 to-white py-16">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center space-y-6 mb-12">
@@ -261,33 +329,31 @@ const MainStepper = ({
                 <BookOpen className="h-10 w-10 text-white drop-shadow-sm" />
               </div>
               <div className="space-y-2">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                  Basic Setup & Content
-                </h1>
-                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-                  Configure your lesson basics and upload materials to get started
-                </p>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Basic Setup & Content</h1>
+                <p className="text-muted-foreground text-lg max-w-lg mx-auto">Configure your lesson basics and upload materials to get started</p>
               </div>
             </div>
-            
+            {error && <p className="text-red-500 text-center mb-4">Error: {error}</p>}
             <SelectionPanel
               board={board}
               setBoard={setBoard}
               grade={grade}
-              setGrade={setGrade}
               subject={subject}
-              setSubject={setSubject}
+              onSubjectChange={handleSubjectChange}
               chapters={chapters}
               setChapters={setChapters}
+              grades={grades}
+              subjects={subjects}
+              chaptersData={chapterList}
+              onGradeChange={handleGradeChange}
+              isLoadingGrades={isLoadingGrades}
+              isLoadingSubjects={isLoadingSubjects}
+              isLoadingChapters={isLoadingChapters}
+              onGenerateCOs={handleGenerateCOs}
             />
           </div>
         </section>
-
-        {/* Section 2: Manage Objectives */}
-        <section 
-          ref={(el) => { if (el) sectionRefs.current[1] = el; }}
-          className="relative bg-gradient-to-br from-purple-50/50 to-white py-16"
-        >
+        <section ref={(el) => { if (el) sectionRefs.current[1] = el; }} className="relative bg-gradient-to-br from-purple-50/50 to-white py-16">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center space-y-6 mb-12">
@@ -295,25 +361,19 @@ const MainStepper = ({
                 <Target className="h-10 w-10 text-white drop-shadow-sm" />
               </div>
               <div className="space-y-2">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                  Manage Objectives
-                </h1>
-                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-                  Choose and customize learning objectives for your lesson
-                </p>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">Manage Objectives</h1>
+                <p className="text-muted-foreground text-lg max-w-lg mx-auto">Choose and customize learning objectives for your lesson</p>
               </div>
             </div>
-            
             <CoreObjectives 
               onGenerateCO={onGenerateCO}
               shortlistedObjectives={shortlistedObjectives}
               setShortlistedObjectives={setShortlistedObjectives}
+              generatedCOs={generatedCOs}
             />
           </div>
         </section>
-
-        {/* Section 3: Expected Learning Outcomes */}
-        <section 
+      <section 
           ref={(el) => { if (el) sectionRefs.current[2] = el; }}
           className="relative bg-gradient-to-br from-emerald-50/50 to-white py-16"
         >
@@ -333,7 +393,12 @@ const MainStepper = ({
               </div>
             </div>
             
-            <ExpectedLearningOutcome />
+            <ExpectedLearningOutcome board={board}
+  grade={grades.find(g => String(g.ClassId) === grade)?.ClassName}
+  subject={subjects.find(s => String(s.SubjectId) === subject)?.SubjectName}
+  chapter={chapterList.find(c => c.chapterId === chapters)?.chapterName}
+  generatedCOs={generatedCOs} 
+  onEloGenerated={(data) => setEloApiResponse(data)}/>
           </div>
         </section>
 
@@ -359,8 +424,8 @@ const MainStepper = ({
             </div>
             
             <ObjectiveMapping 
-              coreObjectives={shortlistedObjectives}
-              learningOutcomes={['Students will demonstrate understanding of concepts', 'Students will apply knowledge in real situations']} // Mock data for now
+             data={eloApiResponse?.course_outcomes || []}
+               
             />
           </div>
         </section>
@@ -464,19 +529,9 @@ const MainStepper = ({
             {/* Prominent CTA Button */}
             <div className="flex justify-center mt-12">
               <Button
-                onClick={async () => {
+                onClick={() => {
                   markStepComplete(4);
-                  // Show loading and redirect
-                  await new Promise(resolve => setTimeout(resolve, 1000));
-                  navigate('/lesson-plan-traditional', {
-                    state: {
-                      lessonData: {
-                        grade,
-                        subject,
-                        lessonName: `${subject} Lesson Plan`
-                      }
-                    }
-                  });
+                  generateUnitPlan();
                 }}
                 size="lg"
                 className="px-12 py-6 text-lg font-bold bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-2xl shadow-amber-500/30 rounded-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-3xl hover:shadow-amber-500/40 group relative overflow-hidden"
@@ -504,3 +559,4 @@ const MainStepper = ({
 };
 
 export default MainStepper;
+
