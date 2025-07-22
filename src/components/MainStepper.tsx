@@ -2,11 +2,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, BookOpen, Target, FileCheck, Sparkles, Award, Clock, Users } from 'lucide-react';
+import { CheckCircle2, BookOpen, Target, FileCheck, Sparkles, Award, Clock, Users, FileBarChart, Lightbulb } from 'lucide-react';
 import SelectionPanel from './SelectionPanel';
 import CoreObjectives from './CoreObjectives';
 import ExpectedLearningOutcome from './ExpectedLearningOutcome';
 import ObjectiveMapping from './ObjectiveMapping';
+import Assessment from './Assessment';
+import LearningExperience from './LearningExperience';
 
 interface MainStepperProps {
   board: string;
@@ -108,6 +110,18 @@ const MainStepper = ({
     },
     {
       number: 5,
+      title: 'Assessment',
+      description: 'Create assessment items for ELOs',
+      icon: FileBarChart
+    },
+    {
+      number: 6,
+      title: 'Learning Experience',
+      description: 'Design learning activities',
+      icon: Lightbulb
+    },
+    {
+      number: 7,
       title: 'Review & Create',
       description: 'Finalize your lesson plan',
       icon: CheckCircle2
@@ -148,6 +162,10 @@ const MainStepper = ({
       case 4:
         return false; // Add logic for mapping completion
       case 5:
+        return false; // Add logic for assessment completion
+      case 6:
+        return false; // Add logic for learning experience completion
+      case 7:
         return board && grade && subject && shortlistedObjectives.length > 0;
       default:
         return false;
@@ -157,7 +175,7 @@ const MainStepper = ({
   // Update completed steps based on section completion
   useEffect(() => {
     const newCompletedSteps: number[] = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       if (isSectionCompleted(i)) {
         newCompletedSteps.push(i);
       }
@@ -365,9 +383,59 @@ const MainStepper = ({
           </div>
         </section>
 
-        {/* Section 5: Review & Create - Enhanced */}
+        {/* Section 5: Assessment */}
         <section 
           ref={(el) => { if (el) sectionRefs.current[4] = el; }}
+          className="relative bg-gradient-to-br from-rose-50/50 to-white py-16"
+        >
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-200 to-transparent"></div>
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center space-y-6 mb-12">
+              <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-pink-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-rose-500/25">
+                <FileBarChart className="h-10 w-10 text-white drop-shadow-sm" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-800 bg-clip-text text-transparent">
+                  Assessment
+                </h1>
+                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+                  Create assessment items for each Expected Learning Outcome
+                </p>
+              </div>
+            </div>
+            
+            <Assessment />
+          </div>
+        </section>
+
+        {/* Section 6: Learning Experience */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[5] = el; }}
+          className="relative bg-gradient-to-br from-teal-50/50 to-white py-16"
+        >
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-200 to-transparent"></div>
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center space-y-6 mb-12">
+              <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-teal-500/25">
+                <Lightbulb className="h-10 w-10 text-white drop-shadow-sm" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-600 to-cyan-800 bg-clip-text text-transparent">
+                  Learning Experience
+                </h1>
+                <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+                  Design engaging learning activities and experiences
+                </p>
+              </div>
+            </div>
+            
+            <LearningExperience />
+          </div>
+        </section>
+
+        {/* Section 7: Review & Create - Enhanced */}
+        <section 
+          ref={(el) => { if (el) sectionRefs.current[6] = el; }}
           className="relative bg-gradient-to-br from-amber-50/50 via-yellow-50/30 to-white py-16"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent"></div>
@@ -465,7 +533,7 @@ const MainStepper = ({
             <div className="flex justify-center mt-12">
               <Button
                 onClick={async () => {
-                  markStepComplete(4);
+                  markStepComplete(7);
                   // Show loading and redirect
                   await new Promise(resolve => setTimeout(resolve, 1000));
                   navigate('/lesson-plan-traditional', {
