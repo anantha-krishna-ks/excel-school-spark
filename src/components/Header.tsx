@@ -37,7 +37,7 @@ const Header = () => {
             </Button>
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/528eecee-f661-48ea-b27b-6518b547edd1.png" 
+                src="/lovable-uploads/1ea2ca7f-c43c-4495-a861-38cfaec2e5b5.png" 
                 alt="Excel School AI" 
                 className="h-12 w-auto"
               />
