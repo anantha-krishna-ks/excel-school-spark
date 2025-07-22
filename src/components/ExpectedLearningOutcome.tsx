@@ -13,6 +13,10 @@ const ExpectedLearningOutcome = () => {
     'Apply',
     'Analyse'
   ]);
+  const [bloomsELOCounts, setBloomsELOCounts] = useState<{[key: string]: string}>({
+    'Apply': '2',
+    'Analyse': '1'
+  });
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedCompetencies, setSelectedCompetencies] = useState<string[]>([]);
   const [selectedAttitudes, setSelectedAttitudes] = useState<string[]>([]);
@@ -54,9 +58,21 @@ const ExpectedLearningOutcome = () => {
   const handleBloomsChange = (blooms: string, checked: boolean) => {
     if (checked) {
       setSelectedBlooms([...selectedBlooms, blooms]);
+      // Initialize ELO count for new selection
+      if (!bloomsELOCounts[blooms]) {
+        setBloomsELOCounts(prev => ({ ...prev, [blooms]: '1' }));
+      }
     } else {
       setSelectedBlooms(selectedBlooms.filter(b => b !== blooms));
+      // Remove ELO count when unchecked
+      const newCounts = { ...bloomsELOCounts };
+      delete newCounts[blooms];
+      setBloomsELOCounts(newCounts);
     }
+  };
+
+  const handleELOCountChange = (blooms: string, count: string) => {
+    setBloomsELOCounts(prev => ({ ...prev, [blooms]: count }));
   };
 
   const handleSkillsChange = (skill: string, checked: boolean) => {
@@ -160,19 +176,51 @@ const ExpectedLearningOutcome = () => {
             <Brain className="text-purple-600" size={20} />
             <h4 className="font-semibold text-gray-900">Bloom's Taxonomy - Higher Order Thinking Skills</h4>
           </div>
-          <div className="space-y-3">
-            <select 
-              value={selectedBlooms[0] || ""} 
-              onChange={(e) => setSelectedBlooms(e.target.value ? [e.target.value] : [])}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
-            >
-              <option value="">Select Bloom's level</option>
-              {bloomsLevels.map((bloom) => (
-                <option key={bloom.id} value={bloom.label}>
-                  {bloom.icon} {bloom.label} - {bloom.description}
-                </option>
-              ))}
-            </select>
+          <div className="space-y-4">
+            {bloomsLevels.map((bloom) => (
+              <div 
+                key={bloom.id}
+                className="flex items-center gap-4 bg-purple-50 p-4 rounded-lg hover:bg-purple-100 transition-all duration-200"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <Checkbox
+                    id={`bloom-${bloom.id}`}
+                    checked={selectedBlooms.includes(bloom.label)}
+                    onCheckedChange={(checked) => handleBloomsChange(bloom.label, !!checked)}
+                    className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                  />
+                  <div className="flex-1">
+                    <label 
+                      htmlFor={`bloom-${bloom.id}`} 
+                      className="text-sm font-medium text-gray-800 cursor-pointer hover:text-gray-900 flex items-center gap-2"
+                    >
+                      <span className="text-lg">{bloom.icon}</span>
+                      <div>
+                        <span className="font-semibold">{bloom.label}</span>
+                        <p className="text-xs text-gray-600">{bloom.description}</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                {selectedBlooms.includes(bloom.label) && (
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                      Number of ELOs:
+                    </label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={bloomsELOCounts[bloom.label] || '1'}
+                      onChange={(e) => handleELOCountChange(bloom.label, e.target.value)}
+                      className="w-20"
+                      placeholder="1"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </Card>
 
