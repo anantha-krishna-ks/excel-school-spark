@@ -35,14 +35,12 @@ const Header = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Tools
             </Button>
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-                <GraduationCap className="text-white" size={24} />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Excel School AI</h1>
-                <p className="text-sm text-gray-500">Lesson Plan Assistant</p>
-              </div>
+            <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/528eecee-f661-48ea-b27b-6518b547edd1.png" 
+                alt="Excel School AI" 
+                className="h-12 w-auto"
+              />
             </div>
           </div>
           <div className="flex items-center space-x-2">
