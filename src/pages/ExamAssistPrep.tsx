@@ -41,7 +41,7 @@ const ExamAssistPrep = () => {
   const [inputQuestion, setInputQuestion] = useState('');
   const [convertInputQuestion, setConvertInputQuestion] = useState('');
   const [targetType, setTargetType] = useState('');
-  const [difficulty, setDifficulty] = useState('');
+  const [difficulty, setDifficulty] = useState('knowledge');
   const [convertQuantity, setConvertQuantity] = useState('1');
   const [repository, setRepository] = useState<Question[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
