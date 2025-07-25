@@ -373,30 +373,25 @@ const ExamAssistPrep = () => {
                     onChange={(e) => setInputQuestion(e.target.value)}
                     rows={4}
                   />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select value={targetType} onValueChange={setTargetType}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Convert to" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {questionTypes.map(type => (
-                            <SelectItem key={type} value={type}>{type}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <div className="space-y-1">
-                        <label className="text-xs font-medium text-gray-700">Quantity</label>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={convertQuantity}
-                          onChange={(e) => setConvertQuantity(e.target.value)}
-                          placeholder="1"
-                        />
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <Select value={targetType} onValueChange={setTargetType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Convert to" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {questionTypes.map(type => (
+                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={convertQuantity}
+                      onChange={(e) => setConvertQuantity(e.target.value)}
+                      placeholder="Quantity"
+                    />
                     <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Convert
