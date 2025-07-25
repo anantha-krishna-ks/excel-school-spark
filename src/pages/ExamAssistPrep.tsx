@@ -184,6 +184,17 @@ const ExamAssistPrep = () => {
       text: `Converted Question ${i + 1} to ${targetType}: ${convertInputQuestion} (Converted format)`
     }));
     setConvertedQuestions(converted);
+    
+    // Scroll to converted questions section after a brief delay
+    setTimeout(() => {
+      const convertedSection = document.querySelector('[data-section="converted-questions"]');
+      if (convertedSection) {
+        convertedSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100);
   };
 
   const addToRepository = (question: Question) => {
@@ -723,7 +734,7 @@ const ExamAssistPrep = () => {
 
             {/* Converted Questions Results */}
             {convertedQuestions.length > 0 && (
-              <Card>
+              <Card data-section="converted-questions">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <RefreshCw className="w-5 h-5 text-green-600" />
