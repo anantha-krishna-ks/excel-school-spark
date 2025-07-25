@@ -28,10 +28,12 @@ const ExamAssistPrep = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('search');
-  const [generatedQuestions, setGeneratedQuestions] = useState<string[]>([]);
+  const [similarQuestions, setSimilarQuestions] = useState<string[]>([]);
+  const [convertedQuestions, setConvertedQuestions] = useState<string[]>([]);
   const [inputQuestion, setInputQuestion] = useState('');
   const [targetType, setTargetType] = useState('');
   const [difficulty, setDifficulty] = useState('');
+  const [convertQuantity, setConvertQuantity] = useState('1');
   const [repository, setRepository] = useState<Question[]>([]);
 
   // Mock data
@@ -79,14 +81,17 @@ const ExamAssistPrep = () => {
       `Generated Question 2: ${inputQuestion} (Alternative approach)`,
       `Generated Question 3: ${inputQuestion} (Different context)`
     ];
-    setGeneratedQuestions(generated);
+    setSimilarQuestions(generated);
   };
 
   const convertQuestionType = () => {
     if (!inputQuestion.trim() || !targetType) return;
     
-    const converted = `Converted to ${targetType}: ${inputQuestion} (Converted format)`;
-    setGeneratedQuestions([converted]);
+    const quantity = parseInt(convertQuantity) || 1;
+    const converted = Array.from({ length: quantity }, (_, i) => 
+      `Converted Question ${i + 1} to ${targetType}: ${inputQuestion} (Converted format)`
+    );
+    setConvertedQuestions(converted);
   };
 
   const addToRepository = (question: Question) => {
@@ -368,7 +373,7 @@ const ExamAssistPrep = () => {
                     onChange={(e) => setInputQuestion(e.target.value)}
                     rows={4}
                   />
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <Select value={targetType} onValueChange={setTargetType}>
                       <SelectTrigger>
                         <SelectValue placeholder="Convert to" />
@@ -379,7 +384,18 @@ const ExamAssistPrep = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-gray-700">Quantity</label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={convertQuantity}
+                        onChange={(e) => setConvertQuantity(e.target.value)}
+                        placeholder="1"
+                      />
+                    </div>
+                    <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700 self-end">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Convert
                     </Button>
@@ -388,21 +404,47 @@ const ExamAssistPrep = () => {
               </Card>
             </div>
 
-            {/* Generated Results */}
-            {generatedQuestions.length > 0 && (
+            {/* Similar Questions Results */}
+            {similarQuestions.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Generated Questions</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    Generated Similar Questions
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {generatedQuestions.map((question, index) => (
+                  {similarQuestions.map((question, index) => (
+                    <div key={index} className="p-4 border rounded-lg bg-purple-50">
+                      <p className="text-gray-800">{question}</p>
+                    </div>
+                  ))}
+                  <Button variant="outline" className="w-full">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Similar Questions
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Converted Questions Results */}
+            {convertedQuestions.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5 text-green-600" />
+                    Converted Questions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {convertedQuestions.map((question, index) => (
                     <div key={index} className="p-4 border rounded-lg bg-green-50">
                       <p className="text-gray-800">{question}</p>
                     </div>
                   ))}
                   <Button variant="outline" className="w-full">
                     <Download className="w-4 h-4 mr-2" />
-                    Export Generated Questions
+                    Export Converted Questions
                   </Button>
                 </CardContent>
               </Card>
