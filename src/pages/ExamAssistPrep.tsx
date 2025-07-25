@@ -55,23 +55,23 @@ const ExamAssistPrep = () => {
     'English': ['First Flight', 'Footprints without Feet', 'Letter Writing', 'Grammar'],
     'Social Science': ['Resources and Development', 'Democracy and Diversity', 'Nationalism in India', 'The Rise of Nationalism in Europe']
   };
-  const questionTypes = ['MCQ', 'Short Answer', 'Long Answer', 'Assertion-Reason', 'Case Study'];
+  const questionTypes = ['Knowledge', 'Understanding', 'Application'];
 
   const mockQuestions: Question[] = [
     {
       id: '1',
-      text: 'Explain the process of photosynthesis in plants. How do plants convert light energy into chemical energy?',
-      type: 'Long Answer',
+      text: 'Define photosynthesis and list the raw materials required for this process.',
+      type: 'Knowledge',
       year: '2023 CBSE Board - Delhi Set',
       chapter: 'Life Processes',
       class: '10',
       subject: 'Science',
-      taxonomy: 'Understanding'
+      taxonomy: 'Knowledge'
     },
     {
       id: '2',
-      text: 'Which of the following is the correct sequence of events in photosynthesis? (a) Light absorption → Water splitting → CO2 fixation → Glucose formation',
-      type: 'MCQ',
+      text: 'Which organelle is known as the powerhouse of the cell? (a) Nucleus (b) Mitochondria (c) Chloroplast (d) Ribosome',
+      type: 'Knowledge',
       year: '2022 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
@@ -80,8 +80,8 @@ const ExamAssistPrep = () => {
     },
     {
       id: '3',
-      text: 'Which organelle is known as the powerhouse of the cell? (a) Nucleus (b) Mitochondria (c) Chloroplast (d) Ribosome',
-      type: 'MCQ',
+      text: 'Name the enzyme that breaks down starch in the mouth.',
+      type: 'Knowledge',
       year: '2023 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
@@ -90,18 +90,18 @@ const ExamAssistPrep = () => {
     },
     {
       id: '4',
-      text: 'The enzyme pepsin is secreted by which part of the digestive system? (a) Stomach (b) Small intestine (c) Liver (d) Pancreas',
-      type: 'MCQ',
+      text: 'Explain the process of photosynthesis in plants. How do plants convert light energy into chemical energy?',
+      type: 'Understanding',
       year: '2022 CBSE Board - Foreign Set',
       chapter: 'Life Processes',
       class: '10',
       subject: 'Science',
-      taxonomy: 'Knowledge'
+      taxonomy: 'Understanding'
     },
     {
       id: '5',
-      text: 'Define respiration and explain its types.',
-      type: 'Short Answer',
+      text: 'Describe the structure and function of nephrons. How do kidneys maintain water balance in the body?',
+      type: 'Understanding',
       year: '2023 CBSE Board - Delhi Set',
       chapter: 'Life Processes',
       class: '10',
@@ -110,8 +110,8 @@ const ExamAssistPrep = () => {
     },
     {
       id: '6',
-      text: 'What is the role of saliva in digestion?',
-      type: 'Short Answer',
+      text: 'Explain the mechanism of breathing in humans and the factors that affect the rate of breathing.',
+      type: 'Understanding',
       year: '2022 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
@@ -120,8 +120,8 @@ const ExamAssistPrep = () => {
     },
     {
       id: '7',
-      text: 'A student performed an experiment to show that CO2 is released during respiration. Study the experimental setup and answer the questions that follow.',
-      type: 'Case Study',
+      text: 'A student performed an experiment to show that CO2 is released during respiration. Analyze the experimental setup and predict what would happen if the setup was kept in darkness for 24 hours.',
+      type: 'Application',
       year: '2023 CBSE Board - Sample Paper',
       chapter: 'Life Processes',
       class: '10',
@@ -130,33 +130,33 @@ const ExamAssistPrep = () => {
     },
     {
       id: '8',
-      text: 'Describe the structure and function of nephrons in detail. How do kidneys maintain water balance in the body?',
-      type: 'Long Answer',
+      text: 'Design an experiment to demonstrate that light is essential for photosynthesis. Include all materials, procedure, and expected results.',
+      type: 'Application',
       year: '2023 CBSE Board - Foreign Set',
       chapter: 'Life Processes',
       class: '10',
       subject: 'Science',
-      taxonomy: 'Analysis'
+      taxonomy: 'Application'
     },
     {
       id: '9',
-      text: 'Explain the mechanism of breathing in humans. What are the factors that affect the rate of breathing?',
-      type: 'Long Answer',
+      text: 'A plant was kept in a dark room for 48 hours and then exposed to sunlight with one leaf covered with aluminum foil. Predict and explain the results when tested with iodine solution.',
+      type: 'Application',
       year: '2022 CBSE Board - Delhi Set',
       chapter: 'Life Processes',
       class: '10',
       subject: 'Science',
-      taxonomy: 'Understanding'
+      taxonomy: 'Application'
     },
     {
       id: '10',
-      text: 'Compare and contrast photosynthesis and respiration in plants. Include the chemical equations for both processes.',
-      type: 'Long Answer',
+      text: 'Compare the efficiency of aerobic and anaerobic respiration in different environmental conditions and justify which process would be more beneficial for a marathon runner.',
+      type: 'Application',
       year: '2023 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
       subject: 'Science',
-      taxonomy: 'Analysis'
+      taxonomy: 'Application'
     }
   ];
 
@@ -424,40 +424,31 @@ const ExamAssistPrep = () => {
                       All (10)
                     </Badge>
                     <Badge 
-                      variant={selectedFilter === 'MCQ' ? 'default' : 'secondary'}
+                      variant={selectedFilter === 'Knowledge' ? 'default' : 'secondary'}
                       className={`px-3 py-1 cursor-pointer transition-colors hover:bg-blue-100 ${
-                        selectedFilter === 'MCQ' ? 'bg-blue-600 text-white' : ''
+                        selectedFilter === 'Knowledge' ? 'bg-blue-600 text-white' : ''
                       }`}
-                      onClick={() => setSelectedFilter('MCQ')}
+                      onClick={() => setSelectedFilter('Knowledge')}
                     >
-                      3 MCQs
+                      3 Knowledge
                     </Badge>
                     <Badge 
-                      variant={selectedFilter === 'Short Answer' ? 'default' : 'secondary'}
+                      variant={selectedFilter === 'Understanding' ? 'default' : 'secondary'}
                       className={`px-3 py-1 cursor-pointer transition-colors hover:bg-green-100 ${
-                        selectedFilter === 'Short Answer' ? 'bg-green-600 text-white' : ''
+                        selectedFilter === 'Understanding' ? 'bg-green-600 text-white' : ''
                       }`}
-                      onClick={() => setSelectedFilter('Short Answer')}
+                      onClick={() => setSelectedFilter('Understanding')}
                     >
-                      2 Short Answers
+                      3 Understanding
                     </Badge>
                     <Badge 
-                      variant={selectedFilter === 'Case Study' ? 'default' : 'secondary'}
+                      variant={selectedFilter === 'Application' ? 'default' : 'secondary'}
                       className={`px-3 py-1 cursor-pointer transition-colors hover:bg-purple-100 ${
-                        selectedFilter === 'Case Study' ? 'bg-purple-600 text-white' : ''
+                        selectedFilter === 'Application' ? 'bg-purple-600 text-white' : ''
                       }`}
-                      onClick={() => setSelectedFilter('Case Study')}
+                      onClick={() => setSelectedFilter('Application')}
                     >
-                      1 Case Study
-                    </Badge>
-                    <Badge 
-                      variant={selectedFilter === 'Long Answer' ? 'default' : 'secondary'}
-                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-orange-100 ${
-                        selectedFilter === 'Long Answer' ? 'bg-orange-600 text-white' : ''
-                      }`}
-                      onClick={() => setSelectedFilter('Long Answer')}
-                    >
-                      4 Long Answers
+                      4 Application
                     </Badge>
                   </div>
                 </CardContent>
@@ -968,30 +959,24 @@ const ExamAssistPrep = () => {
                   <CardTitle className="text-lg">Repository Statistics</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                       <div className="text-2xl font-bold text-blue-600">
-                        {repository.filter(q => q.type === 'MCQ').length}
+                        {repository.filter(q => q.type === 'Knowledge').length}
                       </div>
-                      <div className="text-sm text-gray-600">MCQ Questions</div>
+                      <div className="text-sm text-gray-600">Knowledge Questions</div>
                     </div>
                     <div className="text-center p-4 bg-green-50 rounded-lg">
                       <div className="text-2xl font-bold text-green-600">
-                        {repository.filter(q => q.type === 'Short Answer').length}
+                        {repository.filter(q => q.type === 'Understanding').length}
                       </div>
-                      <div className="text-sm text-gray-600">Short Answer</div>
+                      <div className="text-sm text-gray-600">Understanding Questions</div>
                     </div>
                     <div className="text-center p-4 bg-purple-50 rounded-lg">
                       <div className="text-2xl font-bold text-purple-600">
-                        {repository.filter(q => q.type === 'Long Answer').length}
+                        {repository.filter(q => q.type === 'Application').length}
                       </div>
-                      <div className="text-sm text-gray-600">Long Answer</div>
-                    </div>
-                    <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">
-                        {repository.filter(q => q.type === 'Case Study').length}
-                      </div>
-                      <div className="text-sm text-gray-600">Case Study</div>
+                      <div className="text-sm text-gray-600">Application Questions</div>
                     </div>
                   </div>
                 </CardContent>
