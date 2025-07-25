@@ -73,6 +73,78 @@ const ExamAssistPrep = () => {
       chapter: 'Life Processes',
       class: '10',
       subject: 'Science'
+    },
+    {
+      id: '3',
+      text: 'Which organelle is known as the powerhouse of the cell? (a) Nucleus (b) Mitochondria (c) Chloroplast (d) Ribosome',
+      type: 'MCQ',
+      year: '2023 CBSE Board - All India Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '4',
+      text: 'The enzyme pepsin is secreted by which part of the digestive system? (a) Stomach (b) Small intestine (c) Liver (d) Pancreas',
+      type: 'MCQ',
+      year: '2022 CBSE Board - Foreign Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '5',
+      text: 'Define respiration and explain its types.',
+      type: 'Short Answer',
+      year: '2023 CBSE Board - Delhi Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '6',
+      text: 'What is the role of saliva in digestion?',
+      type: 'Short Answer',
+      year: '2022 CBSE Board - All India Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '7',
+      text: 'A student performed an experiment to show that CO2 is released during respiration. Study the experimental setup and answer the questions that follow.',
+      type: 'Case Study',
+      year: '2023 CBSE Board - Sample Paper',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '8',
+      text: 'Describe the structure and function of nephrons in detail. How do kidneys maintain water balance in the body?',
+      type: 'Long Answer',
+      year: '2023 CBSE Board - Foreign Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '9',
+      text: 'Explain the mechanism of breathing in humans. What are the factors that affect the rate of breathing?',
+      type: 'Long Answer',
+      year: '2022 CBSE Board - Delhi Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
+    },
+    {
+      id: '10',
+      text: 'Compare and contrast photosynthesis and respiration in plants. Include the chemical equations for both processes.',
+      type: 'Long Answer',
+      year: '2023 CBSE Board - All India Set',
+      chapter: 'Life Processes',
+      class: '10',
+      subject: 'Science'
     }
   ];
 
