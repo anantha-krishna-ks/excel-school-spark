@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import searchPlaceholder from '@/assets/search-placeholder.png';
 import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown, Bookmark, Plus, Trash2, Edit, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -507,7 +508,7 @@ const ExamAssistPrep = () => {
                 {!selectedClass || !selectedSubject || !selectedChapter ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <img 
-                      src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
+                      src={searchPlaceholder} 
                       alt="Select dropdowns to view results" 
                       className="w-64 h-48 object-cover rounded-lg shadow-lg mb-6 opacity-80"
                     />
