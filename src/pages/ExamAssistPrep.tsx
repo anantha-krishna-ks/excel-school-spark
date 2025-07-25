@@ -17,6 +17,7 @@ interface Question {
   chapter: string;
   class: string;
   subject: string;
+  taxonomy: string;
 }
 
 interface GeneratedQuestion {
@@ -63,7 +64,8 @@ const ExamAssistPrep = () => {
       year: '2023 CBSE Board - Delhi Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Understanding'
     },
     {
       id: '2',
@@ -72,7 +74,8 @@ const ExamAssistPrep = () => {
       year: '2022 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Knowledge'
     },
     {
       id: '3',
@@ -81,7 +84,8 @@ const ExamAssistPrep = () => {
       year: '2023 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Knowledge'
     },
     {
       id: '4',
@@ -90,7 +94,8 @@ const ExamAssistPrep = () => {
       year: '2022 CBSE Board - Foreign Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Knowledge'
     },
     {
       id: '5',
@@ -99,7 +104,8 @@ const ExamAssistPrep = () => {
       year: '2023 CBSE Board - Delhi Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Understanding'
     },
     {
       id: '6',
@@ -108,7 +114,8 @@ const ExamAssistPrep = () => {
       year: '2022 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Understanding'
     },
     {
       id: '7',
@@ -117,7 +124,8 @@ const ExamAssistPrep = () => {
       year: '2023 CBSE Board - Sample Paper',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Application'
     },
     {
       id: '8',
@@ -126,7 +134,8 @@ const ExamAssistPrep = () => {
       year: '2023 CBSE Board - Foreign Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Analysis'
     },
     {
       id: '9',
@@ -135,7 +144,8 @@ const ExamAssistPrep = () => {
       year: '2022 CBSE Board - Delhi Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Understanding'
     },
     {
       id: '10',
@@ -144,7 +154,8 @@ const ExamAssistPrep = () => {
       year: '2023 CBSE Board - All India Set',
       chapter: 'Life Processes',
       class: '10',
-      subject: 'Science'
+      subject: 'Science',
+      taxonomy: 'Analysis'
     }
   ];
 
@@ -238,7 +249,8 @@ const ExamAssistPrep = () => {
       year: 'AI Generated',
       chapter: 'AI Content',
       class: selectedClass || '10',
-      subject: selectedSubject || 'General'
+      subject: selectedSubject || 'General',
+      taxonomy: 'Application'
     };
     
     if (!repository.find(q => q.text === newQuestion.text)) {
@@ -458,6 +470,31 @@ const ExamAssistPrep = () => {
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Search Results</CardTitle>
                 <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      const filteredQuestions = mockQuestions.filter(question => selectedFilter === 'All' || question.type === selectedFilter);
+                      const allFiltered = filteredQuestions.every(q => selectedQuestions.includes(q.id));
+                      
+                      if (allFiltered) {
+                        // Deselect all filtered questions
+                        setSelectedQuestions(prev => prev.filter(id => !filteredQuestions.some(q => q.id === id)));
+                      } else {
+                        // Select all filtered questions
+                        const newSelections = filteredQuestions.filter(q => !selectedQuestions.includes(q.id)).map(q => q.id);
+                        setSelectedQuestions(prev => [...prev, ...newSelections]);
+                      }
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <input 
+                      type="checkbox" 
+                      checked={mockQuestions.filter(question => selectedFilter === 'All' || question.type === selectedFilter).every(q => selectedQuestions.includes(q.id))}
+                      readOnly
+                      className="mr-1"
+                    />
+                    Select All
+                  </Button>
                   <Button variant="outline" className="flex items-center gap-2">
                     <Download className="w-4 h-4" />
                     Export Selected
@@ -475,11 +512,12 @@ const ExamAssistPrep = () => {
                   <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">{question.type}</Badge>
-                          <Badge variant="secondary">{question.year}</Badge>
-                          <Badge variant="outline">{question.chapter}</Badge>
-                        </div>
+                         <div className="flex items-center gap-2 mb-2">
+                           <Badge variant="outline">{question.type}</Badge>
+                           <Badge variant="secondary">{question.year}</Badge>
+                           <Badge variant="outline">{question.chapter}</Badge>
+                           <Badge variant="default" className="bg-amber-500 text-white">{question.taxonomy}</Badge>
+                         </div>
                         <p className="text-gray-800 leading-relaxed">{question.text}</p>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
