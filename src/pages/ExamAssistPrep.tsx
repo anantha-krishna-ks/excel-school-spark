@@ -866,31 +866,42 @@ const ExamAssistPrep = () => {
                   <>
                     {/* Summary Widget */}
                     <Card className="mb-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
-                      <CardContent className="p-4">
-                        <div className="text-center">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            Total: {repository.length} Questions
-                          </h3>
-                          <div className="text-sm text-gray-600">
-                            {(() => {
-                              const taxonomyCounts = repository.reduce((acc, question) => {
-                                acc[question.taxonomy] = (acc[question.taxonomy] || 0) + 1;
-                                return acc;
-                              }, {} as Record<string, number>);
-                              
-                              const taxonomyBreakdown = Object.entries(taxonomyCounts)
-                                .map(([type, count]) => `${type} (${count})`)
-                                .join(' | ');
-                              
-                              return taxonomyBreakdown;
-                            })()}
+                      <CardContent className="p-6">
+                        <div className="text-center space-y-4">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-1">
+                              Repository Summary
+                            </h3>
+                            <p className="text-lg font-semibold text-emerald-700">
+                              Total: {repository.length} Questions
+                            </p>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    {/* Questions List */}
-                  <div className="space-y-4">
+                          
+                          <div className="border-t border-emerald-200 pt-4">
+                            <h4 className="text-sm font-medium text-gray-700 mb-2">
+                              Taxonomy Distribution:
+                            </h4>
+                            <div className="text-sm text-gray-600 bg-white/50 rounded-lg py-2 px-4 inline-block">
+                              {(() => {
+                                const taxonomyCounts = repository.reduce((acc, question) => {
+                                  acc[question.taxonomy] = (acc[question.taxonomy] || 0) + 1;
+                                  return acc;
+                                }, {} as Record<string, number>);
+                                
+                                const taxonomyBreakdown = Object.entries(taxonomyCounts)
+                                  .map(([type, count]) => `${type} (${count})`)
+                                  .join(' | ');
+                                
+                                return taxonomyBreakdown || 'No taxonomy data available';
+                              })()}
+                            </div>
+                          </div>
+                         </div>
+                       </CardContent>
+                     </Card>
+                     
+                     {/* Questions List */}
+                     <div className="space-y-4">
                     {repository.map((question) => (
                       <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex items-start justify-between">
