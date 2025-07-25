@@ -384,14 +384,19 @@ const ExamAssistPrep = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={convertQuantity}
-                      onChange={(e) => setConvertQuantity(e.target.value)}
-                      placeholder="Quantity"
-                    />
+                    <div className="flex items-center border rounded-md overflow-hidden">
+                      <Input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={convertQuantity}
+                        onChange={(e) => setConvertQuantity(e.target.value)}
+                        className="border-0 rounded-none w-1/2 text-center focus-visible:ring-0"
+                      />
+                      <div className="w-1/2 bg-gray-50 border-l px-3 py-2 text-sm text-gray-600 flex items-center justify-center">
+                        Quantity
+                      </div>
+                    </div>
                     <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Convert
