@@ -42,6 +42,7 @@ const ExamAssistPrep = () => {
   const [difficulty, setDifficulty] = useState('');
   const [convertQuantity, setConvertQuantity] = useState('1');
   const [repository, setRepository] = useState<Question[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<string>('All');
 
   // Mock data
   const classes = ['10', '12'];
@@ -322,18 +323,59 @@ const ExamAssistPrep = () => {
               </CardContent>
             </Card>
 
-            {/* Chapter Summary */}
+            {/* Chapter Summary with Interactive Filters */}
             {selectedChapter && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Available Questions for "{selectedChapter}"</CardTitle>
+                  <CardTitle className="text-lg">Filter Questions for "{selectedChapter}"</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-3">
-                    <Badge variant="secondary" className="px-3 py-1">3 MCQs</Badge>
-                    <Badge variant="secondary" className="px-3 py-1">2 Short Answers</Badge>
-                    <Badge variant="secondary" className="px-3 py-1">1 Case Study</Badge>
-                    <Badge variant="secondary" className="px-3 py-1">4 Long Answers</Badge>
+                    <Badge 
+                      variant={selectedFilter === 'All' ? 'default' : 'secondary'}
+                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-indigo-100 ${
+                        selectedFilter === 'All' ? 'bg-indigo-600 text-white' : ''
+                      }`}
+                      onClick={() => setSelectedFilter('All')}
+                    >
+                      All (10)
+                    </Badge>
+                    <Badge 
+                      variant={selectedFilter === 'MCQ' ? 'default' : 'secondary'}
+                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-blue-100 ${
+                        selectedFilter === 'MCQ' ? 'bg-blue-600 text-white' : ''
+                      }`}
+                      onClick={() => setSelectedFilter('MCQ')}
+                    >
+                      3 MCQs
+                    </Badge>
+                    <Badge 
+                      variant={selectedFilter === 'Short Answer' ? 'default' : 'secondary'}
+                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-green-100 ${
+                        selectedFilter === 'Short Answer' ? 'bg-green-600 text-white' : ''
+                      }`}
+                      onClick={() => setSelectedFilter('Short Answer')}
+                    >
+                      2 Short Answers
+                    </Badge>
+                    <Badge 
+                      variant={selectedFilter === 'Case Study' ? 'default' : 'secondary'}
+                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-purple-100 ${
+                        selectedFilter === 'Case Study' ? 'bg-purple-600 text-white' : ''
+                      }`}
+                      onClick={() => setSelectedFilter('Case Study')}
+                    >
+                      1 Case Study
+                    </Badge>
+                    <Badge 
+                      variant={selectedFilter === 'Long Answer' ? 'default' : 'secondary'}
+                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-orange-100 ${
+                        selectedFilter === 'Long Answer' ? 'bg-orange-600 text-white' : ''
+                      }`}
+                      onClick={() => setSelectedFilter('Long Answer')}
+                    >
+                      4 Long Answers
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -349,7 +391,9 @@ const ExamAssistPrep = () => {
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockQuestions.map((question) => (
+                {mockQuestions
+                  .filter(question => selectedFilter === 'All' || question.type === selectedFilter)
+                  .map((question) => (
                   <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
