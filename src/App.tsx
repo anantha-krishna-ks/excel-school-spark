@@ -14,6 +14,7 @@ import LessonPlanOptions from "./pages/LessonPlanOptions";
 import LessonPlanTraditional from "./pages/LessonPlanTraditional";
 import SessionList from "./pages/SessionList";
 import CreateSession from "./pages/CreateSession";
+import ExamAssistPrep from "./pages/ExamAssistPrep";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/tools" element={<ToolsDashboard />} />
           <Route path="/lesson-plan-assistant" element={<LessonPlanAssistant />} />
+          <Route path="/exam-assist-prep" element={<ExamAssistPrep />} />
           <Route path="/lesson-plan" element={<Index />} />
           <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />
           <Route path="/lesson-plan-output" element={<LessonPlanOutput />} />

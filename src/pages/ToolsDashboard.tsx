@@ -51,6 +51,15 @@ const ToolsDashboard = () => {
       route: '/lesson-plan-assistant'
     },
     {
+      id: 'exam-assist-prep',
+      title: 'Exam Assist Prep',
+      description: 'Smart retrieval of CBSE questions with AI generation',
+      icon: GraduationCap,
+      color: 'bg-indigo-500',
+      buttonColor: 'bg-indigo-500 hover:bg-indigo-600',
+      route: '/exam-assist-prep'
+    },
+    {
       id: 'grade-assistant',
       title: 'Grade Assistant',
       description: 'Streamline grading with intelligent analytics',
