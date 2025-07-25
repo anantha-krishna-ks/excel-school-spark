@@ -516,7 +516,7 @@ const ExamAssistPrep = () => {
                            <Badge variant="outline">{question.type}</Badge>
                            <Badge variant="secondary">{question.year}</Badge>
                            <Badge variant="outline">{question.chapter}</Badge>
-                           <Badge variant="default" className="bg-amber-500 text-white">{question.taxonomy}</Badge>
+                           <Badge variant="secondary" className="text-xs text-muted-foreground bg-muted/50 border-0">{question.taxonomy}</Badge>
                          </div>
                         <p className="text-gray-800 leading-relaxed">{question.text}</p>
                       </div>
