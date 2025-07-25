@@ -52,7 +52,7 @@ const ToolsDashboard = () => {
     },
     {
       id: 'exam-assist-prep',
-      title: 'Exam Assist Prep',
+      title: 'Exam Prep Assist',
       description: 'Smart retrieval of CBSE questions with AI generation',
       icon: GraduationCap,
       color: 'bg-indigo-500',

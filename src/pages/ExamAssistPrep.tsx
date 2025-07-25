@@ -125,7 +125,7 @@ const ExamAssistPrep = () => {
                   <GraduationCap className="text-white" size={24} />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Exam Assist Prep</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">Exam Prep Assist</h1>
                   <p className="text-sm text-gray-500">Smart CBSE Question Retrieval & AI Generation</p>
                 </div>
               </div>
@@ -373,29 +373,31 @@ const ExamAssistPrep = () => {
                     onChange={(e) => setInputQuestion(e.target.value)}
                     rows={4}
                   />
-                  <div className="grid grid-cols-3 gap-4">
-                    <Select value={targetType} onValueChange={setTargetType}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Convert to" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {questionTypes.map(type => (
-                          <SelectItem key={type} value={type}>{type}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-gray-700">Quantity</label>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={convertQuantity}
-                        onChange={(e) => setConvertQuantity(e.target.value)}
-                        placeholder="1"
-                      />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select value={targetType} onValueChange={setTargetType}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Convert to" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {questionTypes.map(type => (
+                            <SelectItem key={type} value={type}>{type}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-gray-700">Quantity</label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={convertQuantity}
+                          onChange={(e) => setConvertQuantity(e.target.value)}
+                          placeholder="1"
+                        />
+                      </div>
                     </div>
-                    <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700 self-end">
+                    <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Convert
                     </Button>
