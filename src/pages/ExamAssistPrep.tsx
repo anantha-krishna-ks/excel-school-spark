@@ -384,14 +384,35 @@ const ExamAssistPrep = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={convertQuantity}
-                      onChange={(e) => setConvertQuantity(e.target.value)}
-                      placeholder="Quantity"
-                    />
+                    <div className="flex items-center border rounded-md">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setConvertQuantity(Math.max(1, parseInt(convertQuantity) - 1).toString())}
+                        className="h-10 w-10 p-0 border-0 rounded-l-md rounded-r-none"
+                      >
+                        -
+                      </Button>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={convertQuantity}
+                        onChange={(e) => setConvertQuantity(e.target.value)}
+                        className="text-center border-0 border-l border-r h-10 rounded-none focus-visible:ring-0"
+                        placeholder="1"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setConvertQuantity(Math.min(10, parseInt(convertQuantity) + 1).toString())}
+                        className="h-10 w-10 p-0 border-0 rounded-r-md rounded-l-none"
+                      >
+                        +
+                      </Button>
+                    </div>
                     <Button onClick={convertQuestionType} className="bg-green-600 hover:bg-green-700">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Convert
