@@ -863,6 +863,33 @@ const ExamAssistPrep = () => {
                     </Button>
                   </div>
                 ) : (
+                  <>
+                    {/* Summary Widget */}
+                    <Card className="mb-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
+                      <CardContent className="p-4">
+                        <div className="text-center">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            Total: {repository.length} Questions
+                          </h3>
+                          <div className="text-sm text-gray-600">
+                            {(() => {
+                              const taxonomyCounts = repository.reduce((acc, question) => {
+                                acc[question.taxonomy] = (acc[question.taxonomy] || 0) + 1;
+                                return acc;
+                              }, {} as Record<string, number>);
+                              
+                              const taxonomyBreakdown = Object.entries(taxonomyCounts)
+                                .map(([type, count]) => `${type} (${count})`)
+                                .join(' | ');
+                              
+                              return taxonomyBreakdown;
+                            })()}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    {/* Questions List */}
                   <div className="space-y-4">
                     {repository.map((question) => (
                       <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
@@ -891,7 +918,8 @@ const ExamAssistPrep = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
+                   </div>
+                   </>
                 )}
               </CardContent>
             </Card>
