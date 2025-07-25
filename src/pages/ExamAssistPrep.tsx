@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown, Bookmark, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,7 @@ const ExamAssistPrep = () => {
   const [inputQuestion, setInputQuestion] = useState('');
   const [targetType, setTargetType] = useState('');
   const [difficulty, setDifficulty] = useState('');
+  const [repository, setRepository] = useState<Question[]>([]);
 
   // Mock data
   const classes = ['10', '12'];
@@ -88,6 +89,16 @@ const ExamAssistPrep = () => {
     setGeneratedQuestions([converted]);
   };
 
+  const addToRepository = (question: Question) => {
+    if (!repository.find(q => q.id === question.id)) {
+      setRepository([...repository, question]);
+    }
+  };
+
+  const removeFromRepository = (questionId: string) => {
+    setRepository(repository.filter(q => q.id !== questionId));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
@@ -136,7 +147,7 @@ const ExamAssistPrep = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+          <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto">
             <TabsTrigger value="search" className="flex items-center gap-2">
               <Search className="w-4 h-4" />
               Question Search
@@ -144,6 +155,10 @@ const ExamAssistPrep = () => {
             <TabsTrigger value="generate" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               AI Generate
+            </TabsTrigger>
+            <TabsTrigger value="repository" className="flex items-center gap-2">
+              <Bookmark className="w-4 h-4" />
+              My Repository
             </TabsTrigger>
           </TabsList>
 
@@ -271,17 +286,29 @@ const ExamAssistPrep = () => {
                         </div>
                         <p className="text-gray-800 leading-relaxed">{question.text}</p>
                       </div>
-                      <input 
-                        type="checkbox" 
-                        className="mt-2 ml-4"
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedQuestions([...selectedQuestions, question.id]);
-                          } else {
-                            setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
-                          }
-                        }}
-                      />
+                      <div className="flex items-center gap-2 ml-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => addToRepository(question)}
+                          disabled={repository.find(q => q.id === question.id) !== undefined}
+                          className="flex items-center gap-1"
+                        >
+                          <Plus className="w-4 h-4" />
+                          {repository.find(q => q.id === question.id) ? 'Added' : 'Add to Repository'}
+                        </Button>
+                        <input 
+                          type="checkbox" 
+                          className="mt-1"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedQuestions([...selectedQuestions, question.id]);
+                            } else {
+                              setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                            }
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -377,6 +404,118 @@ const ExamAssistPrep = () => {
                     <Download className="w-4 h-4 mr-2" />
                     Export Generated Questions
                   </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Repository Tab */}
+          <TabsContent value="repository" className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bookmark className="w-5 h-5" />
+                    My Question Repository
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Save and organize your favorite questions for future use
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="px-3 py-1">
+                    {repository.length} Questions Saved
+                  </Badge>
+                  {repository.length > 0 && (
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Download className="w-4 h-4" />
+                      Export Repository
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {repository.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Bookmark className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Questions Saved Yet</h3>
+                    <p className="text-gray-600 mb-4">
+                      Add questions from the search results to build your personal repository
+                    </p>
+                    <Button 
+                      onClick={() => setActiveTab('search')}
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      <Search className="w-4 h-4 mr-2" />
+                      Browse Questions
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {repository.map((question) => (
+                      <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline">{question.type}</Badge>
+                              <Badge variant="secondary">{question.year}</Badge>
+                              <Badge variant="outline">{question.chapter}</Badge>
+                              <Badge variant="outline">{question.subject} - Class {question.class}</Badge>
+                            </div>
+                            <p className="text-gray-800 leading-relaxed">{question.text}</p>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => removeFromRepository(question.id)}
+                              className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Repository Statistics */}
+            {repository.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Repository Statistics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {repository.filter(q => q.type === 'MCQ').length}
+                      </div>
+                      <div className="text-sm text-gray-600">MCQ Questions</div>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">
+                        {repository.filter(q => q.type === 'Short Answer').length}
+                      </div>
+                      <div className="text-sm text-gray-600">Short Answer</div>
+                    </div>
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {repository.filter(q => q.type === 'Long Answer').length}
+                      </div>
+                      <div className="text-sm text-gray-600">Long Answer</div>
+                    </div>
+                    <div className="text-center p-4 bg-orange-50 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-600">
+                        {repository.filter(q => q.type === 'Case Study').length}
+                      </div>
+                      <div className="text-sm text-gray-600">Case Study</div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}
