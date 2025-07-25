@@ -516,7 +516,7 @@ const ExamAssistPrep = () => {
                            <Badge variant="outline">{question.type}</Badge>
                            <Badge variant="secondary">{question.year}</Badge>
                            <Badge variant="outline">{question.chapter}</Badge>
-                           <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">{question.taxonomy}</Badge>
+                           <Badge className="border border-purple-500 bg-transparent text-purple-600 text-xs px-2 py-1">{question.taxonomy}</Badge>
                          </div>
                         <p className="text-gray-800 leading-relaxed">{question.text}</p>
                       </div>
@@ -652,7 +652,7 @@ const ExamAssistPrep = () => {
                            <div className="flex items-center gap-2 mb-2">
                              <Badge variant="outline">AI Generated</Badge>
                              <Badge variant="secondary">Similar Question</Badge>
-                             <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">Application</Badge>
+                              <Badge className="border border-purple-500 bg-transparent text-purple-600 text-xs px-2 py-1">Application</Badge>
                            </div>
                            {question.isEditing ? (
                              <Textarea
@@ -751,7 +751,7 @@ const ExamAssistPrep = () => {
                            <div className="flex items-center gap-2 mb-2">
                              <Badge variant="outline">AI Generated</Badge>
                              <Badge variant="secondary">Converted Question</Badge>
-                             <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">Application</Badge>
+                             <Badge className="border border-purple-500 bg-transparent text-purple-600 text-xs px-2 py-1">Application</Badge>
                            </div>
                            {question.isEditing ? (
                              <Textarea
@@ -886,7 +886,7 @@ const ExamAssistPrep = () => {
                                <Badge variant="secondary">{question.year}</Badge>
                                <Badge variant="outline">{question.chapter}</Badge>
                                <Badge variant="outline">{question.subject} - Class {question.class}</Badge>
-                               <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">{question.taxonomy}</Badge>
+                               <Badge className="border border-purple-500 bg-transparent text-purple-600 text-xs px-2 py-1">{question.taxonomy}</Badge>
                              </div>
                             <p className="text-gray-800 leading-relaxed">{question.text}</p>
                           </div>
