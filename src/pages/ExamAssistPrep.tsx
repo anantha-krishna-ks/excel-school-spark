@@ -154,16 +154,16 @@ const ExamAssistPrep = () => {
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 max-w-4xl mx-auto bg-white border-2 border-indigo-100 shadow-lg rounded-xl p-2 h-16 gap-2">
-            <TabsTrigger value="search" className="flex items-center gap-2">
-              <Search className="w-4 h-4" />
+            <TabsTrigger value="search" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-indigo-200 transition-all duration-300 rounded-lg font-medium py-3 px-4">
+              <Search className="w-5 h-5" />
               Question Search
             </TabsTrigger>
-            <TabsTrigger value="generate" className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
+            <TabsTrigger value="generate" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-200 transition-all duration-300 rounded-lg font-medium py-3 px-4">
+              <Sparkles className="w-5 h-5" />
               AI Generate
             </TabsTrigger>
-            <TabsTrigger value="repository" className="flex items-center gap-2">
-              <Bookmark className="w-4 h-4" />
+            <TabsTrigger value="repository" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-200 transition-all duration-300 rounded-lg font-medium py-3 px-4">
+              <Bookmark className="w-5 h-5" />
               My Repository
             </TabsTrigger>
           </TabsList>
