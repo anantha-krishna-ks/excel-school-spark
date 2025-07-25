@@ -153,17 +153,17 @@ const ExamAssistPrep = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-4xl mx-auto bg-muted/50 border-2 border-border shadow-lg rounded-xl p-2 h-16 backdrop-blur-sm">
-            <TabsTrigger value="search" className="flex items-center gap-3 text-base font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-primary/20">
-              <Search className="w-5 h-5" />
+          <TabsList className="grid w-full grid-cols-3 max-w-3xl mx-auto border border-gray-200 shadow-sm p-1 h-12">
+            <TabsTrigger value="search" className="flex items-center gap-2">
+              <Search className="w-4 h-4" />
               Question Search
             </TabsTrigger>
-            <TabsTrigger value="generate" className="flex items-center gap-3 text-base font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-primary/20">
-              <Sparkles className="w-5 h-5" />
+            <TabsTrigger value="generate" className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
               AI Generate
             </TabsTrigger>
-            <TabsTrigger value="repository" className="flex items-center gap-3 text-base font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-primary/20">
-              <Bookmark className="w-5 h-5" />
+            <TabsTrigger value="repository" className="flex items-center gap-2">
+              <Bookmark className="w-4 h-4" />
               My Repository
             </TabsTrigger>
           </TabsList>
