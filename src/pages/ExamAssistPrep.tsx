@@ -31,6 +31,7 @@ const ExamAssistPrep = () => {
   const [similarQuestions, setSimilarQuestions] = useState<string[]>([]);
   const [convertedQuestions, setConvertedQuestions] = useState<string[]>([]);
   const [inputQuestion, setInputQuestion] = useState('');
+  const [convertInputQuestion, setConvertInputQuestion] = useState('');
   const [targetType, setTargetType] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [convertQuantity, setConvertQuantity] = useState('1');
@@ -85,11 +86,11 @@ const ExamAssistPrep = () => {
   };
 
   const convertQuestionType = () => {
-    if (!inputQuestion.trim() || !targetType) return;
+    if (!convertInputQuestion.trim() || !targetType) return;
     
     const quantity = parseInt(convertQuantity) || 1;
     const converted = Array.from({ length: quantity }, (_, i) => 
-      `Converted Question ${i + 1} to ${targetType}: ${inputQuestion} (Converted format)`
+      `Converted Question ${i + 1} to ${targetType}: ${convertInputQuestion} (Converted format)`
     );
     setConvertedQuestions(converted);
   };
@@ -369,8 +370,8 @@ const ExamAssistPrep = () => {
                 <CardContent className="space-y-4">
                   <Textarea
                     placeholder="Paste a question to convert its format..."
-                    value={inputQuestion}
-                    onChange={(e) => setInputQuestion(e.target.value)}
+                    value={convertInputQuestion}
+                    onChange={(e) => setConvertInputQuestion(e.target.value)}
                     rows={4}
                   />
                   <div className="grid grid-cols-3 gap-4">
