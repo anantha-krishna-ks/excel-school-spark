@@ -516,7 +516,7 @@ const ExamAssistPrep = () => {
                            <Badge variant="outline">{question.type}</Badge>
                            <Badge variant="secondary">{question.year}</Badge>
                            <Badge variant="outline">{question.chapter}</Badge>
-                           <Badge variant="secondary" className="text-xs text-muted-foreground bg-muted/50 border-0">{question.taxonomy}</Badge>
+                           <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">{question.taxonomy}</Badge>
                          </div>
                         <p className="text-gray-800 leading-relaxed">{question.text}</p>
                       </div>
@@ -645,24 +645,29 @@ const ExamAssistPrep = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {similarQuestions.map((question) => (
-                    <div key={question.id} className="p-4 border rounded-lg bg-purple-50">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
-                          {question.isEditing ? (
-                            <Textarea
-                              value={question.text}
-                              onChange={(e) => {
-                                setSimilarQuestions(prev => prev.map(q => 
-                                  q.id === question.id ? { ...q, text: e.target.value } : q
-                                ));
-                              }}
-                              rows={3}
-                              className="text-gray-800"
-                            />
-                          ) : (
-                            <p className="text-gray-800">{question.text}</p>
-                          )}
+                   {similarQuestions.map((question) => (
+                     <div key={question.id} className="p-4 border rounded-lg bg-purple-50">
+                       <div className="flex items-start justify-between">
+                         <div className="flex-1 space-y-2">
+                           <div className="flex items-center gap-2 mb-2">
+                             <Badge variant="outline">AI Generated</Badge>
+                             <Badge variant="secondary">Similar Question</Badge>
+                             <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">Application</Badge>
+                           </div>
+                           {question.isEditing ? (
+                             <Textarea
+                               value={question.text}
+                               onChange={(e) => {
+                                 setSimilarQuestions(prev => prev.map(q => 
+                                   q.id === question.id ? { ...q, text: e.target.value } : q
+                                 ));
+                               }}
+                               rows={3}
+                               className="text-gray-800"
+                             />
+                           ) : (
+                             <p className="text-gray-800">{question.text}</p>
+                           )}
                         </div>
                         <div className="flex items-center gap-2 ml-4">
                           {question.isEditing ? (
@@ -738,25 +743,30 @@ const ExamAssistPrep = () => {
                     Converted Questions
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {convertedQuestions.map((question) => (
-                    <div key={question.id} className="p-4 border rounded-lg bg-green-50">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
-                          {question.isEditing ? (
-                            <Textarea
-                              value={question.text}
-                              onChange={(e) => {
-                                setConvertedQuestions(prev => prev.map(q => 
-                                  q.id === question.id ? { ...q, text: e.target.value } : q
-                                ));
-                              }}
-                              rows={3}
-                              className="text-gray-800"
-                            />
-                          ) : (
-                            <p className="text-gray-800">{question.text}</p>
-                          )}
+                 <CardContent className="space-y-4">
+                   {convertedQuestions.map((question) => (
+                     <div key={question.id} className="p-4 border rounded-lg bg-green-50">
+                       <div className="flex items-start justify-between">
+                         <div className="flex-1 space-y-2">
+                           <div className="flex items-center gap-2 mb-2">
+                             <Badge variant="outline">AI Generated</Badge>
+                             <Badge variant="secondary">Converted Question</Badge>
+                             <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">Application</Badge>
+                           </div>
+                           {question.isEditing ? (
+                             <Textarea
+                               value={question.text}
+                               onChange={(e) => {
+                                 setConvertedQuestions(prev => prev.map(q => 
+                                   q.id === question.id ? { ...q, text: e.target.value } : q
+                                 ));
+                               }}
+                               rows={3}
+                               className="text-gray-800"
+                             />
+                           ) : (
+                             <p className="text-gray-800">{question.text}</p>
+                           )}
                         </div>
                         <div className="flex items-center gap-2 ml-4">
                           {question.isEditing ? (
@@ -871,12 +881,13 @@ const ExamAssistPrep = () => {
                       <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex items-start justify-between">
                           <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="outline">{question.type}</Badge>
-                              <Badge variant="secondary">{question.year}</Badge>
-                              <Badge variant="outline">{question.chapter}</Badge>
-                              <Badge variant="outline">{question.subject} - Class {question.class}</Badge>
-                            </div>
+                             <div className="flex items-center gap-2 mb-2">
+                               <Badge variant="outline">{question.type}</Badge>
+                               <Badge variant="secondary">{question.year}</Badge>
+                               <Badge variant="outline">{question.chapter}</Badge>
+                               <Badge variant="outline">{question.subject} - Class {question.class}</Badge>
+                               <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">{question.taxonomy}</Badge>
+                             </div>
                             <p className="text-gray-800 leading-relaxed">{question.text}</p>
                           </div>
                           <div className="flex items-center gap-2 ml-4">
