@@ -457,10 +457,16 @@ const ExamAssistPrep = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Search Results</CardTitle>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Export Selected
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Export Selected
+                  </Button>
+                  <Button variant="default" className="flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Export All
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {mockQuestions
