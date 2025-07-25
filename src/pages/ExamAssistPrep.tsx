@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown, Bookmark, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown, Bookmark, Plus, Trash2, Edit, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,12 @@ interface Question {
   subject: string;
 }
 
+interface GeneratedQuestion {
+  id: string;
+  text: string;
+  isEditing?: boolean;
+}
+
 const ExamAssistPrep = () => {
   const navigate = useNavigate();
   const [selectedClass, setSelectedClass] = useState('');
@@ -28,8 +34,8 @@ const ExamAssistPrep = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('search');
-  const [similarQuestions, setSimilarQuestions] = useState<string[]>([]);
-  const [convertedQuestions, setConvertedQuestions] = useState<string[]>([]);
+  const [similarQuestions, setSimilarQuestions] = useState<GeneratedQuestion[]>([]);
+  const [convertedQuestions, setConvertedQuestions] = useState<GeneratedQuestion[]>([]);
   const [inputQuestion, setInputQuestion] = useState('');
   const [convertInputQuestion, setConvertInputQuestion] = useState('');
   const [targetType, setTargetType] = useState('');
@@ -77,10 +83,10 @@ const ExamAssistPrep = () => {
   const generateSimilarQuestions = () => {
     if (!inputQuestion.trim()) return;
     
-    const generated = [
-      `Generated Question 1: ${inputQuestion} (Modified with AI)`,
-      `Generated Question 2: ${inputQuestion} (Alternative approach)`,
-      `Generated Question 3: ${inputQuestion} (Different context)`
+    const generated: GeneratedQuestion[] = [
+      { id: `sim-${Date.now()}-1`, text: `Generated Question 1: ${inputQuestion} (Modified with AI)` },
+      { id: `sim-${Date.now()}-2`, text: `Generated Question 2: ${inputQuestion} (Alternative approach)` },
+      { id: `sim-${Date.now()}-3`, text: `Generated Question 3: ${inputQuestion} (Different context)` }
     ];
     setSimilarQuestions(generated);
   };
@@ -89,9 +95,10 @@ const ExamAssistPrep = () => {
     if (!convertInputQuestion.trim() || !targetType) return;
     
     const quantity = parseInt(convertQuantity) || 1;
-    const converted = Array.from({ length: quantity }, (_, i) => 
-      `Converted Question ${i + 1} to ${targetType}: ${convertInputQuestion} (Converted format)`
-    );
+    const converted: GeneratedQuestion[] = Array.from({ length: quantity }, (_, i) => ({
+      id: `conv-${Date.now()}-${i}`,
+      text: `Converted Question ${i + 1} to ${targetType}: ${convertInputQuestion} (Converted format)`
+    }));
     setConvertedQuestions(converted);
   };
 
@@ -103,6 +110,67 @@ const ExamAssistPrep = () => {
 
   const removeFromRepository = (questionId: string) => {
     setRepository(repository.filter(q => q.id !== questionId));
+  };
+
+  // Functions for managing generated questions
+  const editGeneratedQuestion = (type: 'similar' | 'converted', id: string) => {
+    if (type === 'similar') {
+      setSimilarQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, isEditing: true } : q
+      ));
+    } else {
+      setConvertedQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, isEditing: true } : q
+      ));
+    }
+  };
+
+  const saveGeneratedQuestion = (type: 'similar' | 'converted', id: string, newText: string) => {
+    if (type === 'similar') {
+      setSimilarQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, text: newText, isEditing: false } : q
+      ));
+    } else {
+      setConvertedQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, text: newText, isEditing: false } : q
+      ));
+    }
+  };
+
+  const cancelEditGeneratedQuestion = (type: 'similar' | 'converted', id: string) => {
+    if (type === 'similar') {
+      setSimilarQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, isEditing: false } : q
+      ));
+    } else {
+      setConvertedQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, isEditing: false } : q
+      ));
+    }
+  };
+
+  const deleteGeneratedQuestion = (type: 'similar' | 'converted', id: string) => {
+    if (type === 'similar') {
+      setSimilarQuestions(prev => prev.filter(q => q.id !== id));
+    } else {
+      setConvertedQuestions(prev => prev.filter(q => q.id !== id));
+    }
+  };
+
+  const addGeneratedToRepository = (generatedQuestion: GeneratedQuestion) => {
+    const newQuestion: Question = {
+      id: `repo-${Date.now()}`,
+      text: generatedQuestion.text,
+      type: 'Generated',
+      year: 'AI Generated',
+      chapter: 'AI Content',
+      class: selectedClass || '10',
+      subject: selectedSubject || 'General'
+    };
+    
+    if (!repository.find(q => q.text === newQuestion.text)) {
+      setRepository([...repository, newQuestion]);
+    }
   };
 
   return (
@@ -417,9 +485,80 @@ const ExamAssistPrep = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {similarQuestions.map((question, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-purple-50">
-                      <p className="text-gray-800">{question}</p>
+                  {similarQuestions.map((question) => (
+                    <div key={question.id} className="p-4 border rounded-lg bg-purple-50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-2">
+                          {question.isEditing ? (
+                            <Textarea
+                              value={question.text}
+                              onChange={(e) => {
+                                setSimilarQuestions(prev => prev.map(q => 
+                                  q.id === question.id ? { ...q, text: e.target.value } : q
+                                ));
+                              }}
+                              rows={3}
+                              className="text-gray-800"
+                            />
+                          ) : (
+                            <p className="text-gray-800">{question.text}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          {question.isEditing ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => saveGeneratedQuestion('similar', question.id, question.text)}
+                                className="flex items-center gap-1 text-green-600 hover:text-green-700"
+                              >
+                                <Check className="w-4 h-4" />
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => cancelEditGeneratedQuestion('similar', question.id)}
+                                className="flex items-center gap-1 text-gray-600 hover:text-gray-700"
+                              >
+                                <X className="w-4 h-4" />
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => editGeneratedQuestion('similar', question.id)}
+                                className="flex items-center gap-1"
+                              >
+                                <Edit className="w-4 h-4" />
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => addGeneratedToRepository(question)}
+                                className="flex items-center gap-1 text-purple-600 hover:text-purple-700"
+                              >
+                                <Plus className="w-4 h-4" />
+                                Add to Repository
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteGeneratedQuestion('similar', question.id)}
+                                className="flex items-center gap-1 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                   <Button variant="outline" className="w-full">
@@ -440,9 +579,80 @@ const ExamAssistPrep = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {convertedQuestions.map((question, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-green-50">
-                      <p className="text-gray-800">{question}</p>
+                  {convertedQuestions.map((question) => (
+                    <div key={question.id} className="p-4 border rounded-lg bg-green-50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-2">
+                          {question.isEditing ? (
+                            <Textarea
+                              value={question.text}
+                              onChange={(e) => {
+                                setConvertedQuestions(prev => prev.map(q => 
+                                  q.id === question.id ? { ...q, text: e.target.value } : q
+                                ));
+                              }}
+                              rows={3}
+                              className="text-gray-800"
+                            />
+                          ) : (
+                            <p className="text-gray-800">{question.text}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          {question.isEditing ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => saveGeneratedQuestion('converted', question.id, question.text)}
+                                className="flex items-center gap-1 text-green-600 hover:text-green-700"
+                              >
+                                <Check className="w-4 h-4" />
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => cancelEditGeneratedQuestion('converted', question.id)}
+                                className="flex items-center gap-1 text-gray-600 hover:text-gray-700"
+                              >
+                                <X className="w-4 h-4" />
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => editGeneratedQuestion('converted', question.id)}
+                                className="flex items-center gap-1"
+                              >
+                                <Edit className="w-4 h-4" />
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => addGeneratedToRepository(question)}
+                                className="flex items-center gap-1 text-green-600 hover:text-green-700"
+                              >
+                                <Plus className="w-4 h-4" />
+                                Add to Repository
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteGeneratedQuestion('converted', question.id)}
+                                className="flex items-center gap-1 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                   <Button variant="outline" className="w-full">
