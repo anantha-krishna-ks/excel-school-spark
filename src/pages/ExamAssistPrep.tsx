@@ -504,46 +504,60 @@ const ExamAssistPrep = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockQuestions
-                  .filter(question => selectedFilter === 'All' || question.type === selectedFilter)
-                  .map((question) => (
-                  <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 space-y-2">
-                         <div className="flex items-center gap-2 mb-2">
-                           <Badge variant="outline">{question.type}</Badge>
-                           <Badge variant="secondary">{question.year}</Badge>
-                           <Badge variant="outline">{question.chapter}</Badge>
-                           <Badge className="border border-purple-500 bg-transparent text-purple-600 text-xs px-2 py-1">{question.taxonomy}</Badge>
-                         </div>
-                        <p className="text-gray-800 leading-relaxed">{question.text}</p>
-                      </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => addToRepository(question)}
-                          disabled={repository.find(q => q.id === question.id) !== undefined}
-                          className="flex items-center gap-1"
-                        >
-                          <Plus className="w-4 h-4" />
-                          {repository.find(q => q.id === question.id) ? 'Added' : 'Add to Repository'}
-                        </Button>
-                        <input 
-                          type="checkbox" 
-                          className="mt-1"
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedQuestions([...selectedQuestions, question.id]);
-                            } else {
-                              setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
-                            }
-                          }}
-                        />
+                {!selectedClass || !selectedSubject || !selectedChapter ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <img 
+                      src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
+                      alt="Select dropdowns to view results" 
+                      className="w-64 h-48 object-cover rounded-lg shadow-lg mb-6 opacity-80"
+                    />
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">No Search Criteria Selected</h3>
+                    <p className="text-gray-500 max-w-md">
+                      Please select values from the dropdowns above to display search results.
+                    </p>
+                  </div>
+                ) : (
+                  mockQuestions
+                    .filter(question => selectedFilter === 'All' || question.type === selectedFilter)
+                    .map((question) => (
+                    <div key={question.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-2">
+                           <div className="flex items-center gap-2 mb-2">
+                             <Badge variant="outline">{question.type}</Badge>
+                             <Badge variant="secondary">{question.year}</Badge>
+                             <Badge variant="outline">{question.chapter}</Badge>
+                             <Badge className="border border-purple-500 bg-transparent text-purple-600 text-xs px-2 py-1">{question.taxonomy}</Badge>
+                           </div>
+                          <p className="text-gray-800 leading-relaxed">{question.text}</p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => addToRepository(question)}
+                            disabled={repository.find(q => q.id === question.id) !== undefined}
+                            className="flex items-center gap-1"
+                          >
+                            <Plus className="w-4 h-4" />
+                            {repository.find(q => q.id === question.id) ? 'Added' : 'Add to Repository'}
+                          </Button>
+                          <input 
+                            type="checkbox" 
+                            className="mt-1"
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedQuestions([...selectedQuestions, question.id]);
+                              } else {
+                                setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </CardContent>
             </Card>
           </TabsContent>
