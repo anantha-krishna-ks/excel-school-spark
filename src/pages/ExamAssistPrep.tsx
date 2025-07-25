@@ -153,7 +153,7 @@ const ExamAssistPrep = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-3xl mx-auto border border-gray-200 shadow-sm p-1 h-12">
+          <TabsList className="grid w-full grid-cols-3 max-w-4xl mx-auto bg-white border-2 border-indigo-100 shadow-lg rounded-xl p-2 h-16 gap-2">
             <TabsTrigger value="search" className="flex items-center gap-2">
               <Search className="w-4 h-4" />
               Question Search
