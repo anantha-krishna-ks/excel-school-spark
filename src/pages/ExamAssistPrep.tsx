@@ -578,9 +578,9 @@ const ExamAssistPrep = () => {
                         <SelectValue placeholder="Difficulty Level" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="easy">Easy (Recall)</SelectItem>
-                        <SelectItem value="medium">Medium (Application)</SelectItem>
-                        <SelectItem value="hard">Hard (Analysis)</SelectItem>
+                        <SelectItem value="knowledge">Knowledge</SelectItem>
+                        <SelectItem value="understanding">Understanding</SelectItem>
+                        <SelectItem value="application">Application</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button onClick={generateSimilarQuestions} className="bg-purple-600 hover:bg-purple-700">
