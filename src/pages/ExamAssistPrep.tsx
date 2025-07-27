@@ -290,56 +290,40 @@ const ExamAssistPrep = () => {
     if (questions.length === 0) return null;
 
     return (
-      <div className="mt-8 relative">
-        <div className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-400 to-indigo-400 rounded-full shadow-sm"></div>
-        <div className="pl-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
-              type === 'similar' 
-                ? 'bg-gradient-to-br from-violet-500 to-purple-600' 
-                : 'bg-gradient-to-br from-indigo-500 to-blue-600'
-            }`}>
+      <div className="mt-6 relative">
+        <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-200 to-blue-200 rounded-full"></div>
+        <div className="pl-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${type === 'similar' ? 'bg-gradient-to-r from-purple-500 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-blue-600'} shadow-lg`}>
               {type === 'similar' ? (
-                <Sparkles className="w-5 h-5 text-white" />
+                <Sparkles className="w-4 h-4 text-white" />
               ) : (
-                <RefreshCw className="w-5 h-5 text-white" />
+                <RefreshCw className="w-4 h-4 text-white" />
               )}
             </div>
-            <div className="flex-1">
-              <h4 className="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                {type === 'similar' ? 'Generated Similar Questions' : 'Converted Questions'}
-              </h4>
-              <p className="text-sm text-gray-500 mt-1">AI-powered question variations</p>
-            </div>
-            <Badge 
-              variant="secondary" 
-              className="bg-gradient-to-r from-violet-100 to-indigo-100 text-violet-700 border-0 px-3 py-1"
-            >
+            <h4 className="text-lg font-semibold text-gray-800">
+              {type === 'similar' ? 'Generated Similar Questions' : 'Converted Questions'}
+            </h4>
+            <Badge variant="secondary" className="ml-auto">
               {questions.length} questions
             </Badge>
           </div>
           
-          <div className="space-y-4">
+          <div className="grid gap-4">
             {questions.map((question, index) => (
-              <Card 
-                key={question.id} 
-                className="group border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm hover:bg-white overflow-hidden"
-              >
-                <CardContent className="p-0">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 w-12 h-full bg-gradient-to-br from-gray-50 to-gray-100 border-r border-gray-100 flex items-center justify-center">
-                      <span className="text-lg font-bold text-gray-400 group-hover:text-gray-600 transition-colors">
-                        {index + 1}
-                      </span>
+              <Card key={question.id} className="border-0 shadow-md hover:shadow-lg transition-all duration-200 bg-gradient-to-r from-white to-gray-50/50">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
+                      {index + 1}
                     </div>
-                    <div className="flex-1 p-6">
+                    <div className="flex-1 min-w-0">
                       {question.isEditing ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                           <Textarea
                             defaultValue={question.text}
-                            className="w-full border-gray-200 focus:border-violet-300 focus:ring-violet-200 rounded-lg resize-none"
-                            rows={4}
-                            placeholder="Edit your question..."
+                            className="w-full border-gray-200 focus:border-purple-300 focus:ring-purple-200 rounded-lg"
+                            rows={3}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && e.ctrlKey) {
                                 saveGeneratedQuestion(questionId, type, question.id, e.currentTarget.value);
@@ -355,16 +339,16 @@ const ExamAssistPrep = () => {
                                   saveGeneratedQuestion(questionId, type, question.id, textarea.value);
                                 }
                               }}
-                              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                             >
                               <Check className="w-4 h-4" />
-                              Save Changes
+                              Save
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => cancelEditGeneratedQuestion(questionId, type, question.id)}
-                              className="flex items-center gap-2 hover:bg-gray-50"
+                              className="flex items-center gap-2"
                             >
                               <X className="w-4 h-4" />
                               Cancel
@@ -372,58 +356,55 @@ const ExamAssistPrep = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-4">
-                          <p className="text-gray-800 leading-relaxed text-base font-medium">
-                            {question.text}
-                          </p>
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => editGeneratedQuestion(questionId, type, question.id)}
-                                className="h-8 px-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
-                              >
-                                <Edit className="w-4 h-4 mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => deleteGeneratedQuestion(questionId, type, question.id)}
-                                className="h-8 px-3 text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4 mr-1" />
-                                Delete
-                              </Button>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant={addedToRepository.has(question.id) ? "default" : "outline"}
-                              onClick={() => addGeneratedToRepository(question)}
-                              disabled={addedToRepository.has(question.id)}
-                              className={`flex items-center gap-2 h-8 px-4 transition-all duration-200 ${
-                                addedToRepository.has(question.id) 
-                                  ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm' 
-                                  : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200'
-                              }`}
-                            >
-                              {addedToRepository.has(question.id) ? (
-                                <>
-                                  <Check className="w-4 h-4" />
-                                  Added to Repository
-                                </>
-                              ) : (
-                                <>
-                                  <Plus className="w-4 h-4" />
-                                  Add to Repository
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </div>
+                        <p className="text-gray-700 leading-relaxed text-base">{question.text}</p>
                       )}
                     </div>
+                    {!question.isEditing && (
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => editGeneratedQuestion(questionId, type, question.id)}
+                          className="p-2 hover:bg-gray-100 transition-colors"
+                          title="Edit question"
+                        >
+                          <Edit className="w-4 h-4 text-gray-600" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={addedToRepository.has(question.id) ? "default" : "outline"}
+                          onClick={() => addGeneratedToRepository(question)}
+                          disabled={addedToRepository.has(question.id)}
+                          className={`flex items-center gap-2 transition-all duration-200 ${
+                            addedToRepository.has(question.id) 
+                              ? 'bg-green-600 text-white hover:bg-green-700' 
+                              : 'text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200'
+                          }`}
+                          title={addedToRepository.has(question.id) ? "Added to repository" : "Add to repository"}
+                        >
+                          {addedToRepository.has(question.id) ? (
+                            <>
+                              <Check className="w-4 h-4" />
+                              Added
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-4 h-4" />
+                              Add
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteGeneratedQuestion(questionId, type, question.id)}
+                          className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
+                          title="Delete question"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -672,95 +653,82 @@ const ExamAssistPrep = () => {
                   mockQuestions
                     .filter(question => selectedFilter === 'All' || question.type === selectedFilter)
                     .map((question) => (
-                    <Card key={question.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-sm bg-white/90 backdrop-blur-sm hover:bg-white overflow-hidden">
-                      <CardContent className="p-0">
-                        <div className="flex">
-                          {/* Left accent bar */}
-                          <div className="w-1.5 bg-gradient-to-b from-indigo-500 to-purple-600 flex-shrink-0"></div>
-                          
-                          {/* Main content */}
-                          <div className="flex-1 p-6">
-                            <div className="flex items-start gap-4">
-                              <div className="flex-shrink-0">
-                                <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                                  <FileText className="w-7 h-7 text-white" />
-                                </div>
-                              </div>
-                              
-                              <div className="flex-1 min-w-0 space-y-4">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 px-3 py-1 font-medium">{question.type}</Badge>
-                                  <Badge variant="secondary" className="bg-gray-100 text-gray-700 px-3 py-1">{question.year}</Badge>
-                                  <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50 px-3 py-1">{question.chapter}</Badge>
-                                  <Badge className="border-purple-200 bg-purple-50 text-purple-700 font-medium px-3 py-1">{question.taxonomy}</Badge>
-                                </div>
-                                <p className="text-gray-800 leading-relaxed text-lg font-medium">{question.text}</p>
-                                
-                                {/* Action row */}
-                                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() => generateSimilarFromQuestion(question.id, question.text)}
-                                      className="h-9 px-4 text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-colors"
-                                    >
-                                      <Sparkles className="w-4 h-4 mr-2" />
-                                      Generate Similar
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() => openConversionModal(question.id, question.text)}
-                                      className="h-9 px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                                    >
-                                      <RefreshCw className="w-4 h-4 mr-2" />
-                                      Convert Type
-                                    </Button>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-3">
-                                    <Button
-                                      size="sm"
-                                      variant={repository.find(q => q.id === question.id) ? "default" : "outline"}
-                                      onClick={() => addToRepository(question)}
-                                      disabled={repository.find(q => q.id === question.id) !== undefined}
-                                      className={`h-9 px-4 transition-all duration-200 ${
-                                        repository.find(q => q.id === question.id) 
-                                          ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm' 
-                                          : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200'
-                                      }`}
-                                    >
-                                      {repository.find(q => q.id === question.id) ? (
-                                        <>
-                                          <Check className="w-4 h-4 mr-2" />
-                                          Added to Repository
-                                        </>
-                                      ) : (
-                                        <>
-                                          <Plus className="w-4 h-4 mr-2" />
-                                          Add to Repository
-                                        </>
-                                      )}
-                                    </Button>
-                                    
-                                    <div className="flex items-center">
-                                      <input 
-                                        type="checkbox" 
-                                        className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
-                                        onChange={(e) => {
-                                          if (e.target.checked) {
-                                            setSelectedQuestions([...selectedQuestions, question.id]);
-                                          } else {
-                                            setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
-                                          }
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                    <Card key={question.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-white to-blue-50/30">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                              <FileText className="w-6 h-6 text-white" />
                             </div>
+                          </div>
+                          
+                          <div className="flex-1 min-w-0 space-y-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
+                              <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
+                              <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
+                              <Badge className="border-purple-200 bg-purple-50 text-purple-700 font-medium">{question.taxonomy}</Badge>
+                            </div>
+                            <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white/80">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => generateSimilarFromQuestion(question.id, question.text)}
+                                className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-100 transition-colors"
+                                title="Generate Similar Questions"
+                              >
+                                <Sparkles className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openConversionModal(question.id, question.text)}
+                                className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 transition-colors"
+                                title="Convert Question Type"
+                              >
+                                <RefreshCw className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            <Button
+                              size="sm"
+                              variant={repository.find(q => q.id === question.id) ? "default" : "outline"}
+                              onClick={() => addToRepository(question)}
+                              disabled={repository.find(q => q.id === question.id) !== undefined}
+                              className={`flex items-center gap-2 transition-all duration-200 ${
+                                repository.find(q => q.id === question.id) 
+                                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                                  : 'text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200'
+                              }`}
+                            >
+                              {repository.find(q => q.id === question.id) ? (
+                                <>
+                                  <Check className="w-4 h-4" />
+                                  Added
+                                </>
+                              ) : (
+                                <>
+                                  <Plus className="w-4 h-4" />
+                                  Add to Repository
+                                </>
+                              )}
+                            </Button>
+                            
+                            <input 
+                              type="checkbox" 
+                              className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedQuestions([...selectedQuestions, question.id]);
+                                } else {
+                                  setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                                }
+                              }}
+                            />
                           </div>
                         </div>
                       </CardContent>
@@ -857,66 +825,57 @@ const ExamAssistPrep = () => {
                      {/* Questions List */}
                      <div className="space-y-4">
                     {repository.map((question) => (
-                      <Card key={question.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-sm bg-white/90 backdrop-blur-sm hover:bg-white overflow-hidden">
-                        <CardContent className="p-0">
-                          <div className="flex">
-                            {/* Left accent bar */}
-                            <div className="w-1.5 bg-gradient-to-b from-emerald-500 to-teal-600 flex-shrink-0"></div>
-                            
-                            {/* Main content */}
-                            <div className="flex-1 p-6">
-                              <div className="flex items-start gap-4">
-                                <div className="flex-shrink-0">
-                                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                                    <Bookmark className="w-7 h-7 text-white" />
-                                  </div>
-                                </div>
-                                
-                                <div className="flex-1 min-w-0 space-y-4">
-                                  <div className="flex flex-wrap items-center gap-2">
-                                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 px-3 py-1 font-medium">{question.type}</Badge>
-                                    <Badge variant="secondary" className="bg-gray-100 text-gray-700 px-3 py-1">{question.year}</Badge>
-                                    <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50 px-3 py-1">{question.chapter}</Badge>
-                                    <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50 px-3 py-1">{question.subject} - Class {question.class}</Badge>
-                                    <Badge className="border-purple-200 bg-purple-50 text-purple-700 font-medium px-3 py-1">{question.taxonomy}</Badge>
-                                  </div>
-                                  <p className="text-gray-800 leading-relaxed text-lg font-medium">{question.text}</p>
-                                  
-                                  {/* Action row */}
-                                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                                    <div className="flex items-center gap-2">
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => generateSimilarFromQuestion(question.id, question.text)}
-                                        className="h-9 px-4 text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-colors"
-                                      >
-                                        <Sparkles className="w-4 h-4 mr-2" />
-                                        Generate Similar
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => openConversionModal(question.id, question.text)}
-                                        className="h-9 px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                                      >
-                                        <RefreshCw className="w-4 h-4 mr-2" />
-                                        Convert Type
-                                      </Button>
-                                    </div>
-                                    
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => removeFromRepository(question.id)}
-                                      className="h-9 px-4 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-2" />
-                                      Remove from Repository
-                                    </Button>
-                                  </div>
-                                </div>
+                      <Card key={question.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-white to-emerald-50/30">
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0">
+                              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <Bookmark className="w-6 h-6 text-white" />
                               </div>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0 space-y-3">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
+                                <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
+                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
+                                <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">{question.subject} - Class {question.class}</Badge>
+                                <Badge className="border-purple-200 bg-purple-50 text-purple-700 font-medium">{question.taxonomy}</Badge>
+                              </div>
+                              <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white/80">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => generateSimilarFromQuestion(question.id, question.text)}
+                                  className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-100 transition-colors"
+                                  title="Generate Similar Questions"
+                                >
+                                  <Sparkles className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => openConversionModal(question.id, question.text)}
+                                  className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 transition-colors"
+                                  title="Convert Question Type"
+                                >
+                                  <RefreshCw className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => removeFromRepository(question.id)}
+                                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Remove
+                              </Button>
                             </div>
                           </div>
                         </CardContent>
