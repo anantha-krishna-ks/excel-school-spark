@@ -167,7 +167,9 @@ const Assessment = () => {
     { value: 'mcq', label: 'MCQ' },
     { value: 'fill-blank', label: 'Fill in the blank' },
     { value: 'short-description', label: 'Short description' },
-    { value: 'long-description', label: 'Long description' }
+    { value: 'long-description', label: 'Long description' },
+    { value: 'open-ended', label: 'Open Ended' },
+    { value: 'case-study', label: 'Case Study' }
   ];
 
   return (
