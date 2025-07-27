@@ -653,12 +653,12 @@ const ExamAssistPrep = () => {
                   mockQuestions
                     .filter(question => selectedFilter === 'All' || question.type === selectedFilter)
                     .map((question) => (
-                    <Card key={question.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-white to-blue-50/30">
+                    <Card key={question.id} className="group hover:border-gray-300 transition-all duration-300 border border-gray-200 bg-white">
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
                           <div className="flex-shrink-0">
-                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                              <FileText className="w-6 h-6 text-white" />
+                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-gray-500" />
                             </div>
                           </div>
                           
@@ -667,7 +667,6 @@ const ExamAssistPrep = () => {
                               <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
                               <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
                               <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
-                              <Badge className="border-purple-200 bg-purple-50 text-purple-700 font-medium">{question.taxonomy}</Badge>
                             </div>
                             <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
                           </div>
@@ -825,12 +824,12 @@ const ExamAssistPrep = () => {
                      {/* Questions List */}
                      <div className="space-y-4">
                     {repository.map((question) => (
-                      <Card key={question.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-r from-white to-emerald-50/30">
+                      <Card key={question.id} className="group hover:border-gray-300 transition-all duration-300 border border-gray-200 bg-white">
                         <CardContent className="p-6">
                           <div className="flex items-start gap-4">
                             <div className="flex-shrink-0">
-                              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-                                <Bookmark className="w-6 h-6 text-white" />
+                              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <Bookmark className="w-5 h-5 text-gray-500" />
                               </div>
                             </div>
                             
@@ -840,7 +839,6 @@ const ExamAssistPrep = () => {
                                 <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
                                 <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
                                 <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">{question.subject} - Class {question.class}</Badge>
-                                <Badge className="border-purple-200 bg-purple-50 text-purple-700 font-medium">{question.taxonomy}</Badge>
                               </div>
                               <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
                             </div>
