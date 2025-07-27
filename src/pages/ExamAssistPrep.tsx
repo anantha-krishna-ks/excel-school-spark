@@ -311,8 +311,8 @@ const ExamAssistPrep = () => {
           
           <div className="grid gap-4">
             {questions.map((question, index) => (
-              <Card key={question.id} className="border-0 shadow-md hover:shadow-lg transition-all duration-200 bg-gradient-to-r from-white to-gray-50/50">
-                <CardContent className="p-6">
+              <Card key={question.id} className="border border-gray-200 hover:border-gray-300 transition-all duration-200 bg-white">
+                <CardContent className="p-4">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
                       {index + 1}
