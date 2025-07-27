@@ -208,6 +208,37 @@ const ExamAssistPrep = () => {
     setRepository(repository.filter(q => q.id !== questionId));
   };
 
+  // Functions for managing generated questions from repository/search
+  const generateSimilarFromQuestion = (questionText: string) => {
+    const generated: GeneratedQuestion[] = [
+      { id: `sim-${Date.now()}-1`, text: `Generated Question 1: ${questionText} (Modified with AI)` },
+      { id: `sim-${Date.now()}-2`, text: `Generated Question 2: ${questionText} (Alternative approach)` },
+      { id: `sim-${Date.now()}-3`, text: `Generated Question 3: ${questionText} (Different context)` }
+    ];
+    setSimilarQuestions(prev => [...prev, ...generated]);
+    setActiveTab('generate');
+    setTimeout(() => {
+      const similarSection = document.querySelector('[data-section="similar-questions"]');
+      if (similarSection) {
+        similarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
+  const convertQuestionFromRepository = (questionText: string) => {
+    const converted: GeneratedQuestion[] = [
+      { id: `conv-${Date.now()}-1`, text: `Converted Question 1 to Understanding: ${questionText} (Converted format)` }
+    ];
+    setConvertedQuestions(prev => [...prev, ...converted]);
+    setActiveTab('generate');
+    setTimeout(() => {
+      const convertedSection = document.querySelector('[data-section="converted-questions"]');
+      if (convertedSection) {
+        convertedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
   // Functions for managing generated questions
   const editGeneratedQuestion = (type: 'similar' | 'converted', id: string) => {
     if (type === 'similar') {
@@ -523,29 +554,49 @@ const ExamAssistPrep = () => {
                            </div>
                           <p className="text-gray-800 leading-relaxed">{question.text}</p>
                         </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => addToRepository(question)}
-                            disabled={repository.find(q => q.id === question.id) !== undefined}
-                            className="flex items-center gap-1"
-                          >
-                            <Plus className="w-4 h-4" />
-                            {repository.find(q => q.id === question.id) ? 'Added' : 'Add to Repository'}
-                          </Button>
-                          <input 
-                            type="checkbox" 
-                            className="mt-1"
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedQuestions([...selectedQuestions, question.id]);
-                              } else {
-                                setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
-                              }
-                            }}
-                          />
-                        </div>
+                         <div className="flex items-center gap-2 ml-4">
+                           <div className="flex items-center gap-1">
+                             <Button
+                               size="sm"
+                               variant="outline"
+                               onClick={() => generateSimilarFromQuestion(question.text)}
+                               className="flex items-center gap-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                               title="Generate Similar Questions"
+                             >
+                               <Sparkles className="w-4 h-4" />
+                             </Button>
+                             <Button
+                               size="sm"
+                               variant="outline"
+                               onClick={() => convertQuestionFromRepository(question.text)}
+                               className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                               title="Convert Question Type"
+                             >
+                               <RefreshCw className="w-4 h-4" />
+                             </Button>
+                           </div>
+                           <Button
+                             size="sm"
+                             variant="outline"
+                             onClick={() => addToRepository(question)}
+                             disabled={repository.find(q => q.id === question.id) !== undefined}
+                             className="flex items-center gap-1"
+                           >
+                             <Plus className="w-4 h-4" />
+                             {repository.find(q => q.id === question.id) ? 'Added' : 'Add to Repository'}
+                           </Button>
+                           <input 
+                             type="checkbox" 
+                             className="mt-1"
+                             onChange={(e) => {
+                               if (e.target.checked) {
+                                 setSelectedQuestions([...selectedQuestions, question.id]);
+                               } else {
+                                 setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                               }
+                             }}
+                           />
+                         </div>
                       </div>
                     </div>
                   ))
@@ -641,7 +692,7 @@ const ExamAssistPrep = () => {
 
             {/* Similar Questions Results */}
             {similarQuestions.length > 0 && (
-              <Card>
+              <Card data-section="similar-questions">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-purple-600" />
@@ -932,17 +983,37 @@ const ExamAssistPrep = () => {
                              </div>
                             <p className="text-gray-800 leading-relaxed">{question.text}</p>
                           </div>
-                          <div className="flex items-center gap-2 ml-4">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => removeFromRepository(question.id)}
-                              className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              Remove
-                            </Button>
-                          </div>
+                           <div className="flex items-center gap-2 ml-4">
+                             <div className="flex items-center gap-1">
+                               <Button
+                                 size="sm"
+                                 variant="outline"
+                                 onClick={() => generateSimilarFromQuestion(question.text)}
+                                 className="flex items-center gap-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                 title="Generate Similar Questions"
+                               >
+                                 <Sparkles className="w-4 h-4" />
+                               </Button>
+                               <Button
+                                 size="sm"
+                                 variant="outline"
+                                 onClick={() => convertQuestionFromRepository(question.text)}
+                                 className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                 title="Convert Question Type"
+                               >
+                                 <RefreshCw className="w-4 h-4" />
+                               </Button>
+                             </div>
+                             <Button
+                               size="sm"
+                               variant="outline"
+                               onClick={() => removeFromRepository(question.id)}
+                               className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                             >
+                               <Trash2 className="w-4 h-4" />
+                               Remove
+                             </Button>
+                           </div>
                         </div>
                       </div>
                     ))}
