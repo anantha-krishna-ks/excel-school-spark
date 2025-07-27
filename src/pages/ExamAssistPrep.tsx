@@ -9,8 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 
 interface Question {
   id: string;
@@ -41,10 +39,6 @@ const ExamAssistPrep = () => {
   const [repository, setRepository] = useState<Question[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
   const [questionGenerations, setQuestionGenerations] = useState<Record<string, { similar: GeneratedQuestion[], converted: GeneratedQuestion[] }>>({});
-  const [showConversionModal, setShowConversionModal] = useState(false);
-  const [conversionTarget, setConversionTarget] = useState<{questionId: string, questionText: string} | null>(null);
-  const [conversionType, setConversionType] = useState('MCQ');
-  const [conversionQuantity, setConversionQuantity] = useState('1');
 
   // Mock data
   const classes = ['10', '12'];
@@ -192,30 +186,18 @@ const ExamAssistPrep = () => {
     }));
   };
 
-  const openConversionModal = (questionId: string, questionText: string) => {
-    setConversionTarget({ questionId, questionText });
-    setShowConversionModal(true);
-  };
-
-  const handleConversion = () => {
-    if (!conversionTarget) return;
-    
-    const quantity = parseInt(conversionQuantity);
-    const converted: GeneratedQuestion[] = Array.from({ length: quantity }, (_, index) => ({
-      id: `conv-${Date.now()}-${index + 1}`,
-      text: `Converted Question ${index + 1} to ${conversionType}: ${conversionTarget.questionText} (Converted to ${conversionType} format)`
-    }));
+  const convertQuestionFromRepository = (questionId: string, questionText: string) => {
+    const converted: GeneratedQuestion[] = [
+      { id: `conv-${Date.now()}-1`, text: `Converted Question 1 to Understanding: ${questionText} (Converted format)` }
+    ];
     
     setQuestionGenerations(prev => ({
       ...prev,
-      [conversionTarget.questionId]: {
-        ...prev[conversionTarget.questionId],
+      [questionId]: {
+        ...prev[questionId],
         converted: converted
       }
     }));
-    
-    setShowConversionModal(false);
-    setConversionTarget(null);
   };
 
   // Functions for managing generated questions
@@ -647,7 +629,7 @@ const ExamAssistPrep = () => {
                              <Button
                                size="sm"
                                variant="outline"
-                                onClick={() => openConversionModal(question.id, question.text)}
+                               onClick={() => convertQuestionFromRepository(question.id, question.text)}
                                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                title="Convert Question Type"
                              >
@@ -796,7 +778,7 @@ const ExamAssistPrep = () => {
                                <Button
                                  size="sm"
                                  variant="outline"
-                               onClick={() => openConversionModal(question.id, question.text)}
+                               onClick={() => convertQuestionFromRepository(question.id, question.text)}
                                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                title="Convert Question Type"
                                >
@@ -859,65 +841,6 @@ const ExamAssistPrep = () => {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Conversion Modal */}
-      <Dialog open={showConversionModal} onOpenChange={setShowConversionModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <RefreshCw className="w-5 h-5 text-blue-600" />
-              Convert Question Type
-            </DialogTitle>
-            <DialogDescription>
-              Choose the target question type and specify how many variations you'd like to generate.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="conversion-type">Convert to Question Type</Label>
-              <Select value={conversionType} onValueChange={setConversionType}>
-                <SelectTrigger id="conversion-type">
-                  <SelectValue placeholder="Select question type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="MCQ">Multiple Choice Question (MCQ)</SelectItem>
-                  <SelectItem value="Short Answer">Short Answer</SelectItem>
-                  <SelectItem value="Long Answer">Long Answer</SelectItem>
-                  <SelectItem value="Assertion-Reason">Assertion-Reason</SelectItem>
-                  <SelectItem value="Case Study">Case Study</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="conversion-quantity">Number of Questions</Label>
-              <Select value={conversionQuantity} onValueChange={setConversionQuantity}>
-                <SelectTrigger id="conversion-quantity">
-                  <SelectValue placeholder="Select quantity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 Question</SelectItem>
-                  <SelectItem value="2">2 Questions</SelectItem>
-                  <SelectItem value="3">3 Questions</SelectItem>
-                  <SelectItem value="4">4 Questions</SelectItem>
-                  <SelectItem value="5">5 Questions</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConversionModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleConversion} className="bg-blue-600 hover:bg-blue-700">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Convert Questions
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
