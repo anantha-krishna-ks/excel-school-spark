@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import searchPlaceholder from '@/assets/search-placeholder.png';
 import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown, Bookmark, Plus, Trash2, Edit, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -40,13 +40,32 @@ const ExamAssistPrep = () => {
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('search');
   const [repository, setRepository] = useState<Question[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<string>('All');
+  const [selectedFilter, setSelectedFilter] = useState<string[]>(['All']);
+  const [selectedQuestionTypes, setSelectedQuestionTypes] = useState<string[]>(['All']);
   const [questionGenerations, setQuestionGenerations] = useState<Record<string, { similar: GeneratedQuestion[], converted: GeneratedQuestion[] }>>({});
   const [showConversionModal, setShowConversionModal] = useState(false);
   const [conversionTarget, setConversionTarget] = useState<{questionId: string, questionText: string} | null>(null);
   const [conversionType, setConversionType] = useState('MCQ');
   const [conversionQuantity, setConversionQuantity] = useState('1');
   const [addedToRepository, setAddedToRepository] = useState<Set<string>>(new Set());
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('#taxonomy-dropdown') && !target.closest('[data-dropdown="taxonomy"]')) {
+        document.getElementById('taxonomy-dropdown')?.classList.add('hidden');
+      }
+      if (!target.closest('#question-type-dropdown') && !target.closest('[data-dropdown="question-type"]')) {
+        document.getElementById('question-type-dropdown')?.classList.add('hidden');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Mock data
   const classes = ['10', '12'];
@@ -612,50 +631,122 @@ const ExamAssistPrep = () => {
               </CardContent>
             </Card>
 
-            {/* Chapter Summary with Interactive Filters */}
+            {/* Advanced Filters */}
             {selectedChapter && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Filter Questions for "{selectedChapter}"</CardTitle>
+                  <CardTitle className="text-lg">Advanced Filters for "{selectedChapter}"</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-3">
-                    <Badge 
-                      variant={selectedFilter === 'All' ? 'default' : 'secondary'}
-                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-indigo-100 ${
-                        selectedFilter === 'All' ? 'bg-indigo-600 text-white' : ''
-                      }`}
-                      onClick={() => setSelectedFilter('All')}
-                    >
-                      All (10)
-                    </Badge>
-                    <Badge 
-                      variant={selectedFilter === 'Knowledge' ? 'default' : 'secondary'}
-                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-blue-100 ${
-                        selectedFilter === 'Knowledge' ? 'bg-blue-600 text-white' : ''
-                      }`}
-                      onClick={() => setSelectedFilter('Knowledge')}
-                    >
-                      3 Knowledge
-                    </Badge>
-                    <Badge 
-                      variant={selectedFilter === 'Understanding' ? 'default' : 'secondary'}
-                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-green-100 ${
-                        selectedFilter === 'Understanding' ? 'bg-green-600 text-white' : ''
-                      }`}
-                      onClick={() => setSelectedFilter('Understanding')}
-                    >
-                      3 Understanding
-                    </Badge>
-                    <Badge 
-                      variant={selectedFilter === 'Application' ? 'default' : 'secondary'}
-                      className={`px-3 py-1 cursor-pointer transition-colors hover:bg-purple-100 ${
-                        selectedFilter === 'Application' ? 'bg-purple-600 text-white' : ''
-                      }`}
-                      onClick={() => setSelectedFilter('Application')}
-                    >
-                      4 Application
-                    </Badge>
+                  <div className="flex flex-wrap gap-4">
+                    {/* Taxonomy Filter Dropdown */}
+                    <div className="relative">
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Taxonomy Level</label>
+                      <div className="relative inline-block text-left">
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2 min-w-[200px] justify-between bg-white border-2 border-gray-200 hover:border-indigo-300"
+                          data-dropdown="taxonomy"
+                          onClick={() => {
+                            const dropdown = document.getElementById('taxonomy-dropdown');
+                            dropdown?.classList.toggle('hidden');
+                          }}
+                        >
+                          <span className="text-sm">
+                            {selectedFilter.includes('All') ? 'All Taxonomy' : 
+                             selectedFilter.length === 1 ? selectedFilter[0] : 
+                             `${selectedFilter.length} selected`}
+                          </span>
+                          <ChevronDown className="w-4 h-4" />
+                        </Button>
+                        <div
+                          id="taxonomy-dropdown"
+                          className="hidden absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                        >
+                          <div className="py-2">
+                            {['All', 'Knowledge', 'Understanding', 'Application'].map((option) => (
+                              <label key={option} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedFilter.includes(option) || (option === 'All' && selectedFilter.includes('All'))}
+                                  onChange={(e) => {
+                                    if (option === 'All') {
+                                      setSelectedFilter(e.target.checked ? ['All'] : []);
+                                    } else {
+                                      const newFilter = selectedFilter.filter(f => f !== 'All');
+                                      if (e.target.checked) {
+                                        const updated = [...newFilter, option];
+                                        setSelectedFilter(updated.length === 3 ? ['All'] : updated);
+                                      } else {
+                                        setSelectedFilter(newFilter.filter(f => f !== option));
+                                      }
+                                    }
+                                  }}
+                                  className="mr-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                />
+                                <span className="text-sm text-gray-700">{option}</span>
+                                <span className="ml-auto text-xs text-gray-500">
+                                  ({option === 'All' ? '10' : option === 'Knowledge' ? '3' : option === 'Understanding' ? '3' : '4'})
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Question Type Filter Dropdown */}
+                    <div className="relative">
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Question Type</label>
+                      <div className="relative inline-block text-left">
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2 min-w-[200px] justify-between bg-white border-2 border-gray-200 hover:border-purple-300"
+                          data-dropdown="question-type"
+                          onClick={() => {
+                            const dropdown = document.getElementById('question-type-dropdown');
+                            dropdown?.classList.toggle('hidden');
+                          }}
+                        >
+                          <span className="text-sm">
+                            {selectedQuestionTypes.includes('All') ? 'All Types' : 
+                             selectedQuestionTypes.length === 1 ? selectedQuestionTypes[0] : 
+                             `${selectedQuestionTypes.length} selected`}
+                          </span>
+                          <ChevronDown className="w-4 h-4" />
+                        </Button>
+                        <div
+                          id="question-type-dropdown"
+                          className="hidden absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                        >
+                          <div className="py-2">
+                            {['All', 'MCQ', 'Short Answer', 'Long Answer', 'Assertion-Reason', 'Case Study'].map((option) => (
+                              <label key={option} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedQuestionTypes.includes(option) || (option === 'All' && selectedQuestionTypes.includes('All'))}
+                                  onChange={(e) => {
+                                    if (option === 'All') {
+                                      setSelectedQuestionTypes(e.target.checked ? ['All'] : []);
+                                    } else {
+                                      const newFilter = selectedQuestionTypes.filter(f => f !== 'All');
+                                      if (e.target.checked) {
+                                        const updated = [...newFilter, option];
+                                        setSelectedQuestionTypes(updated.length === 5 ? ['All'] : updated);
+                                      } else {
+                                        setSelectedQuestionTypes(newFilter.filter(f => f !== option));
+                                      }
+                                    }
+                                  }}
+                                  className="mr-3 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                />
+                                <span className="text-sm text-gray-700">{option}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -669,7 +760,15 @@ const ExamAssistPrep = () => {
                   <Button 
                     variant="outline" 
                     onClick={() => {
-                      const filteredQuestions = mockQuestions.filter(question => selectedFilter === 'All' || question.type === selectedFilter);
+                      const getFilteredQuestions = () => {
+                        return mockQuestions.filter(question => {
+                          const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
+                          const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
+                          return taxonomyMatch && questionTypeMatch;
+                        });
+                      };
+                      
+                      const filteredQuestions = getFilteredQuestions();
                       const allFiltered = filteredQuestions.every(q => selectedQuestions.includes(q.id));
                       
                       if (allFiltered) {
@@ -685,7 +784,14 @@ const ExamAssistPrep = () => {
                   >
                     <input 
                       type="checkbox" 
-                      checked={mockQuestions.filter(question => selectedFilter === 'All' || question.type === selectedFilter).every(q => selectedQuestions.includes(q.id))}
+                      checked={(() => {
+                        const filteredQuestions = mockQuestions.filter(question => {
+                          const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
+                          const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
+                          return taxonomyMatch && questionTypeMatch;
+                        });
+                        return filteredQuestions.length > 0 && filteredQuestions.every(q => selectedQuestions.includes(q.id));
+                      })()}
                       readOnly
                       className="mr-1"
                     />
@@ -714,10 +820,14 @@ const ExamAssistPrep = () => {
                       Please select values from the dropdowns above to display search results.
                     </p>
                   </div>
-                ) : (
-                  mockQuestions
-                    .filter(question => selectedFilter === 'All' || question.type === selectedFilter)
-                    .map((question) => (
+                 ) : (
+                   mockQuestions
+                     .filter(question => {
+                       const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
+                       const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
+                       return taxonomyMatch && questionTypeMatch;
+                     })
+                     .map((question) => (
                     <Card key={question.id} className="group hover:border-gray-300 transition-all duration-300 border border-gray-200 bg-white">
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
