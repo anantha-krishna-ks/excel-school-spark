@@ -318,6 +318,14 @@ const ExamAssistPrep = () => {
                       {index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <Badge variant="outline" className="border-indigo-200 text-indigo-700 bg-indigo-50 font-medium">
+                          AI Generated
+                        </Badge>
+                        <Badge variant="outline" className="border-purple-200 text-purple-700 bg-purple-50 font-medium">
+                          {type === 'similar' ? 'Similar Question' : 'Converted Question'}
+                        </Badge>
+                      </div>
                       {question.isEditing ? (
                         <div className="space-y-3">
                           <Textarea
@@ -669,7 +677,9 @@ const ExamAssistPrep = () => {
                           
                           <div className="flex-1 min-w-0 space-y-3">
                             <div className="flex flex-wrap items-center gap-2">
-                              <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
+                              <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 font-semibold">
+                                {question.type} Question
+                              </Badge>
                               <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
                               <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
                             </div>
@@ -839,8 +849,10 @@ const ExamAssistPrep = () => {
                             </div>
                             
                             <div className="flex-1 min-w-0 space-y-3">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 font-semibold">
+                                  {question.type} Question
+                                </Badge>
                                 <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
                                 <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
                                 <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">{question.subject} - Class {question.class}</Badge>
