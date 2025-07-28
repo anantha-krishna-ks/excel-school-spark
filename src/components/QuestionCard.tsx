@@ -220,9 +220,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                     </DialogContent>
                   </Dialog>
                   
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Expand className="h-4 w-4" />
-                  </Button>
                   
                   <Button 
                     variant="ghost" 
