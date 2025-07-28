@@ -631,122 +631,134 @@ const ExamAssistPrep = () => {
               </CardContent>
             </Card>
 
-            {/* Advanced Filters */}
+            {/* Advanced Filters - Always Visible */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Advanced Filters</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-4">
+                  {/* Taxonomy Filter Dropdown */}
+                  <div className="relative">
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Taxonomy Level</label>
+                    <div className="relative inline-block text-left">
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2 min-w-[200px] justify-between bg-white border-2 border-gray-200 hover:border-indigo-300"
+                        data-dropdown="taxonomy"
+                        onClick={() => {
+                          const dropdown = document.getElementById('taxonomy-dropdown');
+                          dropdown?.classList.toggle('hidden');
+                        }}
+                      >
+                        <span className="text-sm">
+                          {selectedFilter.includes('All') ? 'All Taxonomy' : 
+                           selectedFilter.length === 1 ? selectedFilter[0] : 
+                           `${selectedFilter.length} selected`}
+                        </span>
+                        <ChevronDown className="w-4 h-4" />
+                      </Button>
+                      <div
+                        id="taxonomy-dropdown"
+                        className="hidden absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                      >
+                        <div className="py-2">
+                          {['All', 'Knowledge', 'Understanding', 'Application'].map((option) => (
+                            <label key={option} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedFilter.includes(option) || (option === 'All' && selectedFilter.includes('All'))}
+                                onChange={(e) => {
+                                  if (option === 'All') {
+                                    setSelectedFilter(e.target.checked ? ['All'] : []);
+                                  } else {
+                                    const newFilter = selectedFilter.filter(f => f !== 'All');
+                                    if (e.target.checked) {
+                                      const updated = [...newFilter, option];
+                                      setSelectedFilter(updated.length === 3 ? ['All'] : updated);
+                                    } else {
+                                      setSelectedFilter(newFilter.filter(f => f !== option));
+                                    }
+                                  }
+                                }}
+                                className="mr-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                              />
+                              <span className="text-sm text-gray-700">{option}</span>
+                              <span className="ml-auto text-xs text-gray-500">
+                                ({option === 'All' ? '10' : option === 'Knowledge' ? '3' : option === 'Understanding' ? '3' : '4'})
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Question Type Filter Dropdown */}
+                  <div className="relative">
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Question Type</label>
+                    <div className="relative inline-block text-left">
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2 min-w-[200px] justify-between bg-white border-2 border-gray-200 hover:border-purple-300"
+                        data-dropdown="question-type"
+                        onClick={() => {
+                          const dropdown = document.getElementById('question-type-dropdown');
+                          dropdown?.classList.toggle('hidden');
+                        }}
+                      >
+                        <span className="text-sm">
+                          {selectedQuestionTypes.includes('All') ? 'All Types' : 
+                           selectedQuestionTypes.length === 1 ? selectedQuestionTypes[0] : 
+                           `${selectedQuestionTypes.length} selected`}
+                        </span>
+                        <ChevronDown className="w-4 h-4" />
+                      </Button>
+                      <div
+                        id="question-type-dropdown"
+                        className="hidden absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                      >
+                        <div className="py-2">
+                          {['All', 'MCQ', 'Short Answer', 'Long Answer', 'Assertion-Reason', 'Case Study'].map((option) => (
+                            <label key={option} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedQuestionTypes.includes(option) || (option === 'All' && selectedQuestionTypes.includes('All'))}
+                                onChange={(e) => {
+                                  if (option === 'All') {
+                                    setSelectedQuestionTypes(e.target.checked ? ['All'] : []);
+                                  } else {
+                                    const newFilter = selectedQuestionTypes.filter(f => f !== 'All');
+                                    if (e.target.checked) {
+                                      const updated = [...newFilter, option];
+                                      setSelectedQuestionTypes(updated.length === 5 ? ['All'] : updated);
+                                    } else {
+                                      setSelectedQuestionTypes(newFilter.filter(f => f !== option));
+                                    }
+                                  }
+                                }}
+                                className="mr-3 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                              />
+                              <span className="text-sm text-gray-700">{option}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Chapter-specific summary */}
             {selectedChapter && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Advanced Filters for "{selectedChapter}"</CardTitle>
+                  <CardTitle className="text-lg">Results for "{selectedChapter}"</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-4">
-                    {/* Taxonomy Filter Dropdown */}
-                    <div className="relative">
-                      <label className="text-sm font-medium text-gray-700 block mb-2">Taxonomy Level</label>
-                      <div className="relative inline-block text-left">
-                        <Button
-                          variant="outline"
-                          className="flex items-center gap-2 min-w-[200px] justify-between bg-white border-2 border-gray-200 hover:border-indigo-300"
-                          data-dropdown="taxonomy"
-                          onClick={() => {
-                            const dropdown = document.getElementById('taxonomy-dropdown');
-                            dropdown?.classList.toggle('hidden');
-                          }}
-                        >
-                          <span className="text-sm">
-                            {selectedFilter.includes('All') ? 'All Taxonomy' : 
-                             selectedFilter.length === 1 ? selectedFilter[0] : 
-                             `${selectedFilter.length} selected`}
-                          </span>
-                          <ChevronDown className="w-4 h-4" />
-                        </Button>
-                        <div
-                          id="taxonomy-dropdown"
-                          className="hidden absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
-                        >
-                          <div className="py-2">
-                            {['All', 'Knowledge', 'Understanding', 'Application'].map((option) => (
-                              <label key={option} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedFilter.includes(option) || (option === 'All' && selectedFilter.includes('All'))}
-                                  onChange={(e) => {
-                                    if (option === 'All') {
-                                      setSelectedFilter(e.target.checked ? ['All'] : []);
-                                    } else {
-                                      const newFilter = selectedFilter.filter(f => f !== 'All');
-                                      if (e.target.checked) {
-                                        const updated = [...newFilter, option];
-                                        setSelectedFilter(updated.length === 3 ? ['All'] : updated);
-                                      } else {
-                                        setSelectedFilter(newFilter.filter(f => f !== option));
-                                      }
-                                    }
-                                  }}
-                                  className="mr-3 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                />
-                                <span className="text-sm text-gray-700">{option}</span>
-                                <span className="ml-auto text-xs text-gray-500">
-                                  ({option === 'All' ? '10' : option === 'Knowledge' ? '3' : option === 'Understanding' ? '3' : '4'})
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Question Type Filter Dropdown */}
-                    <div className="relative">
-                      <label className="text-sm font-medium text-gray-700 block mb-2">Question Type</label>
-                      <div className="relative inline-block text-left">
-                        <Button
-                          variant="outline"
-                          className="flex items-center gap-2 min-w-[200px] justify-between bg-white border-2 border-gray-200 hover:border-purple-300"
-                          data-dropdown="question-type"
-                          onClick={() => {
-                            const dropdown = document.getElementById('question-type-dropdown');
-                            dropdown?.classList.toggle('hidden');
-                          }}
-                        >
-                          <span className="text-sm">
-                            {selectedQuestionTypes.includes('All') ? 'All Types' : 
-                             selectedQuestionTypes.length === 1 ? selectedQuestionTypes[0] : 
-                             `${selectedQuestionTypes.length} selected`}
-                          </span>
-                          <ChevronDown className="w-4 h-4" />
-                        </Button>
-                        <div
-                          id="question-type-dropdown"
-                          className="hidden absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
-                        >
-                          <div className="py-2">
-                            {['All', 'MCQ', 'Short Answer', 'Long Answer', 'Assertion-Reason', 'Case Study'].map((option) => (
-                              <label key={option} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedQuestionTypes.includes(option) || (option === 'All' && selectedQuestionTypes.includes('All'))}
-                                  onChange={(e) => {
-                                    if (option === 'All') {
-                                      setSelectedQuestionTypes(e.target.checked ? ['All'] : []);
-                                    } else {
-                                      const newFilter = selectedQuestionTypes.filter(f => f !== 'All');
-                                      if (e.target.checked) {
-                                        const updated = [...newFilter, option];
-                                        setSelectedQuestionTypes(updated.length === 5 ? ['All'] : updated);
-                                      } else {
-                                        setSelectedQuestionTypes(newFilter.filter(f => f !== option));
-                                      }
-                                    }
-                                  }}
-                                  className="mr-3 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                />
-                                <span className="text-sm text-gray-700">{option}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="text-sm text-gray-600">
+                    Showing filtered results from {selectedChapter} chapter
                   </div>
                 </CardContent>
               </Card>
