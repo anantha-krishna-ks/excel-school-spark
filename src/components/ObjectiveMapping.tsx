@@ -93,14 +93,6 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
         
         <div className="flex gap-2">
           <Button
-            variant={viewMode === 'edit' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('edit')}
-          >
-            <Link size={16} className="mr-1" />
-            Edit
-          </Button>
-          <Button
             variant={viewMode === 'view' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('view')}
