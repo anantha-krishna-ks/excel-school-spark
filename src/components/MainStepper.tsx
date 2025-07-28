@@ -291,7 +291,19 @@ const MainStepper = ({
               setSubject={setSubject}
               chapters={chapters}
               setChapters={setChapters}
+              onGenerateCO={() => setCurrentStep(2)} // Navigate to Core Objectives section
             />
+            
+            {/* Core Objectives Panel - Show after Generate COs is clicked */}
+            {currentStep >= 2 && (
+              <div className="mt-8">
+                <CoreObjectives 
+                  onGenerateCO={onGenerateCO}
+                  shortlistedObjectives={shortlistedObjectives}
+                  setShortlistedObjectives={setShortlistedObjectives}
+                />
+              </div>
+            )}
           </div>
         </section>
 
