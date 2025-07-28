@@ -12,6 +12,7 @@ interface SelectionPanelProps {
   setSubject: (value: string) => void;
   chapters: string;
   setChapters: (value: string) => void;
+  onGenerateCO?: () => void;
 }
 const SelectionPanel = ({
   board,
@@ -21,7 +22,8 @@ const SelectionPanel = ({
   subject,
   setSubject,
   chapters,
-  setChapters
+  setChapters,
+  onGenerateCO
 }: SelectionPanelProps) => {
   const chapterOptions = [
     { value: 'chapter1', label: 'Chapter 1: Introduction to Science' },
@@ -145,7 +147,10 @@ const SelectionPanel = ({
 
       {/* Generate COs Button */}
       <div className="text-center">
-        <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+        <Button 
+          onClick={onGenerateCO}
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+        >
           <Target className="mr-2" size={18} />
           Generate COs
         </Button>
