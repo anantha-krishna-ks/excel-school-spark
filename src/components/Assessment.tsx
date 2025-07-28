@@ -131,13 +131,49 @@ const Assessment = () => {
 
     const newItems: GeneratedItem[] = [];
     
+    const sampleQuestions = {
+      'mcq': [
+        'What is the chemical symbol for water?',
+        'Which planet is closest to the sun?',
+        'What is the capital of France?'
+      ],
+      'fill-blank': [
+        'A ________ is a group of stars that appear to form a pattern in the sky.',
+        'The process by which plants make their own food is called ________.',
+        'The largest mammal in the world is the ________.'
+      ],
+      'short-description': [
+        'What is photosynthesis?',
+        'Define gravity.',
+        'What is democracy?'
+      ],
+      'long-description': [
+        'Explain the process of photosynthesis, including the stages involved and its importance to living organisms.',
+        'Describe the water cycle and explain how it affects weather patterns.',
+        'Analyze the causes and effects of climate change on global ecosystems.'
+      ],
+      'open-ended': [
+        'How do you think technology has changed the way people communicate in today\'s world?',
+        'What role should governments play in protecting the environment?',
+        'How might artificial intelligence impact education in the future?'
+      ],
+      'case-study': [
+        'As a business consultant, what strategies would you recommend EcoFresh Ltd. pursue to remain competitive and grow in the national market? Justify your recommendations with reasons.',
+        'Analyze the marketing strategy failures of a company that launched a new product but failed to gain market share.',
+        'Evaluate the ethical considerations a pharmaceutical company should address when pricing life-saving medications.'
+      ]
+    };
+    
     elo.assessmentRows.forEach((row) => {
       if (row.noOfItems && row.itemType) {
         const numberOfItems = parseInt(row.noOfItems);
+        const questionsPool = sampleQuestions[row.itemType as keyof typeof sampleQuestions] || ['Sample question'];
+        
         for (let i = 1; i <= numberOfItems; i++) {
+          const questionIndex = (i - 1) % questionsPool.length;
           newItems.push({
             id: `${eloId}-item-${Date.now()}-${i}`,
-            question: `Item Question ${i}`,
+            question: questionsPool[questionIndex],
             itemType: row.itemType,
             eloName: elo.name
           });

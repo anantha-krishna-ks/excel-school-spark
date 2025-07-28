@@ -38,18 +38,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
 
   const bloomsLevel = getBloomsTaxonomy();
 
-  const getSampleQuestion = (type: string) => {
-    const sampleQuestions = {
-      'mcq': 'What is the chemical symbol for water?',
-      'fill-blank': 'A ________ is a group of stars that appear to form a pattern in the sky.',
-      'short-description': 'What is photosynthesis?',
-      'long-description': 'Explain the process of photosynthesis, including the stages involved and its importance to living organisms.',
-      'open-ended': 'How do you think technology has changed the way people communicate in today\'s world?',
-      'case-study': 'As a business consultant, what strategies would you recommend EcoFresh Ltd. pursue to remain competitive and grow in the national market? Justify your recommendations with reasons.'
-    };
-    return sampleQuestions[type as keyof typeof sampleQuestions] || item.question;
-  };
-
   const getTypeColor = (type: string) => {
     const colors = {
       'mcq': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -63,47 +51,74 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
   };
 
   const renderPreviewContent = () => {
+    const getMCQOptions = (question: string) => {
+      if (question.includes('chemical symbol for water')) {
+        return ['A) H2O', 'B) CO2', 'C) NaCl', 'D) O2'];
+      } else if (question.includes('closest to the sun')) {
+        return ['A) Mercury', 'B) Venus', 'C) Earth', 'D) Mars'];
+      } else if (question.includes('capital of France')) {
+        return ['A) London', 'B) Berlin', 'C) Paris', 'D) Madrid'];
+      } else {
+        return ['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D'];
+      }
+    };
+
+    const getCaseStudyContext = (question: string) => {
+      if (question.includes('EcoFresh')) {
+        return 'EcoFresh Ltd. is a startup company that produces biodegradable cleaning products. The company was founded in 2022 and has seen moderate growth in local markets. Recently, EcoFresh received investor funding to expand nationwide. However, the company is now facing challenges such as increased competition from established brands, supply chain delays for raw materials, and the need to hire skilled marketing professionals. The CEO is considering whether to invest in digital marketing, form partnerships with eco-friendly retailers, or diversify the product line.';
+      } else if (question.includes('marketing strategy failures')) {
+        return 'TechnoGadget Inc. launched their revolutionary smartphone with advanced AI features. Despite heavy investment in development and initial hype, the product failed to gain significant market share. The company overlooked key market research, priced the product too high for the target demographic, and failed to communicate the unique value proposition effectively to consumers.';
+      } else {
+        return 'This is a case study scenario that provides background context and relevant information for analyzing the situation and answering the associated questions.';
+      }
+    };
+
+    const getFillBlankAnswer = (question: string) => {
+      if (question.includes('group of stars')) {
+        return 'constellation';
+      } else if (question.includes('plants make their own food')) {
+        return 'photosynthesis';
+      } else if (question.includes('largest mammal')) {
+        return 'blue whale';
+      } else {
+        return 'answer';
+      }
+    };
+
     switch (item.itemType) {
       case 'mcq':
+        const options = getMCQOptions(item.question);
         return (
           <div className="space-y-4">
             <div className="font-medium">{item.question}</div>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <input type="radio" name="option" className="h-4 w-4" />
-                <span>A) H2O</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="radio" name="option" className="h-4 w-4" />
-                <span>B) CO2</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="radio" name="option" className="h-4 w-4" />
-                <span>C) NaCl</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="radio" name="option" className="h-4 w-4" />
-                <span>D) O2</span>
-              </div>
+              {options.map((option, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input type="radio" name="option" className="h-4 w-4" />
+                  <span>{option}</span>
+                </div>
+              ))}
             </div>
           </div>
         );
       case 'fill-blank':
+        const answer = getFillBlankAnswer(item.question);
         return (
           <div className="space-y-4">
             <div className="font-medium">{item.question}</div>
             <div className="border-b-2 border-gray-300 inline-block min-w-[200px] pb-1">
-              <span className="text-transparent">constellation</span>
+              <span className="text-transparent">{answer}</span>
             </div>
           </div>
         );
       case 'case-study':
+        const context = getCaseStudyContext(item.question);
         return (
           <div className="space-y-4">
             <div className="bg-muted/50 p-4 rounded-lg">
               <h4 className="font-semibold mb-2">Case Study</h4>
               <p className="text-sm text-muted-foreground mb-4">
-                EcoFresh Ltd. is a startup company that produces biodegradable cleaning products. The company was founded in 2022 and has seen moderate growth in local markets. Recently, EcoFresh received investor funding to expand nationwide. However, the company is now facing challenges such as increased competition from established brands, supply chain delays for raw materials, and the need to hire skilled marketing professionals. The CEO is considering whether to invest in digital marketing, form partnerships with eco-friendly retailers, or diversify the product line.
+                {context}
               </p>
             </div>
             <div className="font-medium">{item.question}</div>
@@ -159,7 +174,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                   </div>
                   
                   <p className="text-foreground leading-relaxed mb-3">
-                    {getSampleQuestion(item.itemType)}
+                    {item.question}
                   </p>
                   
                   <div className="flex items-center gap-2">
@@ -209,17 +224,76 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                           />
                         </div>
                         
-                        {item.itemType === 'mcq' && (
-                          <div className="space-y-3">
-                            <Label>Options</Label>
-                            {['A', 'B', 'C', 'D'].map((option) => (
-                              <div key={option} className="flex items-center gap-2">
-                                <span className="text-sm font-medium w-6">{option}:</span>
-                                <Input placeholder={`Option ${option}`} />
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                         {item.itemType === 'mcq' && (
+                           <div className="space-y-3">
+                             <Label>Options</Label>
+                             {item.question.includes('chemical symbol for water') ? (
+                               <>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">A:</span>
+                                   <Input defaultValue="H2O" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">B:</span>
+                                   <Input defaultValue="CO2" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">C:</span>
+                                   <Input defaultValue="NaCl" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">D:</span>
+                                   <Input defaultValue="O2" />
+                                 </div>
+                               </>
+                             ) : item.question.includes('closest to the sun') ? (
+                               <>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">A:</span>
+                                   <Input defaultValue="Mercury" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">B:</span>
+                                   <Input defaultValue="Venus" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">C:</span>
+                                   <Input defaultValue="Earth" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">D:</span>
+                                   <Input defaultValue="Mars" />
+                                 </div>
+                               </>
+                             ) : item.question.includes('capital of France') ? (
+                               <>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">A:</span>
+                                   <Input defaultValue="London" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">B:</span>
+                                   <Input defaultValue="Berlin" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">C:</span>
+                                   <Input defaultValue="Paris" />
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">D:</span>
+                                   <Input defaultValue="Madrid" />
+                                 </div>
+                               </>
+                             ) : (
+                               ['A', 'B', 'C', 'D'].map((option) => (
+                                 <div key={option} className="flex items-center gap-2">
+                                   <span className="text-sm font-medium w-6">{option}:</span>
+                                   <Input placeholder={`Option ${option}`} />
+                                 </div>
+                               ))
+                             )}
+                           </div>
+                         )}
                         
                         <div className="flex justify-end gap-2 pt-4">
                           <Button variant="outline" onClick={() => setIsEditOpen(false)}>
