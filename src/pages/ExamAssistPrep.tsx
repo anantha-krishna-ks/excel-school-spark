@@ -27,6 +27,7 @@ interface GeneratedQuestion {
   id: string;
   text: string;
   isEditing?: boolean;
+  questionType?: string;
 }
 
 const ExamAssistPrep = () => {
@@ -57,6 +58,57 @@ const ExamAssistPrep = () => {
     'Social Science': ['Resources and Development', 'Democracy and Diversity', 'Nationalism in India', 'The Rise of Nationalism in Europe']
   };
   const questionTypes = ['Knowledge', 'Understanding', 'Application'];
+
+  // Helper function to detect question type based on text
+  const detectQuestionType = (text: string): string => {
+    const lowerText = text.toLowerCase();
+    
+    // MCQ detection
+    if (lowerText.includes('(a)') && lowerText.includes('(b)') && lowerText.includes('(c)')) {
+      return 'MCQ';
+    }
+    
+    // Short Answer detection (typically shorter questions)
+    if (text.length < 100 && (lowerText.includes('define') || lowerText.includes('name') || lowerText.includes('what is') || lowerText.includes('list'))) {
+      return 'Short Answer';
+    }
+    
+    // Long Answer detection (typically longer questions with explanations)
+    if (text.length > 200 || lowerText.includes('explain') || lowerText.includes('describe') || lowerText.includes('analyze') || lowerText.includes('design an experiment')) {
+      return 'Long Answer';
+    }
+    
+    // Assertion-Reason detection
+    if (lowerText.includes('assertion') && lowerText.includes('reason')) {
+      return 'Assertion-Reason';
+    }
+    
+    // Case Study detection
+    if (lowerText.includes('case study') || lowerText.includes('scenario') || (text.length > 300 && lowerText.includes('situation'))) {
+      return 'Case Study';
+    }
+    
+    // Default fallback
+    return 'Short Answer';
+  };
+
+  // Helper function to get question type badge color
+  const getQuestionTypeBadgeStyle = (questionType: string) => {
+    switch (questionType) {
+      case 'MCQ':
+        return 'border-blue-300 text-blue-800 bg-blue-100';
+      case 'Short Answer':
+        return 'border-green-300 text-green-800 bg-green-100';
+      case 'Long Answer':
+        return 'border-purple-300 text-purple-800 bg-purple-100';
+      case 'Assertion-Reason':
+        return 'border-orange-300 text-orange-800 bg-orange-100';
+      case 'Case Study':
+        return 'border-red-300 text-red-800 bg-red-100';
+      default:
+        return 'border-gray-300 text-gray-800 bg-gray-100';
+    }
+  };
 
   const mockQuestions: Question[] = [
     {
@@ -179,9 +231,9 @@ const ExamAssistPrep = () => {
   // Functions for managing generated questions from repository/search
   const generateSimilarFromQuestion = (questionId: string, questionText: string) => {
     const generated: GeneratedQuestion[] = [
-      { id: `sim-${Date.now()}-1`, text: `Generated Question 1: ${questionText} (Modified with AI)` },
-      { id: `sim-${Date.now()}-2`, text: `Generated Question 2: ${questionText} (Alternative approach)` },
-      { id: `sim-${Date.now()}-3`, text: `Generated Question 3: ${questionText} (Different context)` }
+      { id: `sim-${Date.now()}-1`, text: `Generated Question 1: ${questionText} (Modified with AI)`, questionType: detectQuestionType(questionText) },
+      { id: `sim-${Date.now()}-2`, text: `Generated Question 2: ${questionText} (Alternative approach)`, questionType: detectQuestionType(questionText) },
+      { id: `sim-${Date.now()}-3`, text: `Generated Question 3: ${questionText} (Different context)`, questionType: detectQuestionType(questionText) }
     ];
     
     setQuestionGenerations(prev => ({
@@ -204,7 +256,8 @@ const ExamAssistPrep = () => {
     const quantity = parseInt(conversionQuantity);
     const converted: GeneratedQuestion[] = Array.from({ length: quantity }, (_, index) => ({
       id: `conv-${Date.now()}-${index + 1}`,
-      text: `Converted Question ${index + 1} to ${conversionType}: ${conversionTarget.questionText} (Converted to ${conversionType} format)`
+      text: `Converted Question ${index + 1} to ${conversionType}: ${conversionTarget.questionText} (Converted to ${conversionType} format)`,
+      questionType: conversionType
     }));
     
     setQuestionGenerations(prev => ({
@@ -317,47 +370,54 @@ const ExamAssistPrep = () => {
                     <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
                       {index + 1}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      {question.isEditing ? (
-                        <div className="space-y-3">
-                          <Textarea
-                            defaultValue={question.text}
-                            className="w-full border-gray-200 focus:border-purple-300 focus:ring-purple-200 rounded-lg"
-                            rows={3}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && e.ctrlKey) {
-                                saveGeneratedQuestion(questionId, type, question.id, e.currentTarget.value);
-                              }
-                            }}
-                          />
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                const textarea = e.currentTarget.parentElement?.parentElement?.querySelector('textarea');
-                                if (textarea) {
-                                  saveGeneratedQuestion(questionId, type, question.id, textarea.value);
-                                }
-                              }}
-                              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                            >
-                              <Check className="w-4 h-4" />
-                              Save
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => cancelEditGeneratedQuestion(questionId, type, question.id)}
-                              className="flex items-center gap-2"
-                            >
-                              <X className="w-4 h-4" />
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-gray-700 leading-relaxed text-base">{question.text}</p>
-                      )}
+                     <div className="flex-1 min-w-0">
+                       {question.isEditing ? (
+                         <div className="space-y-3">
+                           <Textarea
+                             defaultValue={question.text}
+                             className="w-full border-gray-200 focus:border-purple-300 focus:ring-purple-200 rounded-lg"
+                             rows={3}
+                             onKeyDown={(e) => {
+                               if (e.key === 'Enter' && e.ctrlKey) {
+                                 saveGeneratedQuestion(questionId, type, question.id, e.currentTarget.value);
+                               }
+                             }}
+                           />
+                           <div className="flex gap-2">
+                             <Button
+                               size="sm"
+                               onClick={(e) => {
+                                 const textarea = e.currentTarget.parentElement?.parentElement?.querySelector('textarea');
+                                 if (textarea) {
+                                   saveGeneratedQuestion(questionId, type, question.id, textarea.value);
+                                 }
+                               }}
+                               className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                             >
+                               <Check className="w-4 h-4" />
+                               Save
+                             </Button>
+                             <Button
+                               size="sm"
+                               variant="outline"
+                               onClick={() => cancelEditGeneratedQuestion(questionId, type, question.id)}
+                               className="flex items-center gap-2"
+                             >
+                               <X className="w-4 h-4" />
+                               Cancel
+                             </Button>
+                           </div>
+                         </div>
+                       ) : (
+                         <div className="space-y-3">
+                           <div className="flex flex-wrap items-center gap-2 mb-2">
+                             <Badge variant="outline" className={getQuestionTypeBadgeStyle(question.questionType || detectQuestionType(question.text))}>
+                               {question.questionType || detectQuestionType(question.text)}
+                             </Badge>
+                           </div>
+                           <p className="text-gray-700 leading-relaxed text-base">{question.text}</p>
+                         </div>
+                       )}
                     </div>
                     {!question.isEditing && (
                       <div className="flex items-center gap-2">
@@ -667,14 +727,17 @@ const ExamAssistPrep = () => {
                             </div>
                           </div>
                           
-                          <div className="flex-1 min-w-0 space-y-3">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
-                              <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
-                              <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
-                            </div>
-                            <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
-                          </div>
+                           <div className="flex-1 min-w-0 space-y-3">
+                             <div className="flex flex-wrap items-center gap-2">
+                               <Badge variant="outline" className={getQuestionTypeBadgeStyle(detectQuestionType(question.text))}>
+                                 {detectQuestionType(question.text)}
+                               </Badge>
+                               <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
+                               <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
+                               <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
+                             </div>
+                             <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
+                           </div>
                           
                           <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white/80">
@@ -838,15 +901,18 @@ const ExamAssistPrep = () => {
                               </div>
                             </div>
                             
-                            <div className="flex-1 min-w-0 space-y-3">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
-                                <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
-                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
-                                <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">{question.subject} - Class {question.class}</Badge>
-                              </div>
-                              <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
-                            </div>
+                             <div className="flex-1 min-w-0 space-y-3">
+                               <div className="flex flex-wrap items-center gap-2">
+                                 <Badge variant="outline" className={getQuestionTypeBadgeStyle(detectQuestionType(question.text))}>
+                                   {detectQuestionType(question.text)}
+                                 </Badge>
+                                 <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
+                                 <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
+                                 <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
+                                 <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">{question.subject} - Class {question.class}</Badge>
+                               </div>
+                               <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
+                             </div>
                             
                             <div className="flex items-center gap-2">
                               <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white/80">
