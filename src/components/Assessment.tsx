@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Plus, Edit, Trash2, FileCheck, Minus } from 'lucide-react';
+import QuestionCard from './QuestionCard';
 
 interface AssessmentItemRow {
   id: string;
@@ -272,62 +273,22 @@ const Assessment = () => {
                   </Button>
                 </div>
 
-                {/* Generated Items Table */}
+                {/* Generated Items Cards */}
                 {elo.generatedItems.length > 0 && (
                   <div className="space-y-4">
                     <h4 className="font-semibold text-lg">Generated Items ({elo.generatedItems.length})</h4>
                     
-                    <div className="border rounded-lg overflow-hidden">
-                      <div className="bg-muted/50 px-6 py-3 border-b">
-                        <div className="grid grid-cols-4 gap-4 font-medium text-sm">
-                          <span>Item Question</span>
-                          <span>Item Type</span>
-                          <span>ELO Name</span>
-                          <span>Actions</span>
-                        </div>
-                      </div>
-                      
-                      <div className="divide-y">
-                        {elo.generatedItems.map((item, index) => (
-                          <div key={item.id} className="px-6 py-4 hover:bg-muted/30 transition-colors">
-                            <div className="grid grid-cols-4 gap-4 items-center">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">{index + 1}.</span>
-                                <span>{item.question}</span>
-                              </div>
-                              <div>
-                                <Badge variant="secondary" className="capitalize">
-                                  {item.itemType.replace('-', ' ')}
-                                </Badge>
-                              </div>
-                              <div>
-                                <Badge variant="outline">
-                                  {item.eloName}
-                                </Badge>
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => editItem(elo.id, item.id)}
-                                >
-                                  <Edit className="h-3 w-3 mr-1" />
-                                  Edit
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => deleteItem(elo.id, item.id)}
-                                  className="text-destructive hover:text-destructive"
-                                >
-                                  <Trash2 className="h-3 w-3 mr-1" />
-                                  Delete
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="space-y-3">
+                      {elo.generatedItems.map((item, index) => (
+                        <QuestionCard
+                          key={item.id}
+                          item={item}
+                          index={index}
+                          eloId={elo.id}
+                          onEdit={editItem}
+                          onDelete={deleteItem}
+                        />
+                      ))}
                     </div>
                   </div>
                 )}
