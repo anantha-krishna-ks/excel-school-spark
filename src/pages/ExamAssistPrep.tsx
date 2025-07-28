@@ -521,6 +521,7 @@ const ExamAssistPrep = () => {
                         <SelectValue placeholder="Select Chapter" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem key="all" value="All">All</SelectItem>
                         {selectedSubject && chapters[selectedSubject as keyof typeof chapters]?.map(chapter => (
                           <SelectItem key={chapter} value={chapter}>{chapter}</SelectItem>
                         ))}
