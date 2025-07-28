@@ -38,6 +38,18 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
 
   const bloomsLevel = getBloomsTaxonomy();
 
+  const getSampleQuestion = (type: string) => {
+    const sampleQuestions = {
+      'mcq': 'What is the chemical symbol for water?',
+      'fill-blank': 'A ________ is a group of stars that appear to form a pattern in the sky.',
+      'short-description': 'What is photosynthesis?',
+      'long-description': 'Explain the process of photosynthesis, including the stages involved and its importance to living organisms.',
+      'open-ended': 'How do you think technology has changed the way people communicate in today\'s world?',
+      'case-study': 'As a business consultant, what strategies would you recommend EcoFresh Ltd. pursue to remain competitive and grow in the national market? Justify your recommendations with reasons.'
+    };
+    return sampleQuestions[type as keyof typeof sampleQuestions] || item.question;
+  };
+
   const getTypeColor = (type: string) => {
     const colors = {
       'mcq': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -146,7 +158,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                   </div>
                   
                   <p className="text-foreground leading-relaxed mb-3">
-                    {item.question}
+                    {getSampleQuestion(item.itemType)}
                   </p>
                   
                   <div className="flex items-center gap-2">
