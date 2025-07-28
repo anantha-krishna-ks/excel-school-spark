@@ -521,9 +521,14 @@ const ExamAssistPrep = () => {
                         <SelectValue placeholder="Select Chapter" />
                       </SelectTrigger>
                       <SelectContent>
-                        {selectedSubject && chapters[selectedSubject as keyof typeof chapters]?.map(chapter => (
-                          <SelectItem key={chapter} value={chapter}>{chapter}</SelectItem>
-                        ))}
+                        {selectedSubject && (
+                          <>
+                            <SelectItem value="All">All Chapters</SelectItem>
+                            {chapters[selectedSubject as keyof typeof chapters]?.map(chapter => (
+                              <SelectItem key={chapter} value={chapter}>{chapter}</SelectItem>
+                            ))}
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
