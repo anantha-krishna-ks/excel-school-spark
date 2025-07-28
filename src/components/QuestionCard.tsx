@@ -71,19 +71,19 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <input type="radio" name="option" className="h-4 w-4" />
-                <span>Option A: Sample option text</span>
+                <span>A) H2O</span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="radio" name="option" className="h-4 w-4" />
-                <span>Option B: Sample option text</span>
+                <span>B) CO2</span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="radio" name="option" className="h-4 w-4" />
-                <span>Option C: Sample option text</span>
+                <span>C) NaCl</span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="radio" name="option" className="h-4 w-4" />
-                <span>Option D: Sample option text</span>
+                <span>D) O2</span>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
           <div className="space-y-4">
             <div className="font-medium">{item.question}</div>
             <div className="border-b-2 border-gray-300 inline-block min-w-[200px] pb-1">
-              <span className="text-transparent">Sample answer</span>
+              <span className="text-transparent">constellation</span>
             </div>
           </div>
         );
@@ -103,7 +103,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
             <div className="bg-muted/50 p-4 rounded-lg">
               <h4 className="font-semibold mb-2">Case Study</h4>
               <p className="text-sm text-muted-foreground mb-4">
-                Sample case study scenario would be presented here with relevant context and background information.
+                EcoFresh Ltd. is a startup company that produces biodegradable cleaning products. The company was founded in 2022 and has seen moderate growth in local markets. Recently, EcoFresh received investor funding to expand nationwide. However, the company is now facing challenges such as increased competition from established brands, supply chain delays for raw materials, and the need to hire skilled marketing professionals. The CEO is considering whether to invest in digital marketing, form partnerships with eco-friendly retailers, or diversify the product line.
               </p>
             </div>
             <div className="font-medium">{item.question}</div>
@@ -122,7 +122,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
   };
 
   const handleSaveEdit = () => {
-    // Here you would typically update the question in the parent component
+    // Update the question content and trigger parent component update
+    onEdit(eloId, item.id);
     setIsEditOpen(false);
   };
 
