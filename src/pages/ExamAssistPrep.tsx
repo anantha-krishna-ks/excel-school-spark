@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import searchPlaceholder from '@/assets/search-placeholder.png';
 import { ArrowLeft, Search, Filter, Download, Sparkles, RefreshCw, FileText, BookOpen, Users, ClipboardList, GraduationCap, ChevronDown, Bookmark, Plus, Trash2, Edit, Check, X, Calendar, Hash, ArrowRight, Eye } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,6 +43,7 @@ interface QuestionBundle {
 
 const ExamAssistPrep = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');

@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, FileText, Calendar, Hash } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ArrowLeft, Edit, FileText, Calendar, Hash, Save, X, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface Question {
   id: string;
@@ -26,7 +31,74 @@ const QuestionBundlePreview = () => {
   const location = useLocation();
   
   // Get bundle data from location state or fetch from storage
-  const bundle: QuestionBundle | null = location.state?.bundle || null;
+  const initialBundle: QuestionBundle | null = location.state?.bundle || null;
+  const [bundle, setBundle] = useState<QuestionBundle | null>(initialBundle);
+  const [isEditingBundle, setIsEditingBundle] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
+  const [bundleName, setBundleName] = useState(bundle?.name || '');
+  
+  // Handle back navigation with state preservation
+  const handleBackNavigation = () => {
+    navigate('/exam-assist-prep', { 
+      state: { 
+        activeTab: 'my-questions',
+        preserveState: true 
+      } 
+    });
+  };
+  
+  const handleSaveBundleName = () => {
+    if (bundle && bundleName.trim()) {
+      const updatedBundle = {
+        ...bundle,
+        name: bundleName.trim(),
+        lastEditOn: new Date()
+      };
+      setBundle(updatedBundle);
+      setIsEditingBundle(false);
+      toast({
+        title: "Bundle Updated",
+        description: "Bundle name has been successfully updated.",
+      });
+    }
+  };
+  
+  const handleQuestionEdit = (questionId: string, updatedText: string, type: string, marks: number) => {
+    if (bundle) {
+      const updatedQuestions = bundle.questions.map(q => 
+        q.id === questionId 
+          ? { ...q, text: updatedText, type: type as 'Knowledge' | 'Understanding' | 'Application', marks }
+          : q
+      );
+      const updatedBundle = {
+        ...bundle,
+        questions: updatedQuestions,
+        lastEditOn: new Date()
+      };
+      setBundle(updatedBundle);
+      setEditingQuestion(null);
+      toast({
+        title: "Question Updated",
+        description: "Question has been successfully updated.",
+      });
+    }
+  };
+  
+  const handleDeleteQuestion = (questionId: string) => {
+    if (bundle) {
+      const updatedQuestions = bundle.questions.filter(q => q.id !== questionId);
+      const updatedBundle = {
+        ...bundle,
+        questions: updatedQuestions,
+        lastEditOn: new Date()
+      };
+      setBundle(updatedBundle);
+      toast({
+        title: "Question Deleted",
+        description: "Question has been successfully deleted.",
+      });
+    }
+  };
 
   if (!bundle) {
     return (
@@ -70,17 +142,51 @@ const QuestionBundlePreview = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate('/exam-assist-prep')}
+                onClick={handleBackNavigation}
                 className="hover:bg-gray-50"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                  {bundle.name}
-                </h1>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-blue-600" />
+                    {isEditingBundle ? (
+                      <Input 
+                        value={bundleName}
+                        onChange={(e) => setBundleName(e.target.value)}
+                        className="text-2xl font-bold"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveBundleName();
+                          if (e.key === 'Escape') setIsEditingBundle(false);
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      bundle?.name
+                    )}
+                  </h1>
+                  {isEditingBundle ? (
+                    <div className="flex gap-1">
+                      <Button size="sm" onClick={handleSaveBundleName}>
+                        <Save className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setIsEditingBundle(false)}>
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => setIsEditingBundle(true)}
+                      className="ml-2"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
                 <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
@@ -95,7 +201,7 @@ const QuestionBundlePreview = () => {
             </div>
             <Button className="bg-blue-600 hover:bg-blue-700">
               <Edit className="w-4 h-4 mr-2" />
-              Edit Bundle
+              Edit Questions
             </Button>
           </div>
         </div>
@@ -139,27 +245,52 @@ const QuestionBundlePreview = () => {
               {bundle.questions.map((question, index) => (
                 <Card key={question.id} className="border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md">
                   <CardContent className="p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                            Q{index + 1}
-                          </span>
-                          <Badge 
-                            variant="outline" 
-                            className={`${getTypeColor(question.type)} font-medium`}
-                          >
-                            {question.type}
-                          </Badge>
-                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                            {question.marks} marks
-                          </Badge>
+                    {editingQuestion === question.id ? (
+                      <EditQuestionForm 
+                        question={question}
+                        onSave={handleQuestionEdit}
+                        onCancel={() => setEditingQuestion(null)}
+                      />
+                    ) : (
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <span className="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                              Q{index + 1}
+                            </span>
+                            <Badge 
+                              variant="outline" 
+                              className={`${getTypeColor(question.type)} font-medium`}
+                            >
+                              {question.type}
+                            </Badge>
+                            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                              {question.marks} marks
+                            </Badge>
+                          </div>
+                          <p className="text-gray-900 text-base leading-relaxed">
+                            {question.text}
+                          </p>
                         </div>
-                        <p className="text-gray-900 text-base leading-relaxed">
-                          {question.text}
-                        </p>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => setEditingQuestion(question.id)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDeleteQuestion(question.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -176,6 +307,66 @@ const QuestionBundlePreview = () => {
             </CardContent>
           </Card>
         )}
+      </div>
+    </div>
+  );
+};
+
+// Edit Question Form Component
+const EditQuestionForm = ({ question, onSave, onCancel }: {
+  question: Question;
+  onSave: (id: string, text: string, type: string, marks: number) => void;
+  onCancel: () => void;
+}) => {
+  const [questionText, setQuestionText] = useState(question.text);
+  const [questionType, setQuestionType] = useState(question.type);
+  const [questionMarks, setQuestionMarks] = useState(question.marks.toString());
+
+  const handleSave = () => {
+    if (questionText.trim() && questionMarks) {
+      onSave(question.id, questionText.trim(), questionType, parseInt(questionMarks));
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <Select value={questionType} onValueChange={(value) => setQuestionType(value as 'Knowledge' | 'Understanding' | 'Application')}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select question type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Knowledge">Knowledge</SelectItem>
+            <SelectItem value="Understanding">Understanding</SelectItem>
+            <SelectItem value="Application">Application</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <Input
+          type="number"
+          value={questionMarks}
+          onChange={(e) => setQuestionMarks(e.target.value)}
+          placeholder="Marks"
+          min="1"
+        />
+      </div>
+      
+      <Textarea
+        value={questionText}
+        onChange={(e) => setQuestionText(e.target.value)}
+        placeholder="Enter question text..."
+        rows={4}
+      />
+      
+      <div className="flex gap-2">
+        <Button onClick={handleSave} disabled={!questionText.trim() || !questionMarks}>
+          <Save className="w-4 h-4 mr-2" />
+          Save
+        </Button>
+        <Button variant="outline" onClick={onCancel}>
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
       </div>
     </div>
   );
