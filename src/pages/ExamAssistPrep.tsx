@@ -662,18 +662,18 @@ const ExamAssistPrep = () => {
                            </div>
                          )}
                          
-                         <input 
-                           type="checkbox" 
-                           className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                           onChange={(e) => {
-                             if (e.target.checked) {
-                               setSelectedQuestions([...selectedQuestions, question.id]);
-                             } else {
-                               setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
-                             }
-                           }}
-                           checked={selectedQuestions.includes(question.id)}
-                         />
+                          <input 
+                            type="checkbox" 
+                            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedQuestions([...selectedQuestions, question.id]);
+                              } else {
+                                setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                              }
+                            }}
+                            checked={selectedQuestions.includes(question.id)}
+                          />
                        </div>
                      )}
                   </div>
@@ -1196,17 +1196,18 @@ const ExamAssistPrep = () => {
                                </div>
                              )}
                              
-                            <input 
-                              type="checkbox" 
-                              className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedQuestions([...selectedQuestions, question.id]);
-                                } else {
-                                  setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
-                                }
-                              }}
-                            />
+                             <input 
+                               type="checkbox" 
+                               className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                               onChange={(e) => {
+                                 if (e.target.checked) {
+                                   setSelectedQuestions([...selectedQuestions, question.id]);
+                                 } else {
+                                   setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                                 }
+                               }}
+                               checked={selectedQuestions.includes(question.id)}
+                             />
                           </div>
                         </div>
                       </CardContent>
