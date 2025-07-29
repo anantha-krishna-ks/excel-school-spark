@@ -239,7 +239,17 @@ const ExamAssistPrep = () => {
 
   const handleSearch = () => {
     // Implementation for search functionality
-    console.log('Searching with filters:', { selectedClass, selectedSubject, selectedChapter, selectedQuestionType });
+    const filteredQuestions = getFilteredQuestions();
+    console.log('Searching with filters:', { 
+      selectedClass, 
+      selectedSubject, 
+      selectedChapters, 
+      selectedYears,
+      selectedFilter,
+      selectedQuestionTypes,
+      searchQuery,
+      resultCount: filteredQuestions.length
+    });
   };
 
   const addToRepository = (question: Question) => {
@@ -359,6 +369,37 @@ const ExamAssistPrep = () => {
       setRepository([...repository, newQuestion]);
       setAddedToRepository(prev => new Set(prev).add(generatedQuestion.id));
     }
+  };
+
+  // Helper function to get filtered questions based on all criteria
+  const getFilteredQuestions = () => {
+    const hasClassFilter = selectedClass && selectedClass !== '';
+    const hasSubjectFilter = selectedSubject && selectedSubject !== '';
+    const hasYearFilter = selectedYears.length > 0 && !selectedYears.includes('All Years');
+    const hasChapterFilter = selectedChapters.length > 0 && !selectedChapters.includes('All');
+    
+    return mockQuestions.filter(question => {
+      // Class filter
+      const classMatch = !hasClassFilter || question.class === selectedClass;
+      
+      // Subject filter
+      const subjectMatch = !hasSubjectFilter || question.subject === selectedSubject;
+      
+      // Year filter - extract year from question.year string
+      const yearMatch = !hasYearFilter || selectedYears.some(year => question.year.includes(year));
+      
+      // Chapter filter
+      const chapterMatch = !hasChapterFilter || selectedChapters.includes(question.chapter);
+      
+      // Advanced filters (taxonomy and question type)
+      const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
+      const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
+      
+      // Search query filter
+      const searchMatch = !searchQuery || question.text.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return classMatch && subjectMatch && yearMatch && chapterMatch && taxonomyMatch && questionTypeMatch && searchMatch;
+    });
   };
 
   // Component for rendering generated questions inline
@@ -886,14 +927,6 @@ const ExamAssistPrep = () => {
                   <Button 
                     variant="outline" 
                     onClick={() => {
-                      const getFilteredQuestions = () => {
-                        return mockQuestions.filter(question => {
-                          const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
-                          const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
-                          return taxonomyMatch && questionTypeMatch;
-                        });
-                      };
-                      
                       const filteredQuestions = getFilteredQuestions();
                       const allFiltered = filteredQuestions.every(q => selectedQuestions.includes(q.id));
                       
@@ -911,11 +944,7 @@ const ExamAssistPrep = () => {
                     <input 
                       type="checkbox" 
                       checked={(() => {
-                        const filteredQuestions = mockQuestions.filter(question => {
-                          const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
-                          const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
-                          return taxonomyMatch && questionTypeMatch;
-                        });
+                        const filteredQuestions = getFilteredQuestions();
                         return filteredQuestions.length > 0 && filteredQuestions.every(q => selectedQuestions.includes(q.id));
                       })()}
                       readOnly
@@ -934,26 +963,33 @@ const ExamAssistPrep = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {!selectedClass || !selectedSubject || !selectedChapter ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <img 
-                      src={searchPlaceholder} 
-                      alt="Select dropdowns to view results" 
-                      className="w-64 h-48 object-cover rounded-lg shadow-lg mb-6 opacity-80"
-                    />
-                    <h3 className="text-lg font-semibold text-gray-700 mb-2">No Search Criteria Selected</h3>
-                    <p className="text-gray-500 max-w-md">
-                      Please select values from the dropdowns above to display search results.
-                    </p>
-                  </div>
-                 ) : (
-                   mockQuestions
-                     .filter(question => {
-                       const taxonomyMatch = selectedFilter.includes('All') || selectedFilter.includes(question.type);
-                       const questionTypeMatch = selectedQuestionTypes.includes('All') || selectedQuestionTypes.includes(detectQuestionType(question.text));
-                       return taxonomyMatch && questionTypeMatch;
-                     })
-                     .map((question) => (
+                {(() => {
+                  const hasClassFilter = selectedClass && selectedClass !== '';
+                  const hasSubjectFilter = selectedSubject && selectedSubject !== '';
+                  const hasYearFilter = selectedYears.length > 0 && !selectedYears.includes('All Years');
+                  const hasChapterFilter = selectedChapters.length > 0 && !selectedChapters.includes('All');
+                  
+                  // Show "No Search Criteria Selected" if no primary filters are applied
+                  if (!hasClassFilter && !hasSubjectFilter && !hasYearFilter && !hasChapterFilter) {
+                    return (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <img 
+                          src={searchPlaceholder} 
+                          alt="Select dropdowns to view results" 
+                          className="w-64 h-48 object-cover rounded-lg shadow-lg mb-6 opacity-80"
+                        />
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">No Search Criteria Selected</h3>
+                        <p className="text-gray-500 max-w-md">
+                          Please select values from the dropdowns above to display search results.
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  // Get filtered questions using the helper function
+                  const filteredQuestions = getFilteredQuestions();
+                  
+                  return filteredQuestions.map((question) => (
                     <Card key={question.id} className="group hover:border-gray-300 transition-all duration-300 border border-gray-200 bg-white">
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
@@ -1040,8 +1076,8 @@ const ExamAssistPrep = () => {
                         <GeneratedQuestionsDisplay questionId={question.id} type="similar" />
                         <GeneratedQuestionsDisplay questionId={question.id} type="converted" />
                     </Card>
-                  ))
-                )}
+                   ));
+                })()}
               </CardContent>
             </Card>
           </TabsContent>
