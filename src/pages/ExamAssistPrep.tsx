@@ -66,6 +66,7 @@ const ExamAssistPrep = () => {
   const [questionBundles, setQuestionBundles] = useState<QuestionBundle[]>([]);
   const [showExportModal, setShowExportModal] = useState(false);
   const [bundleName, setBundleName] = useState('');
+  const [showCreateBundleModal, setShowCreateBundleModal] = useState(false);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -386,16 +387,25 @@ const ExamAssistPrep = () => {
   };
 
   // Bundle management functions
-  const handleExportQuestions = () => {
-    if (repository.length === 0) {
+  const handleCreateBundle = () => {
+    if (selectedQuestions.length === 0) {
       toast({
-        title: "No Questions Available",
-        description: "Please add some questions to your repository before exporting.",
+        title: "No Questions Selected",
+        description: "Please select questions to create a bundle.",
         variant: "destructive"
       });
       return;
     }
-    setShowExportModal(true);
+    setShowCreateBundleModal(true);
+  };
+
+  const handleExportQuestions = () => {
+    // This function is for the new Export button functionality
+    // Implementation will be defined separately as per the user's note
+    toast({
+      title: "Export Feature",
+      description: "Export functionality will be implemented separately.",
+    });
   };
 
   const handleSaveBundle = () => {
@@ -408,17 +418,31 @@ const ExamAssistPrep = () => {
       return;
     }
 
+    // Get selected questions from the filtered questions
+    const filteredQuestions = getFilteredQuestions();
+    const selectedQuestionsData = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
+
+    if (selectedQuestionsData.length === 0) {
+      toast({
+        title: "No Questions Selected",
+        description: "Please select questions to create a bundle.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newBundle: QuestionBundle = {
       id: `bundle-${Date.now()}`,
       name: bundleName.trim(),
-      questions: [...repository],
+      questions: selectedQuestionsData,
       createdAt: new Date(),
       lastEditOn: new Date()
     };
 
     setQuestionBundles([...questionBundles, newBundle]);
     setBundleName('');
-    setShowExportModal(false);
+    setShowCreateBundleModal(false);
+    setSelectedQuestions([]); // Clear selection after creating bundle
     
     toast({
       title: "Bundle Created",
@@ -1023,54 +1047,17 @@ const ExamAssistPrep = () => {
                     Select All
                   </Button>
                   <Button 
+                    variant="outline" 
+                    onClick={handleExportQuestions}
+                    className="flex items-center gap-2"
+                    disabled={selectedQuestions.length === 0}
+                  >
+                    <Download className="w-4 h-4" />
+                    Export
+                  </Button>
+                  <Button 
                     variant="default" 
-                    onClick={() => {
-                       const filteredQuestions = getFilteredQuestions();
-                       const selectedQuestionObjects = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
-                       
-                       // Also include selected generated questions
-                       const allGeneratedQuestions: GeneratedQuestion[] = [];
-                       Object.values(questionGenerations).forEach(gen => {
-                         if (gen.similar) allGeneratedQuestions.push(...gen.similar);
-                         if (gen.converted) allGeneratedQuestions.push(...gen.converted);
-                       });
-                       
-                       const selectedGeneratedQuestions = allGeneratedQuestions
-                         .filter(q => selectedQuestions.includes(q.id))
-                         .map(gq => ({
-                           id: `repo-${Date.now()}-${Math.random()}`,
-                           text: gq.text,
-                           type: 'Generated',
-                           year: 'AI Generated',
-                           chapter: 'AI Content',
-                           class: selectedClass || '10',
-                           subject: selectedSubject || 'General',
-                           taxonomy: 'Application'
-                         } as Question));
-                       
-                       const allQuestionsToAdd = [...selectedQuestionObjects, ...selectedGeneratedQuestions];
-                       const newlyAdded = allQuestionsToAdd.filter(q => !repository.find(r => r.text === q.text));
-                      
-                      if (newlyAdded.length > 0) {
-                        newlyAdded.forEach(question => {
-                          setRepository(prev => [...prev, question]);
-                        });
-                        
-                        toast({
-                          title: "Questions Added Successfully",
-                          description: `${newlyAdded.length} question${newlyAdded.length > 1 ? 's' : ''} added to My Questions`,
-                        });
-                      } else {
-                        toast({
-                          title: "No New Questions",
-                          description: "Selected questions are already in My Questions",
-                          variant: "destructive",
-                        });
-                      }
-                      
-                      // Clear selections after adding
-                      setSelectedQuestions([]);
-                    }}
+                    onClick={handleCreateBundle}
                     className="flex items-center gap-2"
                     disabled={selectedQuestions.length === 0}
                   >
@@ -1195,19 +1182,11 @@ const ExamAssistPrep = () => {
                     Save and organize your favorite questions for future use
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-3 py-1">
-                    {repository.length} Questions Saved
-                  </Badge>
-                  <Button 
-                    onClick={handleExportQuestions}
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                    disabled={repository.length === 0}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Questions
-                  </Button>
-                </div>
+                 <div className="flex items-center gap-2">
+                   <Badge variant="secondary" className="px-3 py-1">
+                     {questionBundles.length} Bundle{questionBundles.length !== 1 ? 's' : ''}
+                   </Badge>
+                 </div>
               </CardHeader>
               <CardContent>
                 {repository.length === 0 ? (
@@ -1225,112 +1204,14 @@ const ExamAssistPrep = () => {
                       Browse Questions
                     </Button>
                   </div>
-                ) : (
-                  <>
-                    {/* Summary Widget */}
-                    <Card className="mb-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
-                      <CardContent className="p-6">
-                        <div className="text-center space-y-4">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">
-                              My Questions Summary
-                            </h3>
-                            <p className="text-lg font-semibold text-emerald-700">
-                              Total: {repository.length} Questions
-                            </p>
-                          </div>
-                          
-                          <div className="border-t border-emerald-200 pt-4">
-                            <h4 className="text-sm font-medium text-gray-700 mb-2">
-                              Taxonomy Distribution:
-                            </h4>
-                            <div className="text-sm text-gray-600 bg-white/50 rounded-lg py-2 px-4 inline-block">
-                              {(() => {
-                                const taxonomyCounts = repository.reduce((acc, question) => {
-                                  acc[question.taxonomy] = (acc[question.taxonomy] || 0) + 1;
-                                  return acc;
-                                }, {} as Record<string, number>);
-                                
-                                const taxonomyBreakdown = Object.entries(taxonomyCounts)
-                                  .map(([type, count]) => `${type} (${count})`)
-                                  .join(' | ');
-                                
-                                return taxonomyBreakdown || 'No taxonomy data available';
-                              })()}
-                            </div>
-                          </div>
-                         </div>
-                       </CardContent>
-                     </Card>
-                     
-                     {/* Questions List */}
-                     <div className="space-y-4">
-                    {repository.map((question) => (
-                      <Card key={question.id} className="group hover:border-gray-300 transition-all duration-300 border border-gray-200 bg-white">
-                        <CardContent className="p-6">
-                          <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0">
-                              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <Bookmark className="w-5 h-5 text-gray-500" />
-                              </div>
-                            </div>
-                            
-                             <div className="flex-1 min-w-0 space-y-3">
-                               <div className="flex flex-wrap items-center gap-2">
-                                 <Badge variant="outline" className={getQuestionTypeBadgeStyle(detectQuestionType(question.text))}>
-                                   {detectQuestionType(question.text)}
-                                 </Badge>
-                                 <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">{question.type}</Badge>
-                                 <Badge variant="secondary" className="bg-gray-100 text-gray-700">{question.year}</Badge>
-                                 <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{question.chapter}</Badge>
-                                 <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">{question.subject} - Class {question.class}</Badge>
-                               </div>
-                               <p className="text-gray-800 leading-relaxed text-base font-medium">{question.text}</p>
-                             </div>
-                            
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white/80">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => generateSimilarFromQuestion(question.id, question.text)}
-                                  className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-100 transition-colors"
-                                  title="Generate Similar Questions"
-                                >
-                                  <Sparkles className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => openConversionModal(question.id, question.text)}
-                                  className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 transition-colors"
-                                  title="Convert Question Type"
-                                >
-                                  <RefreshCw className="w-4 h-4" />
-                                </Button>
-                              </div>
-                              
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => removeFromQuestions(question.id)}
-                                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Remove
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                         
-                         {/* Display Generated Questions Inline */}
-                         <GeneratedQuestionsDisplay questionId={question.id} type="similar" />
-                         <GeneratedQuestionsDisplay questionId={question.id} type="converted" />
-                       </Card>
-                    ))}
+                 ) : (
+                   <div className="space-y-4">
+                     <div className="text-center py-8 text-gray-600">
+                       <Bookmark className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                       <p>No individual questions saved. All questions are organized in bundles.</p>
+                     </div>
                    </div>
-                   </>
-                )}
+                 )}
               </CardContent>
             </Card>
 
@@ -1391,36 +1272,6 @@ const ExamAssistPrep = () => {
               </Card>
             )}
 
-            {/* My Questions Statistics */}
-            {repository.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">My Questions Statistics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">
-                        {repository.filter(q => q.type === 'Knowledge').length}
-                      </div>
-                      <div className="text-sm text-gray-600">Knowledge Questions</div>
-                    </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">
-                        {repository.filter(q => q.type === 'Understanding').length}
-                      </div>
-                      <div className="text-sm text-gray-600">Understanding Questions</div>
-                    </div>
-                    <div className="text-center p-4 bg-purple-50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">
-                        {repository.filter(q => q.type === 'Application').length}
-                      </div>
-                      <div className="text-sm text-gray-600">Application Questions</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -1484,16 +1335,16 @@ const ExamAssistPrep = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Export Bundle Modal */}
-      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+      {/* Create Bundle Modal */}
+      <Dialog open={showCreateBundleModal} onOpenChange={setShowCreateBundleModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Download className="w-5 h-5 text-indigo-600" />
-              Export Questions Bundle
+              <BookOpen className="w-5 h-5 text-indigo-600" />
+              Create Question Bundle
             </DialogTitle>
             <DialogDescription>
-              Enter a name for this questions bundle to organize your exported questions.
+              Enter a name for this question bundle to organize your selected questions.
             </DialogDescription>
           </DialogHeader>
           
@@ -1508,16 +1359,16 @@ const ExamAssistPrep = () => {
               />
             </div>
             <div className="text-sm text-gray-600">
-              This bundle will contain {repository.length} question{repository.length !== 1 ? 's' : ''}.
+              This bundle will contain {selectedQuestions.length} selected question{selectedQuestions.length !== 1 ? 's' : ''}.
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowExportModal(false)}>
+            <Button variant="outline" onClick={() => setShowCreateBundleModal(false)}>
               Cancel
             </Button>
             <Button onClick={handleSaveBundle} className="bg-indigo-600 hover:bg-indigo-700">
-              <Download className="w-4 h-4 mr-2" />
+              <BookOpen className="w-4 h-4 mr-2" />
               Save Bundle
             </Button>
           </DialogFooter>
