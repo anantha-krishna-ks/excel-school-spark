@@ -1343,71 +1343,43 @@ const ExamAssistPrep = () => {
                 <CardContent>
                   <div className="grid gap-4">
                     {questionBundles.map((bundle) => (
-                      <Card key={bundle.id} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-gray-50/50 hover:from-blue-50/30 hover:to-indigo-50/30">
-                        <CardContent className="p-6">
+                      <Card key={bundle.id} className="border border-gray-200 hover:border-gray-300 transition-colors">
+                        <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                                  <FileText className="w-5 h-5 text-blue-600" />
-                                </div>
-                                <div>
-                                  <h3 className="font-bold text-gray-900 text-lg mb-1">{bundle.name}</h3>
-                                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                                    <span className="flex items-center gap-1">
-                                      <Calendar className="w-4 h-4" />
-                                      {bundle.lastEditOn.toLocaleDateString()}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Hash className="w-4 h-4" />
-                                      {bundle.questions.length} questions
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Question Type Distribution */}
-                              <div className="flex gap-2 mt-3">
-                                <div className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-                                  {bundle.questions.filter(q => q.type === 'Knowledge').length} Knowledge
-                                </div>
-                                <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                                  {bundle.questions.filter(q => q.type === 'Understanding').length} Understanding
-                                </div>
-                                <div className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
-                                  {bundle.questions.filter(q => q.type === 'Application').length} Application
-                                </div>
+                              <h3 className="font-semibold text-gray-900 mb-2">{bundle.name}</h3>
+                              <div className="space-y-1 text-sm text-gray-600">
+                                <p>Last Edit On: {bundle.lastEditOn.toLocaleDateString()}</p>
+                                <p>Total Questions: {bundle.questions.length}</p>
                               </div>
                             </div>
-                            
-                            <div className="flex flex-col gap-2 ml-6">
+                            <div className="flex items-center gap-2 ml-4">
                               <Button
                                 size="sm"
+                                variant="outline"
                                 onClick={() => previewBundle(bundle)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                                className="text-blue-600 hover:text-blue-700"
                               >
-                                <Eye className="w-4 h-4 mr-2" />
+                                <FileText className="w-4 h-4 mr-1" />
                                 Preview
-                                <ArrowRight className="w-4 h-4 ml-2" />
                               </Button>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => exportBundle(bundle)}
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
-                                >
-                                  <Download className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => deleteBundle(bundle.id)}
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => exportBundle(bundle)}
+                                className="text-green-600 hover:text-green-700"
+                              >
+                                <Download className="w-4 h-4 mr-1" />
+                                Export
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteBundle(bundle.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
                           </div>
                         </CardContent>
