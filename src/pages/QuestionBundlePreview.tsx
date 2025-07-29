@@ -320,7 +320,7 @@ const EditQuestionForm = ({ question, onSave, onCancel }: {
 }) => {
   const [questionText, setQuestionText] = useState(question.text);
   const [questionType, setQuestionType] = useState(question.type);
-  const [questionMarks, setQuestionMarks] = useState(question.marks.toString());
+  const [questionMarks, setQuestionMarks] = useState((question.marks || 1).toString());
 
   const handleSave = () => {
     if (questionText.trim() && questionMarks) {
