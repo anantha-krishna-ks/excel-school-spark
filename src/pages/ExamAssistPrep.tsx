@@ -33,6 +33,14 @@ interface GeneratedQuestion {
   questionType?: string;
 }
 
+interface QuestionBundle {
+  id: string;
+  name: string;
+  questions: Question[];
+  createdAt: Date;
+  lastEditOn: Date;
+}
+
 const ExamAssistPrep = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -54,6 +62,9 @@ const ExamAssistPrep = () => {
   const [conversionType, setConversionType] = useState('MCQ');
   const [conversionQuantity, setConversionQuantity] = useState('1');
   const [addedToRepository, setAddedToRepository] = useState<Set<string>>(new Set());
+  const [questionBundles, setQuestionBundles] = useState<QuestionBundle[]>([]);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [bundleName, setBundleName] = useState('');
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -371,6 +382,71 @@ const ExamAssistPrep = () => {
       setRepository([...repository, newQuestion]);
       setAddedToRepository(prev => new Set(prev).add(generatedQuestion.id));
     }
+  };
+
+  // Bundle management functions
+  const handleExportQuestions = () => {
+    if (repository.length === 0) {
+      toast({
+        title: "No Questions Available",
+        description: "Please add some questions to your repository before exporting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setShowExportModal(true);
+  };
+
+  const handleSaveBundle = () => {
+    if (!bundleName.trim()) {
+      toast({
+        title: "Bundle Name Required",
+        description: "Please enter a name for your question bundle.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newBundle: QuestionBundle = {
+      id: `bundle-${Date.now()}`,
+      name: bundleName.trim(),
+      questions: [...repository],
+      createdAt: new Date(),
+      lastEditOn: new Date()
+    };
+
+    setQuestionBundles([...questionBundles, newBundle]);
+    setBundleName('');
+    setShowExportModal(false);
+    
+    toast({
+      title: "Bundle Created",
+      description: `Question bundle "${newBundle.name}" has been created successfully.`,
+    });
+  };
+
+  const deleteBundle = (bundleId: string) => {
+    setQuestionBundles(questionBundles.filter(bundle => bundle.id !== bundleId));
+    toast({
+      title: "Bundle Deleted",
+      description: "Question bundle has been deleted successfully.",
+    });
+  };
+
+  const exportBundle = (bundle: QuestionBundle) => {
+    // Implement export functionality here
+    toast({
+      title: "Export Started",
+      description: `Exporting "${bundle.name}" bundle...`,
+    });
+  };
+
+  const previewBundle = (bundle: QuestionBundle) => {
+    // Implement preview functionality here
+    toast({
+      title: "Preview",
+      description: `Previewing "${bundle.name}" bundle...`,
+    });
   };
 
   // Helper function to get filtered questions based on all criteria
@@ -1126,6 +1202,14 @@ const ExamAssistPrep = () => {
                   <Badge variant="secondary" className="px-3 py-1">
                     {repository.length} Questions Saved
                   </Badge>
+                  <Button 
+                    onClick={handleExportQuestions}
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                    disabled={repository.length === 0}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Questions
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
@@ -1253,6 +1337,63 @@ const ExamAssistPrep = () => {
               </CardContent>
             </Card>
 
+            {/* Question Bundles */}
+            {questionBundles.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Question Bundles</CardTitle>
+                  <p className="text-sm text-gray-600">Your exported question collections</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4">
+                    {questionBundles.map((bundle) => (
+                      <Card key={bundle.id} className="border border-gray-200 hover:border-gray-300 transition-colors">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900 mb-2">{bundle.name}</h3>
+                              <div className="space-y-1 text-sm text-gray-600">
+                                <p>Last Edit On: {bundle.lastEditOn.toLocaleDateString()}</p>
+                                <p>Total Questions: {bundle.questions.length}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => previewBundle(bundle)}
+                                className="text-blue-600 hover:text-blue-700"
+                              >
+                                <FileText className="w-4 h-4 mr-1" />
+                                Preview
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => exportBundle(bundle)}
+                                className="text-green-600 hover:text-green-700"
+                              >
+                                <Download className="w-4 h-4 mr-1" />
+                                Export
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteBundle(bundle.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* My Questions Statistics */}
             {repository.length > 0 && (
               <Card>
@@ -1341,6 +1482,46 @@ const ExamAssistPrep = () => {
             <Button onClick={handleConversion} className="bg-blue-600 hover:bg-blue-700">
               <RefreshCw className="w-4 h-4 mr-2" />
               Convert Questions
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Export Bundle Modal */}
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Download className="w-5 h-5 text-indigo-600" />
+              Export Questions Bundle
+            </DialogTitle>
+            <DialogDescription>
+              Enter a name for this questions bundle to organize your exported questions.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="bundle-name">Bundle Name</Label>
+              <Input
+                id="bundle-name"
+                placeholder="e.g., Science Chapter 1 Practice Questions"
+                value={bundleName}
+                onChange={(e) => setBundleName(e.target.value)}
+              />
+            </div>
+            <div className="text-sm text-gray-600">
+              This bundle will contain {repository.length} question{repository.length !== 1 ? 's' : ''}.
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowExportModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveBundle} className="bg-indigo-600 hover:bg-indigo-700">
+              <Download className="w-4 h-4 mr-2" />
+              Save Bundle
             </Button>
           </DialogFooter>
         </DialogContent>
