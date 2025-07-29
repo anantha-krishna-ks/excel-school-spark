@@ -1189,78 +1189,89 @@ const ExamAssistPrep = () => {
                  </div>
               </CardHeader>
               <CardContent>
-                {repository.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Bookmark className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Questions Saved Yet</h3>
-                    <p className="text-gray-600 mb-4">
-                      Add questions from the search results to build your personal collection
-                    </p>
-                    <Button 
-                      onClick={() => setActiveTab('search')}
-                      className="bg-indigo-600 hover:bg-indigo-700"
-                    >
-                      <Search className="w-4 h-4 mr-2" />
-                      Browse Questions
-                    </Button>
+                {/* Always show summary stats */}
+                <Card className="mb-6 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-indigo-200 shadow-xl">
+                  <CardContent className="p-8">
+                    <div className="text-center space-y-6">
+                      <div>
+                        <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                          My Questions Overview
+                        </h3>
+                        <p className="text-gray-600 text-lg">
+                          Your organized question collection at a glance
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/60 hover:shadow-xl transition-all duration-300">
+                          <div className="flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                              <BookOpen className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+                          <div className="text-4xl font-bold text-indigo-600 mb-3">
+                            {questionBundles.length}
+                          </div>
+                          <div className="text-lg font-semibold text-gray-700">
+                            Question Bundle{questionBundles.length !== 1 ? 's' : ''}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-2">
+                            Organized collections
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/60 hover:shadow-xl transition-all duration-300">
+                          <div className="flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                              <FileText className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+                          <div className="text-4xl font-bold text-emerald-600 mb-3">
+                            {questionBundles.reduce((total, bundle) => total + bundle.questions.length, 0)}
+                          </div>
+                          <div className="text-lg font-semibold text-gray-700">
+                            Total Questions
+                          </div>
+                          <div className="text-sm text-gray-500 mt-2">
+                            Across all bundles
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {questionBundles.length === 0 && (
+                        <div className="mt-8 p-6 bg-white/70 rounded-xl border border-gray-200">
+                          <div className="flex items-center justify-center mb-4">
+                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                              <Bookmark className="w-6 h-6 text-gray-400" />
+                            </div>
+                          </div>
+                          <p className="text-gray-600 text-lg mb-4">
+                            No question bundles yet
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            Start building your collection by creating bundles from the search results
+                          </p>
+                          <Button 
+                            onClick={() => setActiveTab('search')}
+                            className="mt-4 bg-indigo-600 hover:bg-indigo-700"
+                          >
+                            <Search className="w-4 h-4 mr-2" />
+                            Browse Questions
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {questionBundles.length > 0 ? (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Question Bundles</h3>
+                    <div className="space-y-4">
+                      {/* Question bundles will be listed here - this section remains unchanged */}
+                    </div>
                   </div>
-                 ) : (
-                   <div className="space-y-6">
-                     {/* Summary Stats Card */}
-                     <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200 shadow-lg">
-                       <CardContent className="p-8">
-                         <div className="text-center space-y-6">
-                           <div>
-                             <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                               My Questions Overview
-                             </h3>
-                             <p className="text-gray-600">
-                               Your organized question collection
-                             </p>
-                           </div>
-                           
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto">
-                             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-md border border-white/50">
-                               <div className="flex items-center justify-center mb-3">
-                                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                                   <BookOpen className="w-6 h-6 text-white" />
-                                 </div>
-                               </div>
-                               <div className="text-3xl font-bold text-indigo-600 mb-2">
-                                 {questionBundles.length}
-                               </div>
-                               <div className="text-sm font-medium text-gray-700">
-                                 Question Bundle{questionBundles.length !== 1 ? 's' : ''}
-                               </div>
-                             </div>
-                             
-                             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-md border border-white/50">
-                               <div className="flex items-center justify-center mb-3">
-                                 <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
-                                   <FileText className="w-6 h-6 text-white" />
-                                 </div>
-                               </div>
-                               <div className="text-3xl font-bold text-emerald-600 mb-2">
-                                 {questionBundles.reduce((total, bundle) => total + bundle.questions.length, 0)}
-                               </div>
-                               <div className="text-sm font-medium text-gray-700">
-                                 Total Questions
-                               </div>
-                             </div>
-                           </div>
-                           
-                           {questionBundles.length === 0 && (
-                             <div className="mt-6 p-4 bg-white/60 rounded-lg">
-                               <p className="text-gray-500 text-sm">
-                                 Start building your question collection by creating bundles from the search results
-                               </p>
-                             </div>
-                           )}
-                         </div>
-                       </CardContent>
-                     </Card>
-                   </div>
-                 )}
+                ) : null}
               </CardContent>
             </Card>
 
