@@ -657,9 +657,9 @@ const ExamAssistPrep = () => {
                          </Button>
                          
                          {repository.find(q => q.text === question.text) && (
-                           <div title="Saved to My Questions" className="flex items-center">
-                             <Bookmark className="w-4 h-4 text-blue-600 fill-blue-600" />
-                           </div>
+            <div title="Saved to My Question Paper(s)" className="flex items-center">
+              <Bookmark className="w-4 h-4 text-blue-600 fill-blue-600" />
+            </div>
                          )}
                          
                           <input 
@@ -741,7 +741,7 @@ const ExamAssistPrep = () => {
             </TabsTrigger>
             <TabsTrigger value="repository" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-200 transition-all duration-300 rounded-lg font-medium py-3 px-4 text-base">
               <Bookmark className="w-5 h-5" />
-              My Questions
+              My Question Paper(s)
             </TabsTrigger>
           </TabsList>
 
@@ -1114,7 +1114,7 @@ const ExamAssistPrep = () => {
                     disabled={selectedQuestions.length === 0}
                   >
                     <Plus className="w-4 h-4" />
-                    +ADD TO MY QUESTIONS
+                    +ADD TO MY QUESTION PAPER(S)
                   </Button>
                 </div>
               </CardHeader>
@@ -1191,9 +1191,9 @@ const ExamAssistPrep = () => {
                             
                              
                              {repository.find(q => q.id === question.id) && (
-                               <div title="Saved to My Questions" className="flex items-center">
-                                 <Bookmark className="w-4 h-4 text-blue-600 fill-blue-600" />
-                               </div>
+                                <div title="Saved to My Question Paper(s)" className="flex items-center">
+                                  <Bookmark className="w-4 h-4 text-blue-600 fill-blue-600" />
+                                </div>
                              )}
                              
                              <input 
@@ -1229,7 +1229,7 @@ const ExamAssistPrep = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Bookmark className="w-5 h-5" />
-                    My Questions
+                    My Question Paper(s)
                   </CardTitle>
                   <p className="text-sm text-gray-600 mt-1">
                     Save and organize your favorite questions for future use
@@ -1248,7 +1248,7 @@ const ExamAssistPrep = () => {
                     <div className="text-center space-y-4">
                       <div>
                         <h3 className="text-xl font-bold text-gray-900 mb-1">
-                          My Questions Overview
+                          My Question Paper(s) Overview
                         </h3>
                         <p className="text-gray-600 text-sm">
                           Your organized question collection at a glance
