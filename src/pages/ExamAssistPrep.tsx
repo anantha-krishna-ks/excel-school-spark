@@ -1062,8 +1062,8 @@ const ExamAssistPrep = () => {
                             
                              
                              {repository.find(q => q.id === question.id) && (
-                               <div title="Added to My Questions">
-                                 <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                               <div title="Saved to My Questions" className="flex items-center">
+                                 <Bookmark className="w-4 h-4 text-blue-600 fill-blue-600" />
                                </div>
                              )}
                              
