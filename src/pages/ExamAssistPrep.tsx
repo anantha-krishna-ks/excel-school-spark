@@ -252,13 +252,13 @@ const ExamAssistPrep = () => {
     });
   };
 
-  const addToRepository = (question: Question) => {
+  const addToQuestions = (question: Question) => {
     if (!repository.find(q => q.id === question.id)) {
       setRepository([...repository, question]);
     }
   };
 
-  const removeFromRepository = (questionId: string) => {
+  const removeFromQuestions = (questionId: string) => {
     setRepository(repository.filter(q => q.id !== questionId));
   };
 
@@ -595,7 +595,7 @@ const ExamAssistPrep = () => {
             </TabsTrigger>
             <TabsTrigger value="repository" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-200 transition-all duration-300 rounded-lg font-medium py-3 px-4 text-base">
               <Bookmark className="w-5 h-5" />
-              My Repository
+              My Questions
             </TabsTrigger>
           </TabsList>
 
@@ -952,14 +952,6 @@ const ExamAssistPrep = () => {
                     />
                     Select All
                   </Button>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Download className="w-4 h-4" />
-                    Export Selected
-                  </Button>
-                  <Button variant="default" className="flex items-center gap-2">
-                    <Download className="w-4 h-4" />
-                    Export All
-                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -1036,7 +1028,7 @@ const ExamAssistPrep = () => {
                             <Button
                               size="sm"
                               variant={repository.find(q => q.id === question.id) ? "default" : "outline"}
-                              onClick={() => addToRepository(question)}
+                              onClick={() => addToQuestions(question)}
                               disabled={repository.find(q => q.id === question.id) !== undefined}
                               className={`flex items-center gap-2 transition-all duration-200 ${
                                 repository.find(q => q.id === question.id) 
@@ -1052,7 +1044,7 @@ const ExamAssistPrep = () => {
                               ) : (
                                 <>
                                   <Plus className="w-4 h-4" />
-                                  Add to Repository
+                                  Add to My Questions
                                 </>
                               )}
                             </Button>
@@ -1089,7 +1081,7 @@ const ExamAssistPrep = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Bookmark className="w-5 h-5" />
-                    My Question Repository
+                    My Questions
                   </CardTitle>
                   <p className="text-sm text-gray-600 mt-1">
                     Save and organize your favorite questions for future use
@@ -1099,12 +1091,6 @@ const ExamAssistPrep = () => {
                   <Badge variant="secondary" className="px-3 py-1">
                     {repository.length} Questions Saved
                   </Badge>
-                  {repository.length > 0 && (
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <Download className="w-4 h-4" />
-                      Export Repository
-                    </Button>
-                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -1113,7 +1099,7 @@ const ExamAssistPrep = () => {
                     <Bookmark className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No Questions Saved Yet</h3>
                     <p className="text-gray-600 mb-4">
-                      Add questions from the search results to build your personal repository
+                      Add questions from the search results to build your personal collection
                     </p>
                     <Button 
                       onClick={() => setActiveTab('search')}
@@ -1131,7 +1117,7 @@ const ExamAssistPrep = () => {
                         <div className="text-center space-y-4">
                           <div>
                             <h3 className="text-xl font-bold text-gray-900 mb-1">
-                              Repository Summary
+                              My Questions Summary
                             </h3>
                             <p className="text-lg font-semibold text-emerald-700">
                               Total: {repository.length} Questions
@@ -1211,7 +1197,7 @@ const ExamAssistPrep = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => removeFromRepository(question.id)}
+                                onClick={() => removeFromQuestions(question.id)}
                                 className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1232,11 +1218,11 @@ const ExamAssistPrep = () => {
               </CardContent>
             </Card>
 
-            {/* Repository Statistics */}
+            {/* My Questions Statistics */}
             {repository.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Repository Statistics</CardTitle>
+                  <CardTitle className="text-lg">My Questions Statistics</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
