@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 
 interface Question {
   id: string;
@@ -34,6 +35,7 @@ interface GeneratedQuestion {
 
 const ExamAssistPrep = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedChapter, setSelectedChapter] = useState('');
@@ -957,12 +959,24 @@ const ExamAssistPrep = () => {
                     onClick={() => {
                       const filteredQuestions = getFilteredQuestions();
                       const selectedQuestionObjects = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
+                      const newlyAdded = selectedQuestionObjects.filter(q => !repository.find(r => r.id === q.id));
                       
-                      selectedQuestionObjects.forEach(question => {
-                        if (!repository.find(q => q.id === question.id)) {
+                      if (newlyAdded.length > 0) {
+                        newlyAdded.forEach(question => {
                           setRepository(prev => [...prev, question]);
-                        }
-                      });
+                        });
+                        
+                        toast({
+                          title: "Questions Added Successfully",
+                          description: `${newlyAdded.length} question${newlyAdded.length > 1 ? 's' : ''} added to My Questions`,
+                        });
+                      } else {
+                        toast({
+                          title: "No New Questions",
+                          description: "Selected questions are already in My Questions",
+                          variant: "destructive",
+                        });
+                      }
                       
                       // Clear selections after adding
                       setSelectedQuestions([]);
@@ -1046,30 +1060,14 @@ const ExamAssistPrep = () => {
                               </Button>
                             </div>
                             
-                            <Button
-                              size="sm"
-                              variant={repository.find(q => q.id === question.id) ? "default" : "outline"}
-                              onClick={() => addToQuestions(question)}
-                              disabled={repository.find(q => q.id === question.id) !== undefined}
-                              className={`flex items-center gap-2 transition-all duration-200 ${
-                                repository.find(q => q.id === question.id) 
-                                  ? 'bg-green-600 text-white hover:bg-green-700' 
-                                  : 'text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200'
-                              }`}
-                            >
-                              {repository.find(q => q.id === question.id) ? (
-                                <>
-                                  <Check className="w-4 h-4" />
-                                  Added
-                                </>
-                              ) : (
-                                <>
-                                  <Plus className="w-4 h-4" />
-                                  Add to My Questions
-                                </>
-                              )}
-                            </Button>
-                            
+                             
+                             {repository.find(q => q.id === question.id) && (
+                               <Badge variant="default" className="bg-green-600 text-white">
+                                 <Check className="w-3 h-3 mr-1" />
+                                 In My Questions
+                               </Badge>
+                             )}
+                             
                             <input 
                               type="checkbox" 
                               className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
