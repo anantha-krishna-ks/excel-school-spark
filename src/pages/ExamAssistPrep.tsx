@@ -952,6 +952,27 @@ const ExamAssistPrep = () => {
                     />
                     Select All
                   </Button>
+                  <Button 
+                    variant="default" 
+                    onClick={() => {
+                      const filteredQuestions = getFilteredQuestions();
+                      const selectedQuestionObjects = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
+                      
+                      selectedQuestionObjects.forEach(question => {
+                        if (!repository.find(q => q.id === question.id)) {
+                          setRepository(prev => [...prev, question]);
+                        }
+                      });
+                      
+                      // Clear selections after adding
+                      setSelectedQuestions([]);
+                    }}
+                    className="flex items-center gap-2"
+                    disabled={selectedQuestions.length === 0}
+                  >
+                    <Plus className="w-4 h-4" />
+                    +ADD TO MY QUESTIONS
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
