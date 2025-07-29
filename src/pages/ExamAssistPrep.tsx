@@ -486,52 +486,47 @@ const ExamAssistPrep = () => {
                          </div>
                        )}
                     </div>
-                    {!question.isEditing && (
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => editGeneratedQuestion(questionId, type, question.id)}
-                          className="p-2 hover:bg-gray-100 transition-colors"
-                          title="Edit question"
-                        >
-                          <Edit className="w-4 h-4 text-gray-600" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant={addedToRepository.has(question.id) ? "default" : "outline"}
-                          onClick={() => addGeneratedToRepository(question)}
-                          disabled={addedToRepository.has(question.id)}
-                          className={`flex items-center gap-2 transition-all duration-200 ${
-                            addedToRepository.has(question.id) 
-                              ? 'bg-green-600 text-white hover:bg-green-700' 
-                              : 'text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200'
-                          }`}
-                          title={addedToRepository.has(question.id) ? "Added to repository" : "Add to repository"}
-                        >
-                          {addedToRepository.has(question.id) ? (
-                            <>
-                              <Check className="w-4 h-4" />
-                              Added
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="w-4 h-4" />
-                              Add
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => deleteGeneratedQuestion(questionId, type, question.id)}
-                          className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
-                          title="Delete question"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
+                     {!question.isEditing && (
+                       <div className="flex items-center gap-2">
+                         <Button
+                           size="sm"
+                           variant="outline"
+                           onClick={() => editGeneratedQuestion(questionId, type, question.id)}
+                           className="p-2 hover:bg-gray-100 transition-colors"
+                           title="Edit question"
+                         >
+                           <Edit className="w-4 h-4 text-gray-600" />
+                         </Button>
+                         <Button
+                           size="sm"
+                           variant="outline"
+                           onClick={() => deleteGeneratedQuestion(questionId, type, question.id)}
+                           className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
+                           title="Delete question"
+                         >
+                           <Trash2 className="w-4 h-4" />
+                         </Button>
+                         
+                         {repository.find(q => q.text === question.text) && (
+                           <div title="Saved to My Questions" className="flex items-center">
+                             <Bookmark className="w-4 h-4 text-blue-600 fill-blue-600" />
+                           </div>
+                         )}
+                         
+                         <input 
+                           type="checkbox" 
+                           className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                           onChange={(e) => {
+                             if (e.target.checked) {
+                               setSelectedQuestions([...selectedQuestions, question.id]);
+                             } else {
+                               setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                             }
+                           }}
+                           checked={selectedQuestions.includes(question.id)}
+                         />
+                       </div>
+                     )}
                   </div>
                 </CardContent>
               </Card>
@@ -957,9 +952,31 @@ const ExamAssistPrep = () => {
                   <Button 
                     variant="default" 
                     onClick={() => {
-                      const filteredQuestions = getFilteredQuestions();
-                      const selectedQuestionObjects = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
-                      const newlyAdded = selectedQuestionObjects.filter(q => !repository.find(r => r.id === q.id));
+                       const filteredQuestions = getFilteredQuestions();
+                       const selectedQuestionObjects = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
+                       
+                       // Also include selected generated questions
+                       const allGeneratedQuestions: GeneratedQuestion[] = [];
+                       Object.values(questionGenerations).forEach(gen => {
+                         if (gen.similar) allGeneratedQuestions.push(...gen.similar);
+                         if (gen.converted) allGeneratedQuestions.push(...gen.converted);
+                       });
+                       
+                       const selectedGeneratedQuestions = allGeneratedQuestions
+                         .filter(q => selectedQuestions.includes(q.id))
+                         .map(gq => ({
+                           id: `repo-${Date.now()}-${Math.random()}`,
+                           text: gq.text,
+                           type: 'Generated',
+                           year: 'AI Generated',
+                           chapter: 'AI Content',
+                           class: selectedClass || '10',
+                           subject: selectedSubject || 'General',
+                           taxonomy: 'Application'
+                         } as Question));
+                       
+                       const allQuestionsToAdd = [...selectedQuestionObjects, ...selectedGeneratedQuestions];
+                       const newlyAdded = allQuestionsToAdd.filter(q => !repository.find(r => r.text === q.text));
                       
                       if (newlyAdded.length > 0) {
                         newlyAdded.forEach(question => {
