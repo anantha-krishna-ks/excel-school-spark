@@ -39,12 +39,8 @@ const QuestionBundlePreview = () => {
   
   // Handle back navigation with state preservation
   const handleBackNavigation = () => {
-    navigate('/exam-assist-prep', { 
-      state: { 
-        activeTab: 'my-questions',
-        preserveState: true 
-      } 
-    });
+    // Use browser's back navigation to preserve all state including scroll position
+    window.history.back();
   };
   
   const handleSaveBundleName = () => {
