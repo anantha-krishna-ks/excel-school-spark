@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Question {
   id: string;
@@ -35,6 +37,8 @@ const ExamAssistPrep = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedChapter, setSelectedChapter] = useState('');
+  const [selectedChapters, setSelectedChapters] = useState<string[]>(['All']);
+  const [selectedYears, setSelectedYears] = useState<string[]>(['All']);
   const [selectedQuestionType, setSelectedQuestionType] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
@@ -70,6 +74,7 @@ const ExamAssistPrep = () => {
   // Mock data
   const classes = ['10', '12'];
   const subjects = ['Science', 'Mathematics', 'English', 'Social Science'];
+  const years = ['All Years', '2025', '2024', '2023', '2022', '2021', '2020'];
   const chapters = {
     'Science': ['Life Processes', 'Light - Reflection and Refraction', 'Electricity', 'Magnetic Effects of Electric Current'],
     'Mathematics': ['Real Numbers', 'Polynomials', 'Linear Equations', 'Quadratic Equations'],
@@ -564,7 +569,7 @@ const ExamAssistPrep = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Class</label>
                     <Select value={selectedClass} onValueChange={setSelectedClass}>
@@ -594,22 +599,131 @@ const ExamAssistPrep = () => {
                   </div>
 
                   <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Year</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between font-normal"
+                        >
+                          <span className="truncate">
+                            {selectedYears.length === 1 && selectedYears[0] === 'All Years' 
+                              ? 'All Years' 
+                              : selectedYears.length === 1 
+                                ? selectedYears[0]
+                                : `${selectedYears.filter(y => y !== 'All Years').length} selected`}
+                          </span>
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0" align="start">
+                        <div className="p-2 space-y-2">
+                          {years.map((year) => (
+                            <div key={year} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`year-${year}`}
+                                checked={selectedYears.includes(year)}
+                                onCheckedChange={(checked) => {
+                                  if (year === 'All Years') {
+                                    setSelectedYears(checked ? ['All Years'] : []);
+                                  } else {
+                                    if (checked) {
+                                      setSelectedYears(prev => 
+                                        prev.includes('All Years') 
+                                          ? [year] 
+                                          : [...prev.filter(y => y !== 'All Years'), year]
+                                      );
+                                    } else {
+                                      setSelectedYears(prev => prev.filter(y => y !== year));
+                                    }
+                                  }
+                                }}
+                              />
+                              <label
+                                htmlFor={`year-${year}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                              >
+                                {year}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Chapter</label>
-                    <Select value={selectedChapter} onValueChange={setSelectedChapter}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Chapter" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {selectedSubject && (
-                          <>
-                            <SelectItem value="All">All Chapters</SelectItem>
-                            {chapters[selectedSubject as keyof typeof chapters]?.map(chapter => (
-                              <SelectItem key={chapter} value={chapter}>{chapter}</SelectItem>
-                            ))}
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between font-normal"
+                          disabled={!selectedSubject}
+                        >
+                          <span className="truncate">
+                            {selectedChapters.length === 1 && selectedChapters[0] === 'All' 
+                              ? 'All Chapters' 
+                              : selectedChapters.length === 1 
+                                ? selectedChapters[0]
+                                : `${selectedChapters.filter(c => c !== 'All').length} selected`}
+                          </span>
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0" align="start">
+                        <div className="p-2 space-y-2">
+                          {selectedSubject && (
+                            <>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id="chapter-all"
+                                  checked={selectedChapters.includes('All')}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setSelectedChapters(['All']);
+                                    } else {
+                                      setSelectedChapters([]);
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor="chapter-all"
+                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                >
+                                  All Chapters
+                                </label>
+                              </div>
+                              {chapters[selectedSubject as keyof typeof chapters]?.map(chapter => (
+                                <div key={chapter} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`chapter-${chapter}`}
+                                    checked={selectedChapters.includes(chapter)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setSelectedChapters(prev => 
+                                          prev.includes('All') 
+                                            ? [chapter] 
+                                            : [...prev.filter(c => c !== 'All'), chapter]
+                                        );
+                                      } else {
+                                        setSelectedChapters(prev => prev.filter(c => c !== chapter));
+                                      }
+                                    }}
+                                  />
+                                  <label
+                                    htmlFor={`chapter-${chapter}`}
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                  >
+                                    {chapter}
+                                  </label>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                 </div>
