@@ -33,7 +33,7 @@ interface GeneratedQuestion {
   questionType?: string;
 }
 
-interface QuestionBundle {
+interface QuestionPaper {
   id: string;
   name: string;
   questions: Question[];
@@ -63,10 +63,10 @@ const ExamAssistPrep = () => {
   const [conversionType, setConversionType] = useState('MCQ');
   const [conversionQuantity, setConversionQuantity] = useState('1');
   const [addedToRepository, setAddedToRepository] = useState<Set<string>>(new Set());
-  const [questionBundles, setQuestionBundles] = useState<QuestionBundle[]>([]);
+  const [questionPapers, setQuestionPapers] = useState<QuestionPaper[]>([]);
   const [showExportModal, setShowExportModal] = useState(false);
-  const [bundleName, setBundleName] = useState('');
-  const [showCreateBundleModal, setShowCreateBundleModal] = useState(false);
+  const [paperName, setPaperName] = useState('');
+  const [showCreatePaperModal, setShowCreatePaperModal] = useState(false);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -386,17 +386,17 @@ const ExamAssistPrep = () => {
     }
   };
 
-  // Bundle management functions
-  const handleCreateBundle = () => {
+  // Paper management functions
+  const handleCreatePaper = () => {
     if (selectedQuestions.length === 0) {
       toast({
         title: "No Questions Selected",
-        description: "Please select questions to create a bundle.",
+        description: "Please select questions to create a paper.",
         variant: "destructive"
       });
       return;
     }
-    setShowCreateBundleModal(true);
+    setShowCreatePaperModal(true);
   };
 
   const handleExportQuestions = () => {
@@ -408,11 +408,11 @@ const ExamAssistPrep = () => {
     });
   };
 
-  const handleSaveBundle = () => {
-    if (!bundleName.trim()) {
+  const handleSavePaper = () => {
+    if (!paperName.trim()) {
       toast({
-        title: "Bundle Name Required",
-        description: "Please enter a name for your question bundle.",
+        title: "Paper Name Required",
+        description: "Please enter a name for your question paper.",
         variant: "destructive"
       });
       return;
@@ -425,49 +425,49 @@ const ExamAssistPrep = () => {
     if (selectedQuestionsData.length === 0) {
       toast({
         title: "No Questions Selected",
-        description: "Please select questions to create a bundle.",
+        description: "Please select questions to create a paper.",
         variant: "destructive"
       });
       return;
     }
 
-    const newBundle: QuestionBundle = {
-      id: `bundle-${Date.now()}`,
-      name: bundleName.trim(),
+    const newPaper: QuestionPaper = {
+      id: `paper-${Date.now()}`,
+      name: paperName.trim(),
       questions: selectedQuestionsData,
       createdAt: new Date(),
       lastEditOn: new Date()
     };
 
-    setQuestionBundles([...questionBundles, newBundle]);
-    setBundleName('');
-    setShowCreateBundleModal(false);
-    setSelectedQuestions([]); // Clear selection after creating bundle
+    setQuestionPapers([...questionPapers, newPaper]);
+    setPaperName('');
+    setShowCreatePaperModal(false);
+    setSelectedQuestions([]); // Clear selection after creating paper
     
     toast({
-      title: "Bundle Created",
-      description: `Question bundle "${newBundle.name}" has been created successfully.`,
+      title: "Paper Created",
+      description: `Question paper "${newPaper.name}" has been created successfully.`,
     });
   };
 
-  const deleteBundle = (bundleId: string) => {
-    setQuestionBundles(questionBundles.filter(bundle => bundle.id !== bundleId));
+  const deletePaper = (paperId: string) => {
+    setQuestionPapers(questionPapers.filter(paper => paper.id !== paperId));
     toast({
-      title: "Bundle Deleted",
-      description: "Question bundle has been deleted successfully.",
+      title: "Paper Deleted",
+      description: "Question paper has been deleted successfully.",
     });
   };
 
-  const exportBundle = (bundle: QuestionBundle) => {
+  const exportPaper = (paper: QuestionPaper) => {
     // Implement export functionality here
     toast({
       title: "Export Started",
-      description: `Exporting "${bundle.name}" bundle...`,
+      description: `Exporting "${paper.name}" paper...`,
     });
   };
 
-  const previewBundle = (bundle: QuestionBundle) => {
-    navigate(`/question-bundle/${bundle.id}`, { state: { bundle } });
+  const previewPaper = (paper: QuestionPaper) => {
+    navigate(`/question-bundle/${paper.id}`, { state: { bundle: paper } });
   };
 
   // Helper function to get filtered questions based on all criteria
@@ -1057,7 +1057,7 @@ const ExamAssistPrep = () => {
                   </Button>
                   <Button 
                     variant="default" 
-                    onClick={handleCreateBundle}
+                    onClick={handleCreatePaper}
                     className="flex items-center gap-2"
                     disabled={selectedQuestions.length === 0}
                   >
@@ -1184,7 +1184,7 @@ const ExamAssistPrep = () => {
                 </div>
                  <div className="flex items-center gap-2">
                    <Badge variant="secondary" className="px-3 py-1">
-                     {questionBundles.length} Bundle{questionBundles.length !== 1 ? 's' : ''}
+                     {questionPapers.length} Paper{questionPapers.length !== 1 ? 's' : ''}
                    </Badge>
                  </div>
               </CardHeader>
@@ -1210,10 +1210,10 @@ const ExamAssistPrep = () => {
                             </div>
                           </div>
                           <div className="text-2xl font-bold text-indigo-600 mb-1">
-                            {questionBundles.length}
+                            {questionPapers.length}
                           </div>
                           <div className="text-sm font-semibold text-gray-700">
-                            Question Bundle{questionBundles.length !== 1 ? 's' : ''}
+                            Question Paper{questionPapers.length !== 1 ? 's' : ''}
                           </div>
                         </div>
                         
@@ -1224,7 +1224,7 @@ const ExamAssistPrep = () => {
                             </div>
                           </div>
                           <div className="text-2xl font-bold text-emerald-600 mb-1">
-                            {questionBundles.reduce((total, bundle) => total + bundle.questions.length, 0)}
+                            {questionPapers.reduce((total, paper) => total + paper.questions.length, 0)}
                           </div>
                           <div className="text-sm font-semibold text-gray-700">
                             Total Questions
@@ -1232,7 +1232,7 @@ const ExamAssistPrep = () => {
                         </div>
                       </div>
                       
-                      {questionBundles.length === 0 && (
+                      {questionPapers.length === 0 && (
                         <div className="mt-8 p-6 bg-white/70 rounded-xl border border-gray-200">
                           <div className="flex items-center justify-center mb-4">
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
@@ -1240,10 +1240,10 @@ const ExamAssistPrep = () => {
                             </div>
                           </div>
                           <p className="text-gray-600 text-lg mb-4">
-                            No question bundles yet
+                            No question papers yet
                           </p>
                           <p className="text-gray-500 text-sm">
-                            Start building your collection by creating bundles from the search results
+                            Start building your collection by creating papers from the search results
                           </p>
                           <Button 
                             onClick={() => setActiveTab('search')}
@@ -1258,41 +1258,41 @@ const ExamAssistPrep = () => {
                   </CardContent>
                 </Card>
 
-                {questionBundles.length > 0 ? (
+                {questionPapers.length > 0 ? (
                   <div className="space-y-4">
                     <div className="space-y-4">
-                      {/* Question bundles will be listed here - this section remains unchanged */}
+                      {/* Question papers will be listed here - this section remains unchanged */}
                     </div>
                   </div>
                 ) : null}
               </CardContent>
             </Card>
 
-            {/* Question Bundles */}
-            {questionBundles.length > 0 && (
+            {/* Question Papers */}
+            {questionPapers.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Question Bundles</CardTitle>
+                  <CardTitle className="text-lg">Question Papers</CardTitle>
                   <p className="text-sm text-gray-600">Your exported question collections</p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4">
-                    {questionBundles.map((bundle) => (
-                      <Card key={bundle.id} className="border border-gray-200 hover:border-gray-300 transition-colors">
+                    {questionPapers.map((paper) => (
+                      <Card key={paper.id} className="border border-gray-200 hover:border-gray-300 transition-colors">
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-gray-900 mb-2">{bundle.name}</h3>
+                              <h3 className="font-semibold text-gray-900 mb-2">{paper.name}</h3>
                               <div className="space-y-1 text-sm text-gray-600">
-                                <p>Last Edit On: {bundle.lastEditOn.toLocaleDateString()}</p>
-                                <p>Total Questions: {bundle.questions.length}</p>
+                                <p>Last Edit On: {paper.lastEditOn.toLocaleDateString()}</p>
+                                <p>Total Questions: {paper.questions.length}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2 ml-4">
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => previewBundle(bundle)}
+                                onClick={() => previewPaper(paper)}
                                 className="text-blue-600 hover:text-blue-700"
                               >
                                 <FileText className="w-4 h-4 mr-1" />
@@ -1301,7 +1301,7 @@ const ExamAssistPrep = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => exportBundle(bundle)}
+                                onClick={() => exportPaper(paper)}
                                 className="text-green-600 hover:text-green-700"
                               >
                                 <Download className="w-4 h-4 mr-1" />
@@ -1310,7 +1310,7 @@ const ExamAssistPrep = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => deleteBundle(bundle.id)}
+                                onClick={() => deletePaper(paper.id)}
                                 className="text-red-600 hover:text-red-700"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1388,41 +1388,41 @@ const ExamAssistPrep = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Create Bundle Modal */}
-      <Dialog open={showCreateBundleModal} onOpenChange={setShowCreateBundleModal}>
+      {/* Create Paper Modal */}
+      <Dialog open={showCreatePaperModal} onOpenChange={setShowCreatePaperModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-indigo-600" />
-              Create Question Bundle
+              Create Question Paper
             </DialogTitle>
             <DialogDescription>
-              Enter a name for this question bundle to organize your selected questions.
+              Enter a name for this question paper to organize your selected questions.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="bundle-name">Bundle Name</Label>
+              <Label htmlFor="paper-name">Paper Name</Label>
               <Input
-                id="bundle-name"
+                id="paper-name"
                 placeholder="e.g., Science Chapter 1 Practice Questions"
-                value={bundleName}
-                onChange={(e) => setBundleName(e.target.value)}
+                value={paperName}
+                onChange={(e) => setPaperName(e.target.value)}
               />
             </div>
             <div className="text-sm text-gray-600">
-              This bundle will contain {selectedQuestions.length} selected question{selectedQuestions.length !== 1 ? 's' : ''}.
+              This paper will contain {selectedQuestions.length} selected question{selectedQuestions.length !== 1 ? 's' : ''}.
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateBundleModal(false)}>
+            <Button variant="outline" onClick={() => setShowCreatePaperModal(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveBundle} className="bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={handleSavePaper} className="bg-indigo-600 hover:bg-indigo-700">
               <BookOpen className="w-4 h-4 mr-2" />
-              Save Bundle
+              Save Paper
             </Button>
           </DialogFooter>
         </DialogContent>
