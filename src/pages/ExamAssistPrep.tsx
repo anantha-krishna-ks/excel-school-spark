@@ -1062,10 +1062,9 @@ const ExamAssistPrep = () => {
                             
                              
                              {repository.find(q => q.id === question.id) && (
-                               <Badge variant="default" className="bg-green-600 text-white">
-                                 <Check className="w-3 h-3 mr-1" />
-                                 In My Questions
-                               </Badge>
+                               <div title="Added to My Questions">
+                                 <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                               </div>
                              )}
                              
                             <input 
