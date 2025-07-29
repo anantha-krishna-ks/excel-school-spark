@@ -1114,7 +1114,7 @@ const ExamAssistPrep = () => {
                     disabled={selectedQuestions.length === 0}
                   >
                     <Plus className="w-4 h-4" />
-                    +ADD TO MY QUESTION PAPER(S)
+                    Add to my QN Paper
                   </Button>
                 </div>
               </CardHeader>
