@@ -418,11 +418,63 @@ const ExamAssistPrep = () => {
       return;
     }
 
-    // Get selected questions from the filtered questions
+    // Get selected questions from multiple sources
     const filteredQuestions = getFilteredQuestions();
-    const selectedQuestionsData = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
+    const selectedRegularQuestions = filteredQuestions.filter(q => selectedQuestions.includes(q.id));
+    
+    // Get selected AI-generated questions from questionGenerations
+    const selectedGeneratedQuestions: Question[] = [];
+    Object.keys(questionGenerations).forEach(questionId => {
+      const generations = questionGenerations[questionId];
+      
+      // Check similar questions
+      if (generations.similar) {
+        generations.similar.forEach(genQ => {
+          if (selectedQuestions.includes(genQ.id)) {
+            selectedGeneratedQuestions.push({
+              id: genQ.id,
+              text: genQ.text,
+              type: 'Generated',
+              year: 'AI Generated',
+              chapter: 'AI Content',
+              class: selectedClass || '10',
+              subject: selectedSubject || 'General',
+              taxonomy: 'Application'
+            });
+          }
+        });
+      }
+      
+      // Check converted questions
+      if (generations.converted) {
+        generations.converted.forEach(genQ => {
+          if (selectedQuestions.includes(genQ.id)) {
+            selectedGeneratedQuestions.push({
+              id: genQ.id,
+              text: genQ.text,
+              type: 'Generated',
+              year: 'AI Generated',
+              chapter: 'AI Content',
+              class: selectedClass || '10',
+              subject: selectedSubject || 'General',
+              taxonomy: 'Application'
+            });
+          }
+        });
+      }
+    });
 
-    if (selectedQuestionsData.length === 0) {
+    // Get selected questions from repository
+    const selectedRepositoryQuestions = repository.filter(q => selectedQuestions.includes(q.id));
+
+    // Combine all selected questions
+    const allSelectedQuestions = [
+      ...selectedRegularQuestions,
+      ...selectedGeneratedQuestions,
+      ...selectedRepositoryQuestions
+    ];
+
+    if (allSelectedQuestions.length === 0) {
       toast({
         title: "No Questions Selected",
         description: "Please select questions to create a paper.",
@@ -434,7 +486,7 @@ const ExamAssistPrep = () => {
     const newPaper: QuestionPaper = {
       id: `paper-${Date.now()}`,
       name: paperName.trim(),
-      questions: selectedQuestionsData,
+      questions: allSelectedQuestions,
       createdAt: new Date(),
       lastEditOn: new Date()
     };
@@ -446,7 +498,7 @@ const ExamAssistPrep = () => {
     
     toast({
       title: "Paper Created",
-      description: `Question paper "${newPaper.name}" has been created successfully.`,
+      description: `Question paper "${newPaper.name}" has been created successfully with ${allSelectedQuestions.length} questions.`,
     });
   };
 
