@@ -426,67 +426,67 @@ const SlideGeneratorLessonPlan = () => {
 
               {/* Text Options Panel */}
               {showTextOptions && (
-                <div className="absolute top-full left-3 mt-1 bg-gray-800 rounded-lg shadow-lg p-4 z-50 min-w-[400px]">
-                  <h3 className="text-white font-medium mb-3">Text</h3>
+                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[400px]">
+                  <h3 className="text-gray-900 font-medium mb-3">Text</h3>
                   <div className="grid grid-cols-3 gap-3">
                     {/* Title */}
                     <button
                       onClick={() => handleAddTextType('title')}
-                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
                     >
-                      <div className="text-white text-2xl font-bold mb-1">T</div>
-                      <div className="text-white font-medium">Title</div>
-                      <div className="text-gray-400 text-sm">! Title</div>
+                      <div className="text-gray-900 text-2xl font-bold mb-1">T</div>
+                      <div className="text-gray-900 font-medium">Title</div>
+                      <div className="text-gray-500 text-sm">! Title</div>
                     </button>
 
                     {/* Heading 1 */}
                     <button
                       onClick={() => handleAddTextType('h1')}
-                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
                     >
-                      <div className="text-white text-xl font-bold mb-1">H1</div>
-                      <div className="text-white font-medium">Heading 1</div>
-                      <div className="text-gray-400 text-sm"># Heading 1</div>
+                      <div className="text-gray-900 text-xl font-bold mb-1">H1</div>
+                      <div className="text-gray-900 font-medium">Heading 1</div>
+                      <div className="text-gray-500 text-sm"># Heading 1</div>
                     </button>
 
                     {/* Heading 2 */}
                     <button
                       onClick={() => handleAddTextType('h2')}
-                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
                     >
-                      <div className="text-white text-lg font-bold mb-1">H2</div>
-                      <div className="text-white font-medium">Heading 2</div>
-                      <div className="text-gray-400 text-sm">## Heading 2</div>
+                      <div className="text-gray-900 text-lg font-bold mb-1">H2</div>
+                      <div className="text-gray-900 font-medium">Heading 2</div>
+                      <div className="text-gray-500 text-sm">## Heading 2</div>
                     </button>
 
                     {/* Heading 3 */}
                     <button
                       onClick={() => handleAddTextType('h3')}
-                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
                     >
-                      <div className="text-white text-base font-bold mb-1">H3</div>
-                      <div className="text-white font-medium">Heading 3</div>
-                      <div className="text-gray-400 text-sm">### Heading 3</div>
+                      <div className="text-gray-900 text-base font-bold mb-1">H3</div>
+                      <div className="text-gray-900 font-medium">Heading 3</div>
+                      <div className="text-gray-500 text-sm">### Heading 3</div>
                     </button>
 
                     {/* Heading 4 */}
                     <button
                       onClick={() => handleAddTextType('h4')}
-                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
                     >
-                      <div className="text-white text-sm font-bold mb-1">H4</div>
-                      <div className="text-white font-medium">Heading 4</div>
-                      <div className="text-gray-400 text-sm">#### Heading 4</div>
+                      <div className="text-gray-900 text-sm font-bold mb-1">H4</div>
+                      <div className="text-gray-900 font-medium">Heading 4</div>
+                      <div className="text-gray-500 text-sm">#### Heading 4</div>
                     </button>
 
                     {/* Blockquote */}
                     <button
                       onClick={() => handleAddTextType('blockquote')}
-                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
                     >
-                      <div className="text-white text-lg mb-1">"</div>
-                      <div className="text-white font-medium">Blockquote</div>
-                      <div className="text-gray-400 text-sm">&gt; Quote</div>
+                      <div className="text-gray-900 text-lg mb-1">"</div>
+                      <div className="text-gray-900 font-medium">Blockquote</div>
+                      <div className="text-gray-500 text-sm">&gt; Quote</div>
                     </button>
                   </div>
                 </div>
