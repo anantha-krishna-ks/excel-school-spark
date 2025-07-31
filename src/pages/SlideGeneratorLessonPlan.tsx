@@ -385,9 +385,10 @@ const SlideGeneratorLessonPlan = () => {
                     <h1 className="text-4xl font-bold text-gray-900 mb-6">
                       {generatedSlides[activeSlide]?.title}
                     </h1>
-                    <p className="text-xl text-gray-700 leading-relaxed">
-                      {generatedSlides[activeSlide]?.content}
-                    </p>
+                    <div 
+                      className="text-xl text-gray-700 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: generatedSlides[activeSlide]?.content || '' }}
+                    />
                   </div>
                 </div>
               </div>
