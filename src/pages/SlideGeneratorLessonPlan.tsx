@@ -362,6 +362,7 @@ const SlideGeneratorLessonPlan = () => {
     formatText('hiliteColor', color);
   };
 
+  // Handlers for adding elements
   const handleAddTable = () => {
     const tableHtml = `
     <table border="1" style="border-collapse: collapse; width: 100%; margin: 20px 0;">
@@ -651,20 +652,6 @@ const SlideGeneratorLessonPlan = () => {
     toast.success(`Layout changed to: ${selectedLayout}`);
   };
 
-  const editorTools = [
-    { icon: Type, label: 'Text', category: 'blocks', onClick: handleAddText },
-    { icon: Table, label: 'Table', category: 'blocks', onClick: handleAddTable },
-    { icon: List, label: 'List', category: 'blocks', onClick: handleAddList },
-    { icon: MessageSquare, label: 'Callout', category: 'blocks', onClick: handleAddCallout },
-    { icon: ImageIcon, label: 'Image', category: 'media', onClick: handleAddImage },
-    { icon: Video, label: 'Video', category: 'media', onClick: handleAddVideo },
-    { icon: BarChart3, label: 'Chart', category: 'visual', onClick: handleAddChart },
-    { icon: BarChart3, label: 'Diagrams', category: 'visual', onClick: handleAddDiagrams },
-    { icon: Shapes, label: 'Shapes', category: 'visual', onClick: handleAddShapes },
-    { icon: Layout, label: 'Background', category: 'design', onClick: handleAddBackground },
-    { icon: Layout, label: 'Layout', category: 'design', onClick: handleChangeLayout }
-  ];
-
   const savePresentation = () => {
     console.log('Save button clicked');
     console.log('Current slides:', generatedSlides);
@@ -845,7 +832,7 @@ const SlideGeneratorLessonPlan = () => {
         </header>
 
         <div className="flex h-[calc(100vh-73px)]">
-          {/* Sidebar with slides */}
+          {/* Left Sidebar with slides */}
           <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
@@ -944,7 +931,7 @@ const SlideGeneratorLessonPlan = () => {
           <div className="flex-1 flex flex-col">
             {/* Formatting Toolbar */}
             <div className="bg-white border-b border-gray-200 p-3">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-gray-700">Format:</span>
                 <Button
                   variant="outline"
@@ -1029,167 +1016,6 @@ const SlideGeneratorLessonPlan = () => {
               </div>
             </div>
 
-            {/* Element Toolbar */}
-            <div className="bg-white border-b border-gray-200 p-3 relative">
-              <div className="flex flex-wrap gap-2">
-                {editorTools.map((tool, index) => {
-                  const IconComponent = tool.icon;
-                  return (
-                    <Button 
-                      key={index} 
-                      ref={tool.label === 'Text' ? textButtonRef : undefined}
-                      variant="outline" 
-                      size="sm" 
-                      className={`text-xs ${tool.label === 'Text' && showTextOptions ? 'bg-gray-100' : ''}`}
-                      onClick={tool.onClick}
-                    >
-                      <IconComponent className="w-3 h-3 mr-1" />
-                      {tool.label}
-                    </Button>
-                  );
-                })}
-              </div>
-
-              {/* Text Options Panel */}
-              {showTextOptions && (
-                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[400px]">
-                  <h3 className="text-gray-900 font-medium mb-3">Text</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {/* Title */}
-                    <button
-                      onClick={() => handleAddTextType('title')}
-                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
-                    >
-                      <div className="text-gray-900 text-2xl font-bold mb-1">T</div>
-                      <div className="text-gray-900 font-medium">Title</div>
-                      <div className="text-gray-500 text-sm">! Title</div>
-                    </button>
-
-                    {/* Heading 1 */}
-                    <button
-                      onClick={() => handleAddTextType('h1')}
-                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
-                    >
-                      <div className="text-gray-900 text-xl font-bold mb-1">H1</div>
-                      <div className="text-gray-900 font-medium">Heading 1</div>
-                      <div className="text-gray-500 text-sm"># Heading 1</div>
-                    </button>
-
-                    {/* Heading 2 */}
-                    <button
-                      onClick={() => handleAddTextType('h2')}
-                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
-                    >
-                      <div className="text-gray-900 text-lg font-bold mb-1">H2</div>
-                      <div className="text-gray-900 font-medium">Heading 2</div>
-                      <div className="text-gray-500 text-sm">## Heading 2</div>
-                    </button>
-
-                    {/* Heading 3 */}
-                    <button
-                      onClick={() => handleAddTextType('h3')}
-                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
-                    >
-                      <div className="text-gray-900 text-base font-bold mb-1">H3</div>
-                      <div className="text-gray-900 font-medium">Heading 3</div>
-                      <div className="text-gray-500 text-sm">### Heading 3</div>
-                    </button>
-
-                    {/* Heading 4 */}
-                    <button
-                      onClick={() => handleAddTextType('h4')}
-                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
-                    >
-                      <div className="text-gray-900 text-sm font-bold mb-1">H4</div>
-                      <div className="text-gray-900 font-medium">Heading 4</div>
-                      <div className="text-gray-500 text-sm">#### Heading 4</div>
-                    </button>
-
-                    {/* Blockquote */}
-                    <button
-                      onClick={() => handleAddTextType('blockquote')}
-                      className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-left transition-colors"
-                    >
-                      <div className="text-gray-900 text-lg mb-1">"</div>
-                      <div className="text-gray-900 font-medium">Blockquote</div>
-                      <div className="text-gray-500 text-sm">&gt; Quote</div>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Smart Diagrams Panel */}
-              {showDiagramPanel && (
-                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[500px]">
-                  <h3 className="text-gray-900 font-medium mb-3">Smart Diagrams</h3>
-                  <div className="grid grid-cols-4 gap-3 max-h-80 overflow-y-auto">
-                    {smartDiagrams.map((diagram, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleAddDiagram(diagram.type)}
-                        className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-center transition-colors"
-                      >
-                        <div className="text-2xl mb-2">{diagram.icon}</div>
-                        <div className="text-gray-900 font-medium text-sm">{diagram.name}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Shapes Panel */}
-              {showShapePanel && (
-                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[400px]">
-                  <h3 className="text-gray-900 font-medium mb-3">Shapes</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {shapes.map((shape, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleAddShape(shape.type, shape.color)}
-                        className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-center transition-colors"
-                      >
-                        <div 
-                          className="w-8 h-8 mx-auto mb-2" 
-                          style={{ 
-                            backgroundColor: shape.color,
-                            borderRadius: shape.type === 'circle' ? '50%' : shape.type === 'triangle' ? '0' : '4px',
-                            clipPath: shape.type === 'triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : 
-                                     shape.type === 'arrow' ? 'polygon(0% 20%, 75% 20%, 75% 0%, 100% 50%, 75% 100%, 75% 80%, 0% 80%)' : 'none'
-                          }}
-                        />
-                        <div className="text-gray-900 font-medium text-sm">{shape.name}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Background Panel */}
-              {showBackgroundPanel && (
-                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[400px]">
-                  <h3 className="text-gray-900 font-medium mb-3">Slide Background</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {backgrounds.map((bg, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleChangeBackground(bg.value)}
-                        className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-center transition-colors"
-                      >
-                        <div 
-                          className="w-full h-16 mx-auto mb-2 rounded"
-                          style={{ 
-                            background: bg.value.startsWith('linear-gradient') || bg.value.startsWith('url') ? bg.value : bg.value,
-                            backgroundColor: bg.value.startsWith('#') ? bg.value : undefined
-                          }}
-                        />
-                        <div className="text-gray-900 font-medium text-sm">{bg.name}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Canvas */}
             <div className="flex-1 p-8 overflow-auto">
               <div className="max-w-4xl mx-auto">
@@ -1269,6 +1095,247 @@ const SlideGeneratorLessonPlan = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Right Panel with Tools */}
+          <div className="w-72 bg-white border-l border-gray-200 overflow-hidden">
+            <div className="p-4">
+              <h3 className="font-medium text-gray-900 mb-4">Add Elements</h3>
+              
+              {/* Text & Content */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Text & Content</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    ref={textButtonRef}
+                    variant="outline" 
+                    size="sm" 
+                    className={`text-xs h-12 flex flex-col ${showTextOptions ? 'bg-gray-100' : ''}`}
+                    onClick={handleAddText}
+                  >
+                    <Type className="w-4 h-4 mb-1" />
+                    Text
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddTable}
+                  >
+                    <Table className="w-4 h-4 mb-1" />
+                    Table
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddList}
+                  >
+                    <List className="w-4 h-4 mb-1" />
+                    List
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddCallout}
+                  >
+                    <MessageSquare className="w-4 h-4 mb-1" />
+                    Callout
+                  </Button>
+                </div>
+              </div>
+
+              {/* Media */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Media</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddImage}
+                  >
+                    <ImageIcon className="w-4 h-4 mb-1" />
+                    Image
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddVideo}
+                  >
+                    <Video className="w-4 h-4 mb-1" />
+                    Video
+                  </Button>
+                </div>
+              </div>
+
+              {/* Visual Elements */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Visual Elements</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddChart}
+                  >
+                    <BarChart3 className="w-4 h-4 mb-1" />
+                    Chart
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddDiagrams}
+                  >
+                    <BarChart3 className="w-4 h-4 mb-1" />
+                    Diagrams
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddShapes}
+                  >
+                    <Shapes className="w-4 h-4 mb-1" />
+                    Shapes
+                  </Button>
+                </div>
+              </div>
+
+              {/* Design */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Design</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleAddBackground}
+                  >
+                    <Layout className="w-4 h-4 mb-1" />
+                    Background
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-12 flex flex-col"
+                    onClick={handleChangeLayout}
+                  >
+                    <Grid className="w-4 h-4 mb-1" />
+                    Layout
+                  </Button>
+                </div>
+              </div>
+
+              {/* Text Options Panel */}
+              {showTextOptions && (
+                <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-gray-900 font-medium mb-3">Text Options</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    <button
+                      onClick={() => handleAddTextType('title')}
+                      className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-left transition-colors"
+                    >
+                      <div className="text-gray-900 text-lg font-bold mb-1">Title</div>
+                      <div className="text-gray-500 text-xs">! Title</div>
+                    </button>
+                    <button
+                      onClick={() => handleAddTextType('h1')}
+                      className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-left transition-colors"
+                    >
+                      <div className="text-gray-900 text-base font-bold mb-1">Heading 1</div>
+                      <div className="text-gray-500 text-xs"># Heading 1</div>
+                    </button>
+                    <button
+                      onClick={() => handleAddTextType('h2')}
+                      className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-left transition-colors"
+                    >
+                      <div className="text-gray-900 text-sm font-bold mb-1">Heading 2</div>
+                      <div className="text-gray-500 text-xs">## Heading 2</div>
+                    </button>
+                    <button
+                      onClick={() => handleAddTextType('blockquote')}
+                      className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-left transition-colors"
+                    >
+                      <div className="text-gray-900 text-sm mb-1">Quote</div>
+                      <div className="text-gray-500 text-xs">&gt; Quote</div>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Smart Diagrams Panel */}
+              {showDiagramPanel && (
+                <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-gray-900 font-medium mb-3">Smart Diagrams</h3>
+                  <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                    {smartDiagrams.map((diagram, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleAddDiagram(diagram.type)}
+                        className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-center transition-colors"
+                      >
+                        <div className="text-lg mb-1">{diagram.icon}</div>
+                        <div className="text-gray-900 font-medium text-xs">{diagram.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Shapes Panel */}
+              {showShapePanel && (
+                <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-gray-900 font-medium mb-3">Shapes</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {shapes.map((shape, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleAddShape(shape.type, shape.color)}
+                        className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-center transition-colors"
+                      >
+                        <div 
+                          className="w-6 h-6 mx-auto mb-1" 
+                          style={{ 
+                            backgroundColor: shape.color,
+                            borderRadius: shape.type === 'circle' ? '50%' : '2px'
+                          }}
+                        />
+                        <div className="text-gray-900 font-medium text-xs">{shape.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Background Panel */}
+              {showBackgroundPanel && (
+                <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-gray-900 font-medium mb-3">Slide Background</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {backgrounds.map((bg, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleChangeBackground(bg.value)}
+                        className="bg-white hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-center transition-colors"
+                      >
+                        <div 
+                          className="w-full h-12 mx-auto mb-1 rounded"
+                          style={{ 
+                            background: bg.value.startsWith('linear-gradient') || bg.value.startsWith('url') ? bg.value : bg.value,
+                            backgroundColor: bg.value.startsWith('#') ? bg.value : undefined
+                          }}
+                        />
+                        <div className="text-gray-900 font-medium text-xs">{bg.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
