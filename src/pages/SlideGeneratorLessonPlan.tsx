@@ -34,6 +34,11 @@ const SlideGeneratorLessonPlan = () => {
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [showFormatPanel, setShowFormatPanel] = useState(false);
   const contentEditableRef = useRef<HTMLDivElement>(null);
+  const [showDiagramPanel, setShowDiagramPanel] = useState(false);
+  const [showShapePanel, setShowShapePanel] = useState(false);
+  const [showBackgroundPanel, setShowBackgroundPanel] = useState(false);
+  const [draggedElement, setDraggedElement] = useState<{ id: string; type: string; } | null>(null);
+  const [slideBackgrounds, setSlideBackgrounds] = useState<{ [key: number]: string }>({});
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -267,6 +272,42 @@ const SlideGeneratorLessonPlan = () => {
     };
   }, [contextMenu.show]);
 
+  // Add interaction styles for diagrams and shapes
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .diagram-container:hover, .shape-element:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+      }
+      
+      .diagram-container:focus, .shape-element:focus {
+        outline: none;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4) !important;
+      }
+      
+      .shape-element {
+        transition: all 0.2s ease;
+      }
+      
+      .shape-element:hover {
+        transform: scale(1.02);
+      }
+      
+      .diagram-container [contenteditable="true"]:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Rich text editing functions
   const formatText = (command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -409,20 +450,177 @@ const SlideGeneratorLessonPlan = () => {
     toast.success('Chart placeholder added');
   };
 
-  const handleAddShapes = () => {
-    const shapesHtml = `
-    <div style="margin: 20px 0; display: flex; gap: 10px; align-items: center;">
-      <div style="width: 50px; height: 50px; background: #3b82f6; border-radius: 50%;"></div>
-      <div style="width: 50px; height: 50px; background: #ef4444;"></div>
-      <div style="width: 50px; height: 30px; background: #22c55e; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
-    </div>`;
+  // Smart Diagrams
+  const smartDiagrams = [
+    { name: 'Venn diagram', icon: '⚬', type: 'venn' },
+    { name: 'Chain', icon: '🔗', type: 'chain' },
+    { name: 'Bullseye', icon: '🎯', type: 'bullseye' },
+    { name: 'Ribbon arrows', icon: '➰', type: 'ribbon' },
+    { name: 'Ideas', icon: '💡', type: 'ideas' },
+    { name: 'Circle inputs', icon: '⚬', type: 'circle_inputs' },
+    { name: 'Quadrant', icon: '⊞', type: 'quadrant' },
+    { name: 'Swoosh', icon: '〰', type: 'swoosh' },
+    { name: 'Versus', icon: '⚔', type: 'versus' },
+    { name: 'Infinity', icon: '∞', type: 'infinity' },
+    { name: 'Square arrows', icon: '⬌', type: 'square_arrows' },
+    { name: 'Puzzle', icon: '🧩', type: 'puzzle' }
+  ];
+
+  const shapes = [
+    { name: 'Rectangle', color: '#3b82f6', type: 'rectangle' },
+    { name: 'Circle', color: '#ef4444', type: 'circle' },
+    { name: 'Triangle', color: '#22c55e', type: 'triangle' },
+    { name: 'Arrow', color: '#f59e0b', type: 'arrow' },
+    { name: 'Star', color: '#8b5cf6', type: 'star' },
+    { name: 'Diamond', color: '#ec4899', type: 'diamond' }
+  ];
+
+  const backgrounds = [
+    { name: 'White', value: '#ffffff' },
+    { name: 'Light Gray', value: '#f8fafc' },
+    { name: 'Blue Gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+    { name: 'Purple Gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+    { name: 'Green Gradient', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+    { name: 'Orange Gradient', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+    { name: 'Dark', value: '#1f2937' },
+    { name: 'Custom Image', value: 'url(/api/placeholder/1920/1080)' }
+  ];
+
+  const handleAddDiagram = (diagramType: string) => {
+    let diagramHtml = '';
+    const elementId = `diagram-${Date.now()}`;
+    
+    switch (diagramType) {
+      case 'venn':
+        diagramHtml = `
+        <div class="diagram-container" data-element-id="${elementId}" style="position: relative; width: 400px; height: 300px; margin: 20px auto; border: 2px dashed #ccc; background: #f9fafb; border-radius: 8px; cursor: move;">
+          <svg width="400" height="300" style="position: absolute; top: 0; left: 0;">
+            <circle cx="150" cy="150" r="80" fill="#3b82f6" fill-opacity="0.5" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="250" cy="150" r="80" fill="#ef4444" fill-opacity="0.5" stroke="#ef4444" stroke-width="2"/>
+            <text x="120" y="155" fill="#1f2937" font-size="14" font-weight="bold" text-anchor="middle">A</text>
+            <text x="280" y="155" fill="#1f2937" font-size="14" font-weight="bold" text-anchor="middle">B</text>
+            <text x="200" y="155" fill="#1f2937" font-size="14" font-weight="bold" text-anchor="middle">Both</text>
+          </svg>
+          <div contenteditable="true" style="position: absolute; top: 10px; left: 10px; background: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">Venn Diagram</div>
+        </div>`;
+        break;
+      case 'quadrant':
+        diagramHtml = `
+        <div class="diagram-container" data-element-id="${elementId}" style="position: relative; width: 400px; height: 300px; margin: 20px auto; border: 2px dashed #ccc; background: #f9fafb; border-radius: 8px; cursor: move;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100%; gap: 2px; padding: 20px;">
+            <div style="background: #fef3c7; border-radius: 4px; padding: 10px; display: flex; align-items: center; justify-content: center;">
+              <span contenteditable="true" style="font-weight: bold; text-align: center;">Quadrant 1</span>
+            </div>
+            <div style="background: #dbeafe; border-radius: 4px; padding: 10px; display: flex; align-items: center; justify-content: center;">
+              <span contenteditable="true" style="font-weight: bold; text-align: center;">Quadrant 2</span>
+            </div>
+            <div style="background: #fecaca; border-radius: 4px; padding: 10px; display: flex; align-items: center; justify-content: center;">
+              <span contenteditable="true" style="font-weight: bold; text-align: center;">Quadrant 3</span>
+            </div>
+            <div style="background: #dcfce7; border-radius: 4px; padding: 10px; display: flex; align-items: center; justify-content: center;">
+              <span contenteditable="true" style="font-weight: bold; text-align: center;">Quadrant 4</span>
+            </div>
+          </div>
+        </div>`;
+        break;
+      case 'chain':
+        diagramHtml = `
+        <div class="diagram-container" data-element-id="${elementId}" style="position: relative; width: 600px; height: 150px; margin: 20px auto; border: 2px dashed #ccc; background: #f9fafb; border-radius: 8px; cursor: move;">
+          <div style="display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 20px;">
+            <div style="background: #3b82f6; color: white; padding: 20px; border-radius: 8px; font-weight: bold; text-align: center; min-width: 100px;">
+              <span contenteditable="true">Step 1</span>
+            </div>
+            <div style="font-size: 24px; color: #6b7280;">→</div>
+            <div style="background: #ef4444; color: white; padding: 20px; border-radius: 8px; font-weight: bold; text-align: center; min-width: 100px;">
+              <span contenteditable="true">Step 2</span>
+            </div>
+            <div style="font-size: 24px; color: #6b7280;">→</div>
+            <div style="background: #22c55e; color: white; padding: 20px; border-radius: 8px; font-weight: bold; text-align: center; min-width: 100px;">
+              <span contenteditable="true">Step 3</span>
+            </div>
+          </div>
+        </div>`;
+        break;
+      default:
+        diagramHtml = `
+        <div class="diagram-container" data-element-id="${elementId}" style="position: relative; width: 400px; height: 200px; margin: 20px auto; border: 2px dashed #3b82f6; background: #f0f9ff; border-radius: 8px; cursor: move; display: flex; align-items: center; justify-content: center;">
+          <div style="text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 10px;">📊</div>
+            <div style="font-weight: bold; margin-bottom: 5px;" contenteditable="true">${diagramType.replace('_', ' ').toUpperCase()}</div>
+            <div style="color: #6b7280; font-size: 14px;" contenteditable="true">Click to customize</div>
+          </div>
+        </div>`;
+    }
+    
     const updatedSlides = [...generatedSlides];
     updatedSlides[activeSlide] = {
       ...updatedSlides[activeSlide],
-      content: updatedSlides[activeSlide].content + shapesHtml
+      content: updatedSlides[activeSlide].content + diagramHtml
     };
     setGeneratedSlides(updatedSlides);
-    toast.success('Shapes added');
+    setShowDiagramPanel(false);
+    toast.success(`${diagramType.replace('_', ' ')} diagram added`);
+  };
+
+  const handleAddShape = (shapeType: string, color: string) => {
+    const elementId = `shape-${Date.now()}`;
+    let shapeHtml = '';
+    
+    switch (shapeType) {
+      case 'rectangle':
+        shapeHtml = `<div class="shape-element" data-element-id="${elementId}" style="position: relative; display: inline-block; width: 150px; height: 100px; background: ${color}; margin: 10px; border-radius: 4px; cursor: move; resize: both; overflow: auto; min-width: 50px; min-height: 30px;">
+          <span contenteditable="true" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-align: center; width: 100%;">Text</span>
+        </div>`;
+        break;
+      case 'circle':
+        shapeHtml = `<div class="shape-element" data-element-id="${elementId}" style="position: relative; display: inline-block; width: 120px; height: 120px; background: ${color}; margin: 10px; border-radius: 50%; cursor: move; resize: both; overflow: auto; min-width: 50px; min-height: 50px;">
+          <span contenteditable="true" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-align: center; width: 100%;">Text</span>
+        </div>`;
+        break;
+      case 'triangle':
+        shapeHtml = `<div class="shape-element" data-element-id="${elementId}" style="position: relative; display: inline-block; width: 0; height: 0; border-left: 50px solid transparent; border-right: 50px solid transparent; border-bottom: 80px solid ${color}; margin: 10px; cursor: move;">
+        </div>`;
+        break;
+      case 'arrow':
+        shapeHtml = `<div class="shape-element" data-element-id="${elementId}" style="position: relative; display: inline-block; width: 200px; height: 60px; background: ${color}; margin: 10px; cursor: move; clip-path: polygon(0% 20%, 75% 20%, 75% 0%, 100% 50%, 75% 100%, 75% 80%, 0% 80%);">
+          <span contenteditable="true" style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%); color: white; font-weight: bold;">Arrow</span>
+        </div>`;
+        break;
+      default:
+        shapeHtml = `<div class="shape-element" data-element-id="${elementId}" style="position: relative; display: inline-block; width: 120px; height: 120px; background: ${color}; margin: 10px; border-radius: 4px; cursor: move; resize: both; overflow: auto;">
+          <span contenteditable="true" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-align: center; width: 100%;">Shape</span>
+        </div>`;
+    }
+    
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + shapeHtml
+    };
+    setGeneratedSlides(updatedSlides);
+    setShowShapePanel(false);
+    toast.success(`${shapeType} added`);
+  };
+
+  const handleChangeBackground = (background: string) => {
+    setSlideBackgrounds({
+      ...slideBackgrounds,
+      [activeSlide]: background
+    });
+    setShowBackgroundPanel(false);
+    toast.success('Background updated');
+  };
+
+  const handleAddShapes = () => {
+    setShowShapePanel(!showShapePanel);
+  };
+
+  const handleAddDiagrams = () => {
+    setShowDiagramPanel(!showDiagramPanel);
+  };
+
+  const handleAddBackground = () => {
+    setShowBackgroundPanel(!showBackgroundPanel);
   };
 
   const handleChangeLayout = () => {
@@ -445,7 +643,9 @@ const SlideGeneratorLessonPlan = () => {
     { icon: ImageIcon, label: 'Image', category: 'media', onClick: handleAddImage },
     { icon: Video, label: 'Video', category: 'media', onClick: handleAddVideo },
     { icon: BarChart3, label: 'Chart', category: 'visual', onClick: handleAddChart },
+    { icon: BarChart3, label: 'Diagrams', category: 'visual', onClick: handleAddDiagrams },
     { icon: Shapes, label: 'Shapes', category: 'visual', onClick: handleAddShapes },
+    { icon: Layout, label: 'Background', category: 'design', onClick: handleAddBackground },
     { icon: Layout, label: 'Layout', category: 'design', onClick: handleChangeLayout }
   ];
 
@@ -781,12 +981,89 @@ const SlideGeneratorLessonPlan = () => {
                   </div>
                 </div>
               )}
+
+              {/* Smart Diagrams Panel */}
+              {showDiagramPanel && (
+                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[500px]">
+                  <h3 className="text-gray-900 font-medium mb-3">Smart Diagrams</h3>
+                  <div className="grid grid-cols-4 gap-3 max-h-80 overflow-y-auto">
+                    {smartDiagrams.map((diagram, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleAddDiagram(diagram.type)}
+                        className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-3 text-center transition-colors"
+                      >
+                        <div className="text-2xl mb-2">{diagram.icon}</div>
+                        <div className="text-gray-900 font-medium text-sm">{diagram.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Shapes Panel */}
+              {showShapePanel && (
+                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[400px]">
+                  <h3 className="text-gray-900 font-medium mb-3">Shapes</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {shapes.map((shape, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleAddShape(shape.type, shape.color)}
+                        className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-center transition-colors"
+                      >
+                        <div 
+                          className="w-8 h-8 mx-auto mb-2" 
+                          style={{ 
+                            backgroundColor: shape.color,
+                            borderRadius: shape.type === 'circle' ? '50%' : shape.type === 'triangle' ? '0' : '4px',
+                            clipPath: shape.type === 'triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : 
+                                     shape.type === 'arrow' ? 'polygon(0% 20%, 75% 20%, 75% 0%, 100% 50%, 75% 100%, 75% 80%, 0% 80%)' : 'none'
+                          }}
+                        />
+                        <div className="text-gray-900 font-medium text-sm">{shape.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Background Panel */}
+              {showBackgroundPanel && (
+                <div className="absolute top-full left-3 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50 min-w-[400px]">
+                  <h3 className="text-gray-900 font-medium mb-3">Slide Background</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {backgrounds.map((bg, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleChangeBackground(bg.value)}
+                        className="bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg p-4 text-center transition-colors"
+                      >
+                        <div 
+                          className="w-full h-16 mx-auto mb-2 rounded"
+                          style={{ 
+                            background: bg.value.startsWith('linear-gradient') || bg.value.startsWith('url') ? bg.value : bg.value,
+                            backgroundColor: bg.value.startsWith('#') ? bg.value : undefined
+                          }}
+                        />
+                        <div className="text-gray-900 font-medium text-sm">{bg.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Canvas */}
             <div className="flex-1 p-8 overflow-auto">
               <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-lg shadow-lg" style={{ aspectRatio: '16/9' }}>
+                <div 
+                  className="rounded-lg shadow-lg relative" 
+                  style={{ 
+                    aspectRatio: '16/9',
+                    background: slideBackgrounds[activeSlide] || '#ffffff'
+                  }}
+                >
                   <div className="p-8 h-full flex flex-col justify-center">
                     <h1 
                       contentEditable
@@ -799,7 +1076,10 @@ const SlideGeneratorLessonPlan = () => {
                         };
                         setGeneratedSlides(updatedSlides);
                       }}
-                      className="text-4xl font-bold text-gray-900 mb-6 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2"
+                      className="text-4xl font-bold mb-6 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2"
+                      style={{
+                        color: slideBackgrounds[activeSlide]?.includes('gradient') || slideBackgrounds[activeSlide] === '#1f2937' ? 'white' : '#111827'
+                      }}
                     >
                       {generatedSlides[activeSlide]?.title}
                     </h1>
@@ -809,10 +1089,48 @@ const SlideGeneratorLessonPlan = () => {
                       suppressContentEditableWarning
                       onInput={updateSlideContent}
                       onClick={handleElementClick}
-                      className="text-xl text-gray-700 leading-relaxed outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2 min-h-[200px]"
+                      className="text-xl leading-relaxed outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2 min-h-[200px]"
+                      style={{
+                        color: slideBackgrounds[activeSlide]?.includes('gradient') || slideBackgrounds[activeSlide] === '#1f2937' ? 'white' : '#374151'
+                      }}
                       dangerouslySetInnerHTML={{ __html: generatedSlides[activeSlide]?.content || '' }}
                     />
                   </div>
+                  
+                  {/* Element Selection Overlay */}
+                  {selectedElement && (
+                    <div className="absolute top-2 right-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-10">
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          className="w-6 h-6 border border-gray-300 rounded cursor-pointer"
+                          title="Element Color"
+                          onChange={(e) => {
+                            const element = document.querySelector(`[data-element-id="${selectedElement}"]`) as HTMLElement;
+                            if (element) {
+                              element.style.backgroundColor = e.target.value;
+                              updateSlideContent();
+                            }
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const element = document.querySelector(`[data-element-id="${selectedElement}"]`);
+                            if (element) {
+                              element.remove();
+                              updateSlideContent();
+                            }
+                            setSelectedElement(null);
+                          }}
+                          className="text-xs p-1"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
