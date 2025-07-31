@@ -25,6 +25,12 @@ const SlideGeneratorLessonPlan = () => {
   const [isEditorMode, setIsEditorMode] = useState(false);
   const [showTextOptions, setShowTextOptions] = useState(false);
   const textButtonRef = useRef<HTMLButtonElement>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+    slideIndex: number;
+  }>({ show: false, x: 0, y: 0, slideIndex: -1 });
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -168,6 +174,95 @@ const SlideGeneratorLessonPlan = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showTextOptions]);
+
+  // Context menu handlers
+  const handleRightClick = (e: React.MouseEvent, slideIndex: number) => {
+    e.preventDefault();
+    setContextMenu({
+      show: true,
+      x: e.clientX,
+      y: e.clientY,
+      slideIndex: slideIndex
+    });
+  };
+
+  const handleCopySlide = () => {
+    if (contextMenu.slideIndex >= 0) {
+      const slideText = `${generatedSlides[contextMenu.slideIndex].title}\n\n${generatedSlides[contextMenu.slideIndex].content}`;
+      navigator.clipboard.writeText(slideText);
+      toast.success('Slide content copied to clipboard');
+      setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+    }
+  };
+
+  const handleDuplicateSlide = () => {
+    if (contextMenu.slideIndex >= 0) {
+      const slideToClone = generatedSlides[contextMenu.slideIndex];
+      const newSlide = {
+        ...slideToClone,
+        id: `${slideToClone.id}-copy-${Date.now()}`,
+        title: `${slideToClone.title} (Copy)`
+      };
+      const updatedSlides = [...generatedSlides];
+      updatedSlides.splice(contextMenu.slideIndex + 1, 0, newSlide);
+      setGeneratedSlides(updatedSlides);
+      toast.success('Slide duplicated');
+      setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+    }
+  };
+
+  const handleDeleteSlide = () => {
+    if (contextMenu.slideIndex >= 0 && generatedSlides.length > 1) {
+      const updatedSlides = generatedSlides.filter((_, index) => index !== contextMenu.slideIndex);
+      setGeneratedSlides(updatedSlides);
+      
+      // Adjust active slide if necessary
+      if (activeSlide >= updatedSlides.length) {
+        setActiveSlide(updatedSlides.length - 1);
+      } else if (activeSlide > contextMenu.slideIndex) {
+        setActiveSlide(activeSlide - 1);
+      }
+      
+      toast.success('Slide deleted');
+      setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+    } else {
+      toast.error('Cannot delete the last remaining slide');
+      setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+    }
+  };
+
+  const handleAddSlideBelow = () => {
+    if (contextMenu.slideIndex >= 0) {
+      const newSlide: GeneratedSlide = {
+        id: `new-slide-${Date.now()}`,
+        title: 'New Slide',
+        content: 'Click to edit this slide content.',
+        type: 'content',
+        thumbnail: 'bg-gradient-to-br from-gray-400 to-gray-600'
+      };
+      const updatedSlides = [...generatedSlides];
+      updatedSlides.splice(contextMenu.slideIndex + 1, 0, newSlide);
+      setGeneratedSlides(updatedSlides);
+      setActiveSlide(contextMenu.slideIndex + 1);
+      toast.success('New slide added');
+      setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+    }
+  };
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+    };
+
+    if (contextMenu.show) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [contextMenu.show]);
 
   const handleAddTable = () => {
     const tableHtml = `
@@ -387,6 +482,7 @@ const SlideGeneratorLessonPlan = () => {
                   <div
                     key={slide.id}
                     onClick={() => setActiveSlide(index)}
+                    onContextMenu={(e) => handleRightClick(e, index)}
                     className={`p-3 rounded-lg cursor-pointer transition-colors ${
                       activeSlide === index ? 'bg-rose-100 border-rose-300' : 'bg-gray-50 hover:bg-gray-100'
                     } border`}
@@ -399,6 +495,72 @@ const SlideGeneratorLessonPlan = () => {
                 ))}
               </div>
             </div>
+
+            {/* Context Menu */}
+            {contextMenu.show && (
+              <div
+                className="fixed bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 min-w-[180px]"
+                style={{
+                  left: `${contextMenu.x}px`,
+                  top: `${contextMenu.y}px`,
+                }}
+              >
+                <button
+                  onClick={handleCopySlide}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                    </svg>
+                  </div>
+                  <span>Copy</span>
+                  <span className="ml-auto text-xs text-gray-400">Ctrl+C</span>
+                </button>
+
+                <button
+                  onClick={handleDuplicateSlide}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                      <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                    </svg>
+                  </div>
+                  <span>Duplicate</span>
+                  <span className="ml-auto text-xs text-gray-400">Ctrl+D</span>
+                </button>
+
+                <button
+                  onClick={handleAddSlideBelow}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                      <path d="M12 8v8m-4-4h8"/>
+                    </svg>
+                  </div>
+                  <span>Add card below</span>
+                </button>
+
+                <div className="border-t border-gray-200 my-1"></div>
+
+                <button
+                  onClick={handleDeleteSlide}
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c0-1 1-2 2-2v2"/>
+                    </svg>
+                  </div>
+                  <span>Delete</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Main Editor */}
