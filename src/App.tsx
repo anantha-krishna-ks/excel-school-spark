@@ -16,6 +16,9 @@ import SessionList from "./pages/SessionList";
 import CreateSession from "./pages/CreateSession";
 import ExamAssistPrep from "./pages/ExamAssistPrep";
 import QuestionBundlePreview from "./pages/QuestionBundlePreview";
+import SlideGenerator from "./pages/SlideGenerator";
+import SlideGeneratorLessonPlan from "./pages/SlideGeneratorLessonPlan";
+import SlideGeneratorTemplates from "./pages/SlideGeneratorTemplates";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +34,9 @@ const App = () => (
           <Route path="/tools" element={<ToolsDashboard />} />
           <Route path="/lesson-plan-assistant" element={<LessonPlanAssistant />} />
           <Route path="/exam-assist-prep" element={<ExamAssistPrep />} />
+          <Route path="/slide-generator" element={<SlideGenerator />} />
+          <Route path="/slide-generator/lesson-plan" element={<SlideGeneratorLessonPlan />} />
+          <Route path="/slide-generator/templates" element={<SlideGeneratorTemplates />} />
           <Route path="/question-bundle/:bundleId" element={<QuestionBundlePreview />} />
           <Route path="/lesson-plan" element={<Index />} />
           <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />

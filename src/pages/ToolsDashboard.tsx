@@ -1,4 +1,4 @@
-import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap } from 'lucide-react';
+import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap, Presentation } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -58,6 +58,15 @@ const ToolsDashboard = () => {
       color: 'bg-indigo-500',
       buttonColor: 'bg-indigo-500 hover:bg-indigo-600',
       route: '/exam-assist-prep'
+    },
+    {
+      id: 'slide-generator',
+      title: 'Slide Generator',
+      description: 'Create stunning presentations with AI-powered tools',
+      icon: Presentation,
+      color: 'bg-rose-500',
+      buttonColor: 'bg-rose-500 hover:bg-rose-600',
+      route: '/slide-generator'
     },
     {
       id: 'grade-assistant',
