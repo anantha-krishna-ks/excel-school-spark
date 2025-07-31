@@ -666,6 +666,10 @@ const SlideGeneratorLessonPlan = () => {
   ];
 
   const savePresentation = () => {
+    console.log('Save button clicked');
+    console.log('Current slides:', generatedSlides);
+    console.log('Current title:', currentPresentationTitle);
+    
     const newPresentation: SavedPresentation = {
       id: `ppt-${Date.now()}`,
       title: currentPresentationTitle,
@@ -677,11 +681,19 @@ const SlideGeneratorLessonPlan = () => {
       slides: generatedSlides
     };
     
-    setSavedPresentations(prev => [newPresentation, ...prev]);
+    console.log('New presentation:', newPresentation);
+    setSavedPresentations(prev => {
+      console.log('Previous presentations:', prev);
+      const updated = [newPresentation, ...prev];
+      console.log('Updated presentations:', updated);
+      return updated;
+    });
     toast.success('Presentation saved successfully!');
   };
 
   const previewPresentation = () => {
+    console.log('Preview button clicked');
+    console.log('Setting showPreview to true');
     setShowPreview(true);
   };
 
@@ -786,15 +798,20 @@ const SlideGeneratorLessonPlan = () => {
               />
             </div>
             <div className="flex items-center space-x-2 flex-shrink-0">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowDashboard(true)}
-                className="hidden lg:flex"
-              >
-                <FileText className="w-4 h-4 mr-2" />
-                My Presentations
-              </Button>
+               <Button 
+                 variant="outline" 
+                 size="sm" 
+                 onClick={() => {
+                   console.log('My Presentations button clicked');
+                   console.log('Current showDashboard:', showDashboard);
+                   setShowDashboard(true);
+                   console.log('Setting showDashboard to true');
+                 }}
+                 className="hidden lg:flex"
+               >
+                 <FileText className="w-4 h-4 mr-2" />
+                 My Presentations
+               </Button>
               <Button variant="outline" size="sm" onClick={savePresentation}>
                 <Save className="w-4 h-4 mr-2" />
                 <span className="hidden md:inline">Save</span>
@@ -809,15 +826,20 @@ const SlideGeneratorLessonPlan = () => {
               </Button>
               
               {/* Mobile Menu Button */}
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowDashboard(true)}
-                className="lg:hidden"
-                title="My Presentations"
-              >
-                <FileText className="w-4 h-4" />
-              </Button>
+               <Button 
+                 variant="outline" 
+                 size="sm" 
+                 onClick={() => {
+                   console.log('Mobile My Presentations button clicked');
+                   console.log('Current showDashboard:', showDashboard);
+                   setShowDashboard(true);
+                   console.log('Setting showDashboard to true');
+                 }}
+                 className="lg:hidden"
+                 title="My Presentations"
+               >
+                 <FileText className="w-4 h-4" />
+               </Button>
             </div>
           </div>
         </header>
