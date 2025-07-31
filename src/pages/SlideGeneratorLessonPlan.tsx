@@ -765,14 +765,14 @@ const SlideGeneratorLessonPlan = () => {
     return (
       <div className="min-h-screen bg-gray-100">
         {/* Editor Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+            <div className="flex items-center space-x-4 min-w-0 flex-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditorMode(false)}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-600 hover:text-gray-900 flex-shrink-0"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
@@ -781,25 +781,42 @@ const SlideGeneratorLessonPlan = () => {
                 type="text"
                 value={currentPresentationTitle}
                 onChange={(e) => setCurrentPresentationTitle(e.target.value)}
-                className="text-lg font-semibold text-gray-900 bg-transparent border-none outline-none focus:bg-white focus:border focus:border-gray-300 focus:rounded px-2 py-1"
+                className="text-lg font-semibold text-gray-900 bg-transparent border-none outline-none focus:bg-white focus:border focus:border-gray-300 focus:rounded px-2 py-1 min-w-0 flex-1 max-w-md truncate"
+                placeholder="Enter presentation title"
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={() => setShowDashboard(true)}>
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowDashboard(true)}
+                className="hidden lg:flex"
+              >
                 <FileText className="w-4 h-4 mr-2" />
                 My Presentations
               </Button>
               <Button variant="outline" size="sm" onClick={savePresentation}>
                 <Save className="w-4 h-4 mr-2" />
-                Save
+                <span className="hidden md:inline">Save</span>
               </Button>
               <Button variant="outline" size="sm" onClick={previewPresentation}>
                 <Eye className="w-4 h-4 mr-2" />
-                Preview
+                <span className="hidden md:inline">Preview</span>
               </Button>
               <Button size="sm" onClick={exportPresentation} className="bg-rose-600 hover:bg-rose-700">
                 <Download className="w-4 h-4 mr-2" />
-                Export
+                <span className="hidden md:inline">Export</span>
+              </Button>
+              
+              {/* Mobile Menu Button */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowDashboard(true)}
+                className="lg:hidden"
+                title="My Presentations"
+              >
+                <FileText className="w-4 h-4" />
               </Button>
             </div>
           </div>
