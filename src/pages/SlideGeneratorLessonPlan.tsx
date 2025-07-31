@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ const SlideGeneratorLessonPlan = () => {
   const [generatedSlides, setGeneratedSlides] = useState<GeneratedSlide[]>([]);
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isEditorMode, setIsEditorMode] = useState(false);
+  const [showTextOptions, setShowTextOptions] = useState(false);
+  const textButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -111,16 +113,61 @@ const SlideGeneratorLessonPlan = () => {
     }, 3000);
   };
 
-  const handleAddText = () => {
-    const newText = "New text block - click to edit";
+  // Text options handlers
+  const handleAddTextType = (type: 'title' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote') => {
+    let textHtml = '';
+    
+    switch (type) {
+      case 'title':
+        textHtml = '<h1 style="font-size: 2.5rem; font-weight: bold; margin: 20px 0; color: #111;">! Title</h1>';
+        break;
+      case 'h1':
+        textHtml = '<h1 style="font-size: 2rem; font-weight: bold; margin: 16px 0; color: #333;"># Heading 1</h1>';
+        break;
+      case 'h2':
+        textHtml = '<h2 style="font-size: 1.5rem; font-weight: bold; margin: 14px 0; color: #333;">## Heading 2</h2>';
+        break;
+      case 'h3':
+        textHtml = '<h3 style="font-size: 1.25rem; font-weight: bold; margin: 12px 0; color: #333;">### Heading 3</h3>';
+        break;
+      case 'h4':
+        textHtml = '<h4 style="font-size: 1.125rem; font-weight: bold; margin: 10px 0; color: #333;">#### Heading 4</h4>';
+        break;
+      case 'blockquote':
+        textHtml = '<blockquote style="border-left: 4px solid #e2e8f0; padding-left: 16px; margin: 16px 0; font-style: italic; color: #64748b;">&gt; Quote</blockquote>';
+        break;
+    }
+    
     const updatedSlides = [...generatedSlides];
     updatedSlides[activeSlide] = {
       ...updatedSlides[activeSlide],
-      content: updatedSlides[activeSlide].content + `\n\n${newText}`
+      content: updatedSlides[activeSlide].content + textHtml
     };
     setGeneratedSlides(updatedSlides);
-    toast.success('Text block added');
+    setShowTextOptions(false);
+    toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} added`);
   };
+
+  const handleAddText = () => {
+    setShowTextOptions(!showTextOptions);
+  };
+
+  // Close text options when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (textButtonRef.current && !textButtonRef.current.contains(event.target as Node)) {
+        setShowTextOptions(false);
+      }
+    };
+
+    if (showTextOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTextOptions]);
 
   const handleAddTable = () => {
     const tableHtml = `
@@ -357,16 +404,17 @@ const SlideGeneratorLessonPlan = () => {
           {/* Main Editor */}
           <div className="flex-1 flex flex-col">
             {/* Toolbar */}
-            <div className="bg-white border-b border-gray-200 p-3">
+            <div className="bg-white border-b border-gray-200 p-3 relative">
               <div className="flex flex-wrap gap-2">
                 {editorTools.map((tool, index) => {
                   const IconComponent = tool.icon;
                   return (
                     <Button 
                       key={index} 
+                      ref={tool.label === 'Text' ? textButtonRef : undefined}
                       variant="outline" 
                       size="sm" 
-                      className="text-xs"
+                      className={`text-xs ${tool.label === 'Text' && showTextOptions ? 'bg-gray-100' : ''}`}
                       onClick={tool.onClick}
                     >
                       <IconComponent className="w-3 h-3 mr-1" />
@@ -375,6 +423,74 @@ const SlideGeneratorLessonPlan = () => {
                   );
                 })}
               </div>
+
+              {/* Text Options Panel */}
+              {showTextOptions && (
+                <div className="absolute top-full left-3 mt-1 bg-gray-800 rounded-lg shadow-lg p-4 z-50 min-w-[400px]">
+                  <h3 className="text-white font-medium mb-3">Text</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Title */}
+                    <button
+                      onClick={() => handleAddTextType('title')}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                    >
+                      <div className="text-white text-2xl font-bold mb-1">T</div>
+                      <div className="text-white font-medium">Title</div>
+                      <div className="text-gray-400 text-sm">! Title</div>
+                    </button>
+
+                    {/* Heading 1 */}
+                    <button
+                      onClick={() => handleAddTextType('h1')}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                    >
+                      <div className="text-white text-xl font-bold mb-1">H1</div>
+                      <div className="text-white font-medium">Heading 1</div>
+                      <div className="text-gray-400 text-sm"># Heading 1</div>
+                    </button>
+
+                    {/* Heading 2 */}
+                    <button
+                      onClick={() => handleAddTextType('h2')}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                    >
+                      <div className="text-white text-lg font-bold mb-1">H2</div>
+                      <div className="text-white font-medium">Heading 2</div>
+                      <div className="text-gray-400 text-sm">## Heading 2</div>
+                    </button>
+
+                    {/* Heading 3 */}
+                    <button
+                      onClick={() => handleAddTextType('h3')}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                    >
+                      <div className="text-white text-base font-bold mb-1">H3</div>
+                      <div className="text-white font-medium">Heading 3</div>
+                      <div className="text-gray-400 text-sm">### Heading 3</div>
+                    </button>
+
+                    {/* Heading 4 */}
+                    <button
+                      onClick={() => handleAddTextType('h4')}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                    >
+                      <div className="text-white text-sm font-bold mb-1">H4</div>
+                      <div className="text-white font-medium">Heading 4</div>
+                      <div className="text-gray-400 text-sm">#### Heading 4</div>
+                    </button>
+
+                    {/* Blockquote */}
+                    <button
+                      onClick={() => handleAddTextType('blockquote')}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                    >
+                      <div className="text-white text-lg mb-1">"</div>
+                      <div className="text-white font-medium">Blockquote</div>
+                      <div className="text-gray-400 text-sm">&gt; Quote</div>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Canvas */}
