@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,17 @@ interface GeneratedSlide {
   content: string;
   type: 'title' | 'content' | 'image' | 'chart';
   thumbnail: string;
+}
+
+interface SavedPresentation {
+  id: string;
+  title: string;
+  thumbnail: string;
+  createdAt: Date;
+  lastViewed: Date;
+  isPrivate: boolean;
+  slideCount: number;
+  slides: GeneratedSlide[];
 }
 
 const SlideGeneratorLessonPlan = () => {
@@ -39,6 +50,11 @@ const SlideGeneratorLessonPlan = () => {
   const [showBackgroundPanel, setShowBackgroundPanel] = useState(false);
   const [draggedElement, setDraggedElement] = useState<{ id: string; type: string; } | null>(null);
   const [slideBackgrounds, setSlideBackgrounds] = useState<{ [key: number]: string }>({});
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [savedPresentations, setSavedPresentations] = useState<SavedPresentation[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showPreview, setShowPreview] = useState(false);
+  const [currentPresentationTitle, setCurrentPresentationTitle] = useState('Photosynthesis Presentation');
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -650,11 +666,83 @@ const SlideGeneratorLessonPlan = () => {
   ];
 
   const savePresentation = () => {
+    const newPresentation: SavedPresentation = {
+      id: `ppt-${Date.now()}`,
+      title: currentPresentationTitle,
+      thumbnail: generatedSlides[0]?.thumbnail || 'bg-gradient-to-br from-blue-400 to-purple-500',
+      createdAt: new Date(),
+      lastViewed: new Date(),
+      isPrivate: true,
+      slideCount: generatedSlides.length,
+      slides: generatedSlides
+    };
+    
+    setSavedPresentations(prev => [newPresentation, ...prev]);
     toast.success('Presentation saved successfully!');
   };
 
+  const previewPresentation = () => {
+    setShowPreview(true);
+  };
+
   const exportPresentation = () => {
-    toast.success('Presentation exported as PowerPoint!');
+    // Create a simple text export for demo purposes
+    const exportData = {
+      title: currentPresentationTitle,
+      slides: generatedSlides.map(slide => ({
+        title: slide.title,
+        content: slide.content.replace(/<[^>]*>/g, '') // Strip HTML tags
+      }))
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentPresentationTitle}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Presentation exported successfully!');
+  };
+
+  const loadPresentation = (presentation: SavedPresentation) => {
+    setGeneratedSlides(presentation.slides);
+    setCurrentPresentationTitle(presentation.title);
+    setActiveSlide(0);
+    setIsEditorMode(true);
+    setShowDashboard(false);
+    
+    // Update last viewed
+    setSavedPresentations(prev => 
+      prev.map(p => 
+        p.id === presentation.id 
+          ? { ...p, lastViewed: new Date() }
+          : p
+      )
+    );
+    
+    toast.success(`Loaded presentation: ${presentation.title}`);
+  };
+
+  const deletePresentation = (presentationId: string) => {
+    setSavedPresentations(prev => prev.filter(p => p.id !== presentationId));
+    toast.success('Presentation deleted');
+  };
+
+  const duplicatePresentation = (presentation: SavedPresentation) => {
+    const duplicated: SavedPresentation = {
+      ...presentation,
+      id: `ppt-${Date.now()}`,
+      title: `${presentation.title} (Copy)`,
+      createdAt: new Date(),
+      lastViewed: new Date()
+    };
+    
+    setSavedPresentations(prev => [duplicated, ...prev]);
+    toast.success('Presentation duplicated');
   };
 
   if (isGenerating) {
@@ -689,14 +777,23 @@ const SlideGeneratorLessonPlan = () => {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              <h1 className="text-lg font-semibold text-gray-900">Photosynthesis Presentation</h1>
+              <input
+                type="text"
+                value={currentPresentationTitle}
+                onChange={(e) => setCurrentPresentationTitle(e.target.value)}
+                className="text-lg font-semibold text-gray-900 bg-transparent border-none outline-none focus:bg-white focus:border focus:border-gray-300 focus:rounded px-2 py-1"
+              />
             </div>
             <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={() => setShowDashboard(true)}>
+                <FileText className="w-4 h-4 mr-2" />
+                My Presentations
+              </Button>
               <Button variant="outline" size="sm" onClick={savePresentation}>
                 <Save className="w-4 h-4 mr-2" />
                 Save
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={previewPresentation}>
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
               </Button>
@@ -1133,6 +1230,260 @@ const SlideGeneratorLessonPlan = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Dashboard view for saved presentations
+  if (showDashboard) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Navigation Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create new
+                  <span className="ml-2 bg-blue-500 text-white px-2 py-1 rounded text-xs">AI</span>
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New from blank
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
+                </Button>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/slide-generator')}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Tools
+                </Button>
+                
+                <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className="px-3"
+                  >
+                    <Grid className="w-4 h-4 mr-1" />
+                    Grid
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className="px-3"
+                  >
+                    <LayoutList className="w-4 h-4 mr-1" />
+                    List
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Dashboard Content */}
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Your Presentations</h1>
+            <p className="text-gray-600">
+              {savedPresentations.length} presentation{savedPresentations.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+
+          {savedPresentations.length === 0 ? (
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No presentations yet</h3>
+              <p className="text-gray-600 mb-6">Create your first presentation to get started</p>
+              <Button
+                onClick={() => setShowDashboard(false)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create new presentation
+              </Button>
+            </div>
+          ) : (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}>
+              {savedPresentations.map((presentation) => (
+                <div
+                  key={presentation.id}
+                  className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${
+                    viewMode === 'list' ? 'flex items-center p-4' : 'p-4'
+                  }`}
+                >
+                  {viewMode === 'grid' ? (
+                    <>
+                      <div 
+                        className={`w-full h-32 rounded-lg mb-4 flex items-center justify-center cursor-pointer ${presentation.thumbnail}`}
+                        onClick={() => loadPresentation(presentation)}
+                      >
+                        <FileText className="w-8 h-8 text-white" />
+                      </div>
+                      
+                      <div className="mb-4">
+                        <h3 className="font-medium text-gray-900 text-sm mb-1 truncate">
+                          {presentation.title}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                          <Lock className="w-3 h-3" />
+                          <span>Private</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                          <User className="w-3 h-3 text-white" />
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          <div>Created by you</div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Last viewed {presentation.lastViewed.toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => loadPresentation(presentation)}
+                          className="flex-1 text-xs"
+                        >
+                          Open
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => duplicatePresentation(presentation)}
+                          className="text-xs"
+                        >
+                          Duplicate
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deletePresentation(presentation.id)}
+                          className="text-xs text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div 
+                        className={`w-16 h-16 rounded-lg mr-4 flex items-center justify-center cursor-pointer ${presentation.thumbnail}`}
+                        onClick={() => loadPresentation(presentation)}
+                      >
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900 mb-1">
+                          {presentation.title}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                          <div className="flex items-center gap-1">
+                            <Lock className="w-3 h-3" />
+                            <span>Private</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            <span>Created by you</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            <span>Last viewed {presentation.lastViewed.toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => loadPresentation(presentation)}
+                          className="text-xs"
+                        >
+                          Open
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => duplicatePresentation(presentation)}
+                          className="text-xs"
+                        >
+                          Duplicate
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deletePresentation(presentation.id)}
+                          className="text-xs text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Preview Modal
+  if (showPreview) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] w-full mx-4 overflow-hidden">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-semibold">Preview: {currentPresentationTitle}</h2>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <Play className="w-4 h-4 mr-2" />
+                Start Slideshow
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowPreview(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {generatedSlides.map((slide, index) => (
+                <div key={slide.id} className="border rounded-lg p-4 bg-gray-50">
+                  <div className={`w-full h-24 rounded mb-2 flex items-center justify-center ${slide.thumbnail}`}>
+                    <span className="text-white text-sm font-medium">{index + 1}</span>
+                  </div>
+                  <h4 className="text-sm font-medium text-gray-900 truncate">{slide.title}</h4>
+                </div>
+              ))}
             </div>
           </div>
         </div>
