@@ -111,16 +111,159 @@ const SlideGeneratorLessonPlan = () => {
     }, 3000);
   };
 
+  const handleAddText = () => {
+    const newText = "New text block - click to edit";
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + `\n\n${newText}`
+    };
+    setGeneratedSlides(updatedSlides);
+    toast.success('Text block added');
+  };
+
+  const handleAddTable = () => {
+    const tableHtml = `
+    <table border="1" style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+      <tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr>
+      <tr><td>Row 1, Col 1</td><td>Row 1, Col 2</td><td>Row 1, Col 3</td></tr>
+      <tr><td>Row 2, Col 1</td><td>Row 2, Col 2</td><td>Row 2, Col 3</td></tr>
+    </table>`;
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + tableHtml
+    };
+    setGeneratedSlides(updatedSlides);
+    toast.success('Table added');
+  };
+
+  const handleAddList = () => {
+    const listHtml = `
+    <ul style="margin: 20px 0; padding-left: 20px;">
+      <li>First item</li>
+      <li>Second item</li>
+      <li>Third item</li>
+    </ul>`;
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + listHtml
+    };
+    setGeneratedSlides(updatedSlides);
+    toast.success('List added');
+  };
+
+  const handleAddCallout = () => {
+    const calloutHtml = `
+    <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 16px; margin: 20px 0; border-radius: 4px;">
+      <strong>💡 Important:</strong> This is a callout box. Edit this text to add your important note.
+    </div>`;
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + calloutHtml
+    };
+    setGeneratedSlides(updatedSlides);
+    toast.success('Callout added');
+  };
+
+  const handleAddImage = () => {
+    // Create a file input for image upload
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imageSrc = e.target?.result;
+          const imageHtml = `<img src="${imageSrc}" alt="Uploaded image" style="max-width: 100%; height: auto; margin: 20px 0; border-radius: 8px;" />`;
+          const updatedSlides = [...generatedSlides];
+          updatedSlides[activeSlide] = {
+            ...updatedSlides[activeSlide],
+            content: updatedSlides[activeSlide].content + imageHtml
+          };
+          setGeneratedSlides(updatedSlides);
+          toast.success('Image added');
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleAddVideo = () => {
+    const videoUrl = prompt('Enter video URL (YouTube, Vimeo, etc.):');
+    if (videoUrl) {
+      const videoHtml = `
+      <div style="margin: 20px 0;">
+        <iframe width="100%" height="315" src="${videoUrl}" frameborder="0" allowfullscreen></iframe>
+      </div>`;
+      const updatedSlides = [...generatedSlides];
+      updatedSlides[activeSlide] = {
+        ...updatedSlides[activeSlide],
+        content: updatedSlides[activeSlide].content + videoHtml
+      };
+      setGeneratedSlides(updatedSlides);
+      toast.success('Video added');
+    }
+  };
+
+  const handleAddChart = () => {
+    const chartHtml = `
+    <div style="margin: 20px 0; padding: 20px; border: 2px dashed #ccc; text-align: center;">
+      <h4>📊 Chart Placeholder</h4>
+      <p>Chart will be rendered here. You can integrate with chart libraries like Chart.js or D3.</p>
+    </div>`;
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + chartHtml
+    };
+    setGeneratedSlides(updatedSlides);
+    toast.success('Chart placeholder added');
+  };
+
+  const handleAddShapes = () => {
+    const shapesHtml = `
+    <div style="margin: 20px 0; display: flex; gap: 10px; align-items: center;">
+      <div style="width: 50px; height: 50px; background: #3b82f6; border-radius: 50%;"></div>
+      <div style="width: 50px; height: 50px; background: #ef4444;"></div>
+      <div style="width: 50px; height: 30px; background: #22c55e; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+    </div>`;
+    const updatedSlides = [...generatedSlides];
+    updatedSlides[activeSlide] = {
+      ...updatedSlides[activeSlide],
+      content: updatedSlides[activeSlide].content + shapesHtml
+    };
+    setGeneratedSlides(updatedSlides);
+    toast.success('Shapes added');
+  };
+
+  const handleChangeLayout = () => {
+    const layouts = [
+      'Title + Content',
+      'Two Columns',
+      'Three Columns',
+      'Content + Image',
+      'Full Image Background'
+    ];
+    const selectedLayout = layouts[Math.floor(Math.random() * layouts.length)];
+    toast.success(`Layout changed to: ${selectedLayout}`);
+  };
+
   const editorTools = [
-    { icon: Type, label: 'Text', category: 'blocks' },
-    { icon: Table, label: 'Table', category: 'blocks' },
-    { icon: List, label: 'List', category: 'blocks' },
-    { icon: MessageSquare, label: 'Callout', category: 'blocks' },
-    { icon: ImageIcon, label: 'Image', category: 'media' },
-    { icon: Video, label: 'Video', category: 'media' },
-    { icon: BarChart3, label: 'Chart', category: 'visual' },
-    { icon: Shapes, label: 'Shapes', category: 'visual' },
-    { icon: Layout, label: 'Layout', category: 'design' }
+    { icon: Type, label: 'Text', category: 'blocks', onClick: handleAddText },
+    { icon: Table, label: 'Table', category: 'blocks', onClick: handleAddTable },
+    { icon: List, label: 'List', category: 'blocks', onClick: handleAddList },
+    { icon: MessageSquare, label: 'Callout', category: 'blocks', onClick: handleAddCallout },
+    { icon: ImageIcon, label: 'Image', category: 'media', onClick: handleAddImage },
+    { icon: Video, label: 'Video', category: 'media', onClick: handleAddVideo },
+    { icon: BarChart3, label: 'Chart', category: 'visual', onClick: handleAddChart },
+    { icon: Shapes, label: 'Shapes', category: 'visual', onClick: handleAddShapes },
+    { icon: Layout, label: 'Layout', category: 'design', onClick: handleChangeLayout }
   ];
 
   const savePresentation = () => {
@@ -219,7 +362,13 @@ const SlideGeneratorLessonPlan = () => {
                 {editorTools.map((tool, index) => {
                   const IconComponent = tool.icon;
                   return (
-                    <Button key={index} variant="outline" size="sm" className="text-xs">
+                    <Button 
+                      key={index} 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={tool.onClick}
+                    >
                       <IconComponent className="w-3 h-3 mr-1" />
                       {tool.label}
                     </Button>
