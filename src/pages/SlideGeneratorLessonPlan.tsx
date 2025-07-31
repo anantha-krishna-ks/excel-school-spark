@@ -31,6 +31,9 @@ const SlideGeneratorLessonPlan = () => {
     y: number;
     slideIndex: number;
   }>({ show: false, x: 0, y: 0, slideIndex: -1 });
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [showFormatPanel, setShowFormatPanel] = useState(false);
+  const contentEditableRef = useRef<HTMLDivElement>(null);
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -263,6 +266,44 @@ const SlideGeneratorLessonPlan = () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [contextMenu.show]);
+
+  // Rich text editing functions
+  const formatText = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    updateSlideContent();
+  };
+
+  const updateSlideContent = () => {
+    if (contentEditableRef.current) {
+      const updatedSlides = [...generatedSlides];
+      updatedSlides[activeSlide] = {
+        ...updatedSlides[activeSlide],
+        content: contentEditableRef.current.innerHTML
+      };
+      setGeneratedSlides(updatedSlides);
+    }
+  };
+
+  const handleElementClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const elementId = target.getAttribute('data-element-id') || target.closest('[data-element-id]')?.getAttribute('data-element-id');
+    if (elementId) {
+      setSelectedElement(elementId);
+      setShowFormatPanel(true);
+    }
+  };
+
+  const changeFontSize = (size: string) => {
+    formatText('fontSize', size);
+  };
+
+  const changeFontColor = (color: string) => {
+    formatText('foreColor', color);
+  };
+
+  const changeBackgroundColor = (color: string) => {
+    formatText('hiliteColor', color);
+  };
 
   const handleAddTable = () => {
     const tableHtml = `
@@ -565,7 +606,94 @@ const SlideGeneratorLessonPlan = () => {
 
           {/* Main Editor */}
           <div className="flex-1 flex flex-col">
-            {/* Toolbar */}
+            {/* Formatting Toolbar */}
+            <div className="bg-white border-b border-gray-200 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium text-gray-700">Format:</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => formatText('bold')}
+                  className="text-xs"
+                >
+                  <strong>B</strong>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => formatText('italic')}
+                  className="text-xs"
+                >
+                  <em>I</em>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => formatText('underline')}
+                  className="text-xs"
+                >
+                  <u>U</u>
+                </Button>
+                
+                <div className="border-l border-gray-300 h-6 mx-2"></div>
+                
+                <select
+                  onChange={(e) => changeFontSize(e.target.value)}
+                  className="text-xs border border-gray-300 rounded px-2 py-1"
+                >
+                  <option value="1">8pt</option>
+                  <option value="2">10pt</option>
+                  <option value="3" selected>12pt</option>
+                  <option value="4">14pt</option>
+                  <option value="5">18pt</option>
+                  <option value="6">24pt</option>
+                  <option value="7">36pt</option>
+                </select>
+                
+                <input
+                  type="color"
+                  onChange={(e) => changeFontColor(e.target.value)}
+                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                  title="Text Color"
+                />
+                
+                <input
+                  type="color"
+                  onChange={(e) => changeBackgroundColor(e.target.value)}
+                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                  title="Background Color"
+                />
+                
+                <div className="border-l border-gray-300 h-6 mx-2"></div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => formatText('justifyLeft')}
+                  className="text-xs"
+                >
+                  ←
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => formatText('justifyCenter')}
+                  className="text-xs"
+                >
+                  ↔
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => formatText('justifyRight')}
+                  className="text-xs"
+                >
+                  →
+                </Button>
+              </div>
+            </div>
+
+            {/* Element Toolbar */}
             <div className="bg-white border-b border-gray-200 p-3 relative">
               <div className="flex flex-wrap gap-2">
                 {editorTools.map((tool, index) => {
@@ -660,11 +788,28 @@ const SlideGeneratorLessonPlan = () => {
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-lg shadow-lg" style={{ aspectRatio: '16/9' }}>
                   <div className="p-8 h-full flex flex-col justify-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-6">
+                    <h1 
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const updatedSlides = [...generatedSlides];
+                        updatedSlides[activeSlide] = {
+                          ...updatedSlides[activeSlide],
+                          title: e.currentTarget.textContent || ''
+                        };
+                        setGeneratedSlides(updatedSlides);
+                      }}
+                      className="text-4xl font-bold text-gray-900 mb-6 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2"
+                    >
                       {generatedSlides[activeSlide]?.title}
                     </h1>
                     <div 
-                      className="text-xl text-gray-700 leading-relaxed"
+                      ref={contentEditableRef}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onInput={updateSlideContent}
+                      onClick={handleElementClick}
+                      className="text-xl text-gray-700 leading-relaxed outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2 min-h-[200px]"
                       dangerouslySetInnerHTML={{ __html: generatedSlides[activeSlide]?.content || '' }}
                     />
                   </div>
