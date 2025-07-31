@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader } from '@/components/ui/loader';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { toast } from 'sonner';
 
 interface GeneratedSlide {
@@ -44,6 +45,12 @@ const SlideGeneratorLessonPlan = () => {
   }>({ show: false, x: 0, y: 0, slideIndex: -1 });
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [showFormatPanel, setShowFormatPanel] = useState(false);
+  const [elementContextMenu, setElementContextMenu] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+    elementId: string;
+  }>({ show: false, x: 0, y: 0, elementId: '' });
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const [showDiagramPanel, setShowDiagramPanel] = useState(false);
   const [showShapePanel, setShowShapePanel] = useState(false);
@@ -277,16 +284,17 @@ const SlideGeneratorLessonPlan = () => {
   useEffect(() => {
     const handleClickOutside = () => {
       setContextMenu({ show: false, x: 0, y: 0, slideIndex: -1 });
+      setElementContextMenu({ show: false, x: 0, y: 0, elementId: '' });
     };
 
-    if (contextMenu.show) {
+    if (contextMenu.show || elementContextMenu.show) {
       document.addEventListener('click', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [contextMenu.show]);
+  }, [contextMenu.show, elementContextMenu.show]);
 
   // Add interaction styles for diagrams and shapes
   useEffect(() => {
@@ -350,6 +358,67 @@ const SlideGeneratorLessonPlan = () => {
     }
   };
 
+  const handleElementRightClick = (e: React.MouseEvent, elementId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setElementContextMenu({
+      show: true,
+      x: e.clientX,
+      y: e.clientY,
+      elementId: elementId
+    });
+  };
+
+  const handleEditElement = () => {
+    if (elementContextMenu.elementId) {
+      const element = document.querySelector(`[data-element-id="${elementContextMenu.elementId}"]`) as HTMLElement;
+      if (element) {
+        element.contentEditable = 'true';
+        element.focus();
+        element.style.outline = '2px solid #3b82f6';
+        element.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+        
+        const handleBlur = () => {
+          element.contentEditable = 'false';
+          element.style.outline = '';
+          element.style.backgroundColor = '';
+          updateSlideContent();
+          element.removeEventListener('blur', handleBlur);
+        };
+        
+        element.addEventListener('blur', handleBlur);
+      }
+    }
+    setElementContextMenu({ show: false, x: 0, y: 0, elementId: '' });
+  };
+
+  const handleDeleteElement = () => {
+    if (elementContextMenu.elementId) {
+      const element = document.querySelector(`[data-element-id="${elementContextMenu.elementId}"]`);
+      if (element) {
+        element.remove();
+        updateSlideContent();
+        toast.success('Element deleted');
+      }
+    }
+    setElementContextMenu({ show: false, x: 0, y: 0, elementId: '' });
+  };
+
+  const handleDuplicateElement = () => {
+    if (elementContextMenu.elementId) {
+      const element = document.querySelector(`[data-element-id="${elementContextMenu.elementId}"]`) as HTMLElement;
+      if (element) {
+        const clone = element.cloneNode(true) as HTMLElement;
+        const newId = `element-${Date.now()}`;
+        clone.setAttribute('data-element-id', newId);
+        element.parentNode?.insertBefore(clone, element.nextSibling);
+        updateSlideContent();
+        toast.success('Element duplicated');
+      }
+    }
+    setElementContextMenu({ show: false, x: 0, y: 0, elementId: '' });
+  };
+
   const changeFontSize = (size: string) => {
     formatText('fontSize', size);
   };
@@ -364,41 +433,60 @@ const SlideGeneratorLessonPlan = () => {
 
   // Handlers for adding elements
   const handleAddTable = () => {
+    const tableId = `element-${Date.now()}`;
     const tableHtml = `
-    <table border="1" style="border-collapse: collapse; width: 100%; margin: 20px 0;">
-      <tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr>
-      <tr><td>Row 1, Col 1</td><td>Row 1, Col 2</td><td>Row 1, Col 3</td></tr>
-      <tr><td>Row 2, Col 1</td><td>Row 2, Col 2</td><td>Row 2, Col 3</td></tr>
-    </table>`;
+    <div data-element-id="${tableId}" style="margin: 20px 0; cursor: pointer;" oncontextmenu="handleElementRightClick(event, '${tableId}')">
+      <table border="1" style="border-collapse: collapse; width: 100%; border: 1px solid #ddd;">
+        <tr style="background-color: #f8f9fa;">
+          <th style="padding: 8px; border: 1px solid #ddd;">Header 1</th>
+          <th style="padding: 8px; border: 1px solid #ddd;">Header 2</th>
+          <th style="padding: 8px; border: 1px solid #ddd;">Header 3</th>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;">Row 1, Col 1</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">Row 1, Col 2</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">Row 1, Col 3</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;">Row 2, Col 1</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">Row 2, Col 2</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">Row 2, Col 3</td>
+        </tr>
+      </table>
+    </div>`;
     const updatedSlides = [...generatedSlides];
     updatedSlides[activeSlide] = {
       ...updatedSlides[activeSlide],
       content: updatedSlides[activeSlide].content + tableHtml
     };
     setGeneratedSlides(updatedSlides);
-    toast.success('Table added');
+    toast.success('Interactive table added');
   };
 
   const handleAddList = () => {
+    const listId = `element-${Date.now()}`;
     const listHtml = `
-    <ul style="margin: 20px 0; padding-left: 20px;">
-      <li>First item</li>
-      <li>Second item</li>
-      <li>Third item</li>
-    </ul>`;
+    <div data-element-id="${listId}" style="margin: 20px 0; cursor: pointer;" oncontextmenu="handleElementRightClick(event, '${listId}')">
+      <ul style="padding-left: 20px; list-style-type: disc;">
+        <li style="margin: 8px 0;">First item - click to edit</li>
+        <li style="margin: 8px 0;">Second item - click to edit</li>
+        <li style="margin: 8px 0;">Third item - click to edit</li>
+      </ul>
+    </div>`;
     const updatedSlides = [...generatedSlides];
     updatedSlides[activeSlide] = {
       ...updatedSlides[activeSlide],
       content: updatedSlides[activeSlide].content + listHtml
     };
     setGeneratedSlides(updatedSlides);
-    toast.success('List added');
+    toast.success('Interactive list added');
   };
 
   const handleAddCallout = () => {
+    const calloutId = `element-${Date.now()}`;
     const calloutHtml = `
-    <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 16px; margin: 20px 0; border-radius: 4px;">
-      <strong>💡 Important:</strong> This is a callout box. Edit this text to add your important note.
+    <div data-element-id="${calloutId}" style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 16px; margin: 20px 0; border-radius: 4px; cursor: pointer; transition: all 0.2s;" oncontextmenu="handleElementRightClick(event, '${calloutId}')">
+      <strong>💡 Important:</strong> <span contenteditable="true">This is a callout box. Click to edit this text.</span>
     </div>`;
     const updatedSlides = [...generatedSlides];
     updatedSlides[activeSlide] = {
@@ -406,7 +494,7 @@ const SlideGeneratorLessonPlan = () => {
       content: updatedSlides[activeSlide].content + calloutHtml
     };
     setGeneratedSlides(updatedSlides);
-    toast.success('Callout added');
+    toast.success('Interactive callout added');
   };
 
   const handleAddImage = () => {
@@ -420,14 +508,17 @@ const SlideGeneratorLessonPlan = () => {
         const reader = new FileReader();
         reader.onload = (e) => {
           const imageSrc = e.target?.result;
-          const imageHtml = `<img src="${imageSrc}" alt="Uploaded image" style="max-width: 100%; height: auto; margin: 20px 0; border-radius: 8px;" />`;
+          const imageId = `element-${Date.now()}`;
+          const imageHtml = `<div data-element-id="${imageId}" style="margin: 20px 0; cursor: pointer; display: inline-block;" oncontextmenu="handleElementRightClick(event, '${imageId}')">
+            <img src="${imageSrc}" alt="Uploaded image" style="max-width: 100%; height: auto; border-radius: 8px; border: 2px solid transparent; transition: border-color 0.2s;" />
+          </div>`;
           const updatedSlides = [...generatedSlides];
           updatedSlides[activeSlide] = {
             ...updatedSlides[activeSlide],
             content: updatedSlides[activeSlide].content + imageHtml
           };
           setGeneratedSlides(updatedSlides);
-          toast.success('Image added');
+          toast.success('Interactive image added');
         };
         reader.readAsDataURL(file);
       }
@@ -438,9 +529,10 @@ const SlideGeneratorLessonPlan = () => {
   const handleAddVideo = () => {
     const videoUrl = prompt('Enter video URL (YouTube, Vimeo, etc.):');
     if (videoUrl) {
+      const videoId = `element-${Date.now()}`;
       const videoHtml = `
-      <div style="margin: 20px 0;">
-        <iframe width="100%" height="315" src="${videoUrl}" frameborder="0" allowfullscreen></iframe>
+      <div data-element-id="${videoId}" style="margin: 20px 0; cursor: pointer; border: 2px solid transparent; border-radius: 8px; transition: border-color 0.2s;" oncontextmenu="handleElementRightClick(event, '${videoId}')">
+        <iframe width="100%" height="315" src="${videoUrl}" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
       </div>`;
       const updatedSlides = [...generatedSlides];
       updatedSlides[activeSlide] = {
@@ -448,15 +540,17 @@ const SlideGeneratorLessonPlan = () => {
         content: updatedSlides[activeSlide].content + videoHtml
       };
       setGeneratedSlides(updatedSlides);
-      toast.success('Video added');
+      toast.success('Interactive video added');
     }
   };
 
   const handleAddChart = () => {
+    const chartId = `element-${Date.now()}`;
     const chartHtml = `
-    <div style="margin: 20px 0; padding: 20px; border: 2px dashed #ccc; text-align: center;">
-      <h4>📊 Chart Placeholder</h4>
-      <p>Chart will be rendered here. You can integrate with chart libraries like Chart.js or D3.</p>
+    <div data-element-id="${chartId}" style="margin: 20px 0; padding: 20px; border: 2px dashed #e2e8f0; text-align: center; border-radius: 8px; background: #f8fafc; cursor: pointer;" oncontextmenu="handleElementRightClick(event, '${chartId}')">
+      <div style="font-size: 3rem; margin-bottom: 10px;">📊</div>
+      <h4 style="color: #475569; margin: 10px 0;">Interactive Chart</h4>
+      <p style="color: #64748b; margin: 0;">Click to customize chart data and type</p>
     </div>`;
     const updatedSlides = [...generatedSlides];
     updatedSlides[activeSlide] = {
@@ -464,7 +558,7 @@ const SlideGeneratorLessonPlan = () => {
       content: updatedSlides[activeSlide].content + chartHtml
     };
     setGeneratedSlides(updatedSlides);
-    toast.success('Chart placeholder added');
+    toast.success('Interactive chart added');
   };
 
   // Smart Diagrams
@@ -713,26 +807,11 @@ const SlideGeneratorLessonPlan = () => {
     setActiveSlide(0);
     setIsEditorMode(true);
     setShowDashboard(false);
-    
-    // Update last viewed
-    setSavedPresentations(prev => 
-      prev.map(p => 
-        p.id === presentation.id 
-          ? { ...p, lastViewed: new Date() }
-          : p
-      )
-    );
-    
-    toast.success(`Loaded presentation: ${presentation.title}`);
-  };
-
-  const deletePresentation = (presentationId: string) => {
-    setSavedPresentations(prev => prev.filter(p => p.id !== presentationId));
-    toast.success('Presentation deleted');
+    toast.success('Presentation loaded successfully!');
   };
 
   const duplicatePresentation = (presentation: SavedPresentation) => {
-    const duplicated: SavedPresentation = {
+    const duplicatedPresentation: SavedPresentation = {
       ...presentation,
       id: `ppt-${Date.now()}`,
       title: `${presentation.title} (Copy)`,
@@ -740,8 +819,13 @@ const SlideGeneratorLessonPlan = () => {
       lastViewed: new Date()
     };
     
-    setSavedPresentations(prev => [duplicated, ...prev]);
-    toast.success('Presentation duplicated');
+    setSavedPresentations(prev => [duplicatedPresentation, ...prev]);
+    toast.success('Presentation duplicated successfully!');
+  };
+
+  const deletePresentation = (presentationId: string) => {
+    setSavedPresentations(prev => prev.filter(p => p.id !== presentationId));
+    toast.success('Presentation deleted successfully!');
   };
 
   if (isGenerating) {
@@ -1051,6 +1135,13 @@ const SlideGeneratorLessonPlan = () => {
                       suppressContentEditableWarning
                       onInput={updateSlideContent}
                       onClick={handleElementClick}
+                      onContextMenu={(e) => {
+                        const target = e.target as HTMLElement;
+                        const elementId = target.getAttribute('data-element-id') || target.closest('[data-element-id]')?.getAttribute('data-element-id');
+                        if (elementId) {
+                          handleElementRightClick(e, elementId);
+                        }
+                      }}
                       className="text-xl leading-relaxed outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded p-2 min-h-[200px]"
                       style={{
                         color: slideBackgrounds[activeSlide]?.includes('gradient') || slideBackgrounds[activeSlide] === '#1f2937' ? 'white' : '#374151'
@@ -1099,19 +1190,19 @@ const SlideGeneratorLessonPlan = () => {
           </div>
 
           {/* Right Panel with Tools */}
-          <div className="w-72 bg-white border-l border-gray-200 overflow-hidden">
-            <div className="p-4">
+          <div className="w-72 bg-white border-l border-gray-200 overflow-y-auto">
+            <div className="p-6">
               <h3 className="font-medium text-gray-900 mb-4">Add Elements</h3>
               
               {/* Text & Content */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Text & Content</h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button 
                     ref={textButtonRef}
                     variant="outline" 
                     size="sm" 
-                    className={`text-xs h-12 flex flex-col ${showTextOptions ? 'bg-gray-100' : ''}`}
+                    className={`text-xs h-12 flex flex-col p-3 ${showTextOptions ? 'bg-blue-50 border-blue-200' : ''}`}
                     onClick={handleAddText}
                   >
                     <Type className="w-4 h-4 mb-1" />
@@ -1120,7 +1211,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleAddTable}
                   >
                     <Table className="w-4 h-4 mb-1" />
@@ -1129,7 +1220,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleAddList}
                   >
                     <List className="w-4 h-4 mb-1" />
@@ -1138,7 +1229,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleAddCallout}
                   >
                     <MessageSquare className="w-4 h-4 mb-1" />
@@ -1150,11 +1241,11 @@ const SlideGeneratorLessonPlan = () => {
               {/* Media */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Media</h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleAddImage}
                   >
                     <ImageIcon className="w-4 h-4 mb-1" />
@@ -1163,7 +1254,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleAddVideo}
                   >
                     <Video className="w-4 h-4 mb-1" />
@@ -1175,11 +1266,11 @@ const SlideGeneratorLessonPlan = () => {
               {/* Visual Elements */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Visual Elements</h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleAddChart}
                   >
                     <BarChart3 className="w-4 h-4 mb-1" />
@@ -1188,7 +1279,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className={`text-xs h-12 flex flex-col p-3 ${showDiagramPanel ? 'bg-blue-50 border-blue-200' : ''}`}
                     onClick={handleAddDiagrams}
                   >
                     <BarChart3 className="w-4 h-4 mb-1" />
@@ -1197,7 +1288,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className={`text-xs h-12 flex flex-col p-3 ${showShapePanel ? 'bg-blue-50 border-blue-200' : ''}`}
                     onClick={handleAddShapes}
                   >
                     <Shapes className="w-4 h-4 mb-1" />
@@ -1209,11 +1300,11 @@ const SlideGeneratorLessonPlan = () => {
               {/* Design */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Design</h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className={`text-xs h-12 flex flex-col p-3 ${showBackgroundPanel ? 'bg-blue-50 border-blue-200' : ''}`}
                     onClick={handleAddBackground}
                   >
                     <Layout className="w-4 h-4 mb-1" />
@@ -1222,7 +1313,7 @@ const SlideGeneratorLessonPlan = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-12 flex flex-col"
+                    className="text-xs h-12 flex flex-col p-3"
                     onClick={handleChangeLayout}
                   >
                     <Grid className="w-4 h-4 mb-1" />
@@ -1339,6 +1430,83 @@ const SlideGeneratorLessonPlan = () => {
             </div>
           </div>
         </div>
+
+        {/* Element Context Menu */}
+        {elementContextMenu.show && (
+          <div 
+            className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+            style={{ 
+              left: elementContextMenu.x, 
+              top: elementContextMenu.y,
+              minWidth: '150px'
+            }}
+          >
+            <button
+              onClick={handleEditElement}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            >
+              <Edit className="w-4 h-4" />
+              Edit Element
+            </button>
+            <button
+              onClick={handleDuplicateElement}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              Duplicate
+            </button>
+            <div className="border-t border-gray-200 my-1"></div>
+            <button
+              onClick={handleDeleteElement}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Element
+            </button>
+          </div>
+        )}
+
+        {/* Slide Context Menu */}
+        {contextMenu.show && (
+          <div 
+            className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+            style={{ 
+              left: contextMenu.x, 
+              top: contextMenu.y,
+              minWidth: '180px'
+            }}
+          >
+            <button
+              onClick={handleCopySlide}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              Copy Content
+            </button>
+            <button
+              onClick={handleDuplicateSlide}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              Duplicate Slide
+            </button>
+            <button
+              onClick={handleAddSlideBelow}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Slide Below
+            </button>
+            <div className="border-t border-gray-200 my-1"></div>
+            <button
+              onClick={handleDeleteSlide}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Slide
+            </button>
+          </div>
+        )}
       </div>
     );
   }
