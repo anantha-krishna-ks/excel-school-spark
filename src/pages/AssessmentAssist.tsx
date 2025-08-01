@@ -86,47 +86,33 @@ const AssessmentAssist = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+    <div className="w-full min-h-screen bg-background">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-start mb-8 animate-fade-in">
+        <div className="flex justify-between items-start mb-8">
           <div>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  Assessment Repository
-                </h1>
-                <p className="text-xl text-muted-foreground mt-2">
-                  Manage and organize your assessments with AI-powered tools
-                </p>
-              </div>
-            </div>
+            <h1 className="text-4xl font-bold text-foreground mb-4">Assessment Repository</h1>
+            <p className="text-lg text-muted-foreground">
+              Manage and organize your assessments
+            </p>
           </div>
           <Button 
             onClick={handleCreateNew}
-            className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold px-8 py-4 h-auto rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
           >
-            <Plus className="h-5 w-5 mr-2" />
+            <Plus className="h-4 w-4 mr-2" />
             Create Assessment
           </Button>
         </div>
 
-        <Card className="w-full border-0 shadow-2xl bg-white/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
-          <CardHeader className="pb-6 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-t-lg">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-3 group">
-                <label className="text-base font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
-                  Grade
-                </label>
+        <Card className="w-full border border-border/50 shadow-sm">
+          <CardHeader className="pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground">Grade</label>
                 <Select value={filters.grade} onValueChange={(value) => setFilters({...filters, grade: value})}>
-                  <SelectTrigger className="h-12 border-2 hover:border-blue-300 transition-colors duration-200 bg-white/50">
+                  <SelectTrigger className="h-11 bg-background">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
@@ -148,13 +134,10 @@ const AssessmentAssist = () => {
                 </Select>
               </div>
 
-              <div className="space-y-3 group">
-                <label className="text-base font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
-                  Subject
-                </label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground">Subject</label>
                 <Select value={filters.subject} onValueChange={(value) => setFilters({...filters, subject: value})}>
-                  <SelectTrigger className="h-12 border-2 hover:border-purple-300 transition-colors duration-200 bg-white/50">
+                  <SelectTrigger className="h-11 bg-background">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
@@ -173,18 +156,15 @@ const AssessmentAssist = () => {
                 </Select>
               </div>
 
-              <div className="space-y-3 group">
-                <label className="text-base font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full group-hover:scale-110 transition-transform duration-200"></div>
-                  Assessment Name
-                </label>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground">Assessment Name</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Enter assessment name"
                     value={filters.assessmentName}
                     onChange={(e) => setFilters({...filters, assessmentName: e.target.value})}
-                    className="pl-12 h-12 text-base border-2 hover:border-orange-300 focus:border-orange-500 transition-colors duration-200 bg-white/50"
+                    className="pl-10 h-11 bg-background"
                   />
                 </div>
               </div>
