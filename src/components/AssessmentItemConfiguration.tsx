@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, Sparkles } from 'lucide-react';
+import AssessmentItemGeneration from './AssessmentItemGeneration';
 
 interface ItemConfigRow {
   id: string;
@@ -22,6 +23,7 @@ interface AssessmentItemConfigurationProps {
 
 const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onComplete }: AssessmentItemConfigurationProps) => {
   const [itemConfig, setItemConfig] = useState<ItemConfigRow[]>(assessmentData.itemConfiguration || []);
+  const [showItemGeneration, setShowItemGeneration] = useState(false);
 
   const bloomsLevels = [
     'Remember', 'Understand', 'Apply', 'Analyze', 'Evaluate', 'Create'
@@ -226,16 +228,25 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
         </CardContent>
       </Card>
 
-      {/* Continue Button */}
-      {itemConfig.length > 0 && (
+      {/* Generate Items Button */}
+      {itemConfig.length > 0 && !showItemGeneration && (
         <div className="text-center animate-fade-in">
           <Button
-            onClick={onComplete}
+            onClick={() => setShowItemGeneration(true)}
             className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl border border-green-400/20 hover:scale-105 transition-all duration-300 transform"
           >
-            Continue to Review
+            <Sparkles className="h-5 w-5 mr-2" />
+            Generate Items
           </Button>
         </div>
+      )}
+
+      {/* Item Generation Section */}
+      {showItemGeneration && (
+        <AssessmentItemGeneration 
+          assessmentData={assessmentData}
+          updateAssessmentData={updateAssessmentData}
+        />
       )}
     </div>
   );
