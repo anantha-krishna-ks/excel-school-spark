@@ -345,7 +345,7 @@ const AssessmentCreate = () => {
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                      <label className="text-sm font-semibold text-foreground">Chapter/Unit</label>
+                      <label className="text-sm font-semibold text-foreground">Chapter/Unit Selection</label>
                     </div>
                     
                     {loading ? (
@@ -354,50 +354,101 @@ const AssessmentCreate = () => {
                       </div>
                     ) : chapters.length > 0 ? (
                       <div className="space-y-4">
-                        <Select>
-                          <SelectTrigger className="h-12">
-                            <SelectValue placeholder={`${selectedChapters.length} chapter(s) selected`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {chapters.map(chapter => (
-                              <SelectItem key={chapter.chapterId} value={chapter.chapterId}>
-                                {chapter.chapterName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        
-                        <div className="space-y-2">
-                          <div className="text-sm font-medium text-foreground">
-                            Selected Chapters ({selectedChapters.length} of {chapters.length})
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedChapters.map(chapter => (
-                              <Badge 
-                                key={chapter.chapterId} 
-                                variant="secondary" 
-                                className="flex items-center gap-2 px-3 py-1"
+                        <div className="bg-muted/20 p-4 rounded-lg">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="text-sm font-medium text-foreground">
+                              Available Chapters ({selectedChapters.length} of {chapters.length} selected)
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSelectedChapters(chapters)}
+                                disabled={selectedChapters.length === chapters.length}
                               >
-                                {chapter.chapterName}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-4 w-4 p-0 hover:bg-destructive/20"
-                                  onClick={() => removeChapter(chapter.chapterId)}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </Badge>
-                            ))}
+                                Select All
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSelectedChapters([])}
+                                disabled={selectedChapters.length === 0}
+                              >
+                                Clear All
+                              </Button>
+                            </div>
                           </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {chapters.map(chapter => {
+                              const isSelected = selectedChapters.some(sc => sc.chapterId === chapter.chapterId);
+                              return (
+                                <div 
+                                  key={chapter.chapterId} 
+                                  className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${
+                                    isSelected 
+                                      ? 'border-blue-200 bg-blue-50' 
+                                      : 'border-gray-200 bg-white'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                      isSelected 
+                                        ? 'bg-blue-500 border-blue-500' 
+                                        : 'border-gray-300'
+                                    }`}>
+                                      {isSelected && (
+                                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      )}
+                                    </div>
+                                    <span className="text-sm font-medium text-foreground">
+                                      {chapter.chapterName}
+                                    </span>
+                                  </div>
+                                  
+                                  {isSelected ? (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 hover:bg-red-100"
+                                      onClick={() => removeChapter(chapter.chapterId)}
+                                    >
+                                      <X className="h-4 w-4 text-red-500" />
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 hover:bg-blue-100"
+                                      onClick={() => setSelectedChapters(prev => [...prev, chapter])}
+                                    >
+                                      <svg className="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                      </svg>
+                                    </Button>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          
+                          {selectedChapters.length === 0 && (
+                            <div className="text-center py-4">
+                              <p className="text-sm text-muted-foreground">
+                                Please select at least one chapter to continue.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
-                      <Select disabled>
-                        <SelectTrigger className="h-12">
-                          <SelectValue placeholder="Select chapter/unit..." />
-                        </SelectTrigger>
-                      </Select>
+                      <div className="text-center py-4">
+                        <p className="text-sm text-muted-foreground">
+                          No chapters available for the selected subject.
+                        </p>
+                      </div>
                     )}
                   </div>
                 )}
