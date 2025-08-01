@@ -265,11 +265,10 @@ const AssessmentItemGeneration = ({ assessmentData, updateAssessmentData }: Asse
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="all">All Items ({generatedItems.length})</TabsTrigger>
           <TabsTrigger value="selected">Selected ({selectedItems.length})</TabsTrigger>
           <TabsTrigger value="historical">Historical Questions</TabsTrigger>
-          <TabsTrigger value="overview">Assessment Overview</TabsTrigger>
         </TabsList>
 
         {/* All Items Tab */}
@@ -471,89 +470,89 @@ const AssessmentItemGeneration = ({ assessmentData, updateAssessmentData }: Asse
           </Card>
         </TabsContent>
 
-        {/* Assessment Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <Card className="border border-border/50 bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-purple-600" />
-                Assessment Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Summary Statistics */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
-                  <div className="text-sm text-muted-foreground">Total Chapters</div>
-                  <div className="text-2xl font-bold text-blue-700">{assessmentData.selectedChapters?.length || 0}</div>
-                </div>
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
-                  <div className="text-sm text-muted-foreground">ELOs Addressed</div>
-                  <div className="text-2xl font-bold text-green-700">{assessmentData.selectedELOs?.length || 0}</div>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
-                  <div className="text-sm text-muted-foreground">Selected Items</div>
-                  <div className="text-2xl font-bold text-purple-700">{selectedItems.length}</div>
-                </div>
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg">
-                  <div className="text-sm text-muted-foreground">Total Marks</div>
-                  <div className="text-2xl font-bold text-orange-700">{totalSelectedMarks}</div>
-                </div>
-              </div>
-
-              {/* Bloom's Taxonomy Distribution */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold flex items-center gap-2">
-                  <PieChart className="h-5 w-5" />
-                  Bloom's Taxonomy Distribution
-                </h4>
-                <div className="space-y-2">
-                  {Object.entries(bloomsDistribution).map(([level, count]) => (
-                    <div key={level} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <span className="font-medium">{level}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${getBadgeColor(level).split(' ')[0]}`}
-                            style={{ width: `${(count / selectedItems.length) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium w-8 text-right">{count}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Save Assessment Button */}
-              {selectedItems.length > 0 && (
-                <div className="text-center pt-6">
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-12 py-4 text-lg rounded-xl"
-                    onClick={() => {
-                      updateAssessmentData({ 
-                        finalizedItems: selectedItemsData,
-                        assessmentOverview: {
-                          totalChapters: assessmentData.selectedChapters?.length || 0,
-                          totalELOs: assessmentData.selectedELOs?.length || 0,
-                          totalItems: selectedItems.length,
-                          totalMarks: totalSelectedMarks,
-                          bloomsDistribution
-                        }
-                      });
-                      toast.success('Assessment saved successfully!');
-                    }}
-                  >
-                    <Save className="h-5 w-5 mr-2" />
-                    Save Assessment
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
+
+      {/* Review & Create Assessment Section */}
+      {selectedItems.length > 0 && (
+        <Card className="border border-border/50 bg-gradient-to-br from-orange-50/50 to-white">
+          <CardHeader className="bg-gradient-to-r from-orange-500/10 to-red-500/10">
+            <CardTitle className="flex items-center gap-2 text-2xl bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent">
+              <BarChart3 className="h-6 w-6 text-orange-600" />
+              Review & Create Assessment
+            </CardTitle>
+            <p className="text-muted-foreground">Review your assessment overview and finalize the creation</p>
+          </CardHeader>
+          <CardContent className="space-y-6 p-8">
+            {/* Summary Statistics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
+                <div className="text-sm text-muted-foreground">Total Chapters</div>
+                <div className="text-2xl font-bold text-blue-700">{assessmentData.selectedChapters?.length || 0}</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
+                <div className="text-sm text-muted-foreground">ELOs Addressed</div>
+                <div className="text-2xl font-bold text-green-700">{assessmentData.selectedELOs?.length || 0}</div>
+              </div>
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
+                <div className="text-sm text-muted-foreground">Selected Items</div>
+                <div className="text-2xl font-bold text-purple-700">{selectedItems.length}</div>
+              </div>
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg">
+                <div className="text-sm text-muted-foreground">Total Marks</div>
+                <div className="text-2xl font-bold text-orange-700">{totalSelectedMarks}</div>
+              </div>
+            </div>
+
+            {/* Bloom's Taxonomy Distribution */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <PieChart className="h-5 w-5" />
+                Bloom's Taxonomy Distribution
+              </h4>
+              <div className="space-y-2">
+                {Object.entries(bloomsDistribution).map(([level, count]) => (
+                  <div key={level} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <span className="font-medium">{level}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${getBadgeColor(level).split(' ')[0]}`}
+                          style={{ width: `${selectedItems.length > 0 ? (count / selectedItems.length) * 100 : 0}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium w-8 text-right">{count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Save Assessment Button */}
+            <div className="text-center pt-6">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-12 py-4 text-lg rounded-xl hover:scale-105 transition-all duration-300 transform"
+                onClick={() => {
+                  updateAssessmentData({ 
+                    finalizedItems: selectedItemsData,
+                    assessmentOverview: {
+                      totalChapters: assessmentData.selectedChapters?.length || 0,
+                      totalELOs: assessmentData.selectedELOs?.length || 0,
+                      totalItems: selectedItems.length,
+                      totalMarks: totalSelectedMarks,
+                      bloomsDistribution
+                    }
+                  });
+                  toast.success('Assessment saved successfully!');
+                }}
+              >
+                <Save className="h-5 w-5 mr-2" />
+                Save Assessment
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
