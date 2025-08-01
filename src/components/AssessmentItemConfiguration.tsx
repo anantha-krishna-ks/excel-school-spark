@@ -188,7 +188,7 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
                 {(row.itemType === 'Long Answer' || row.itemType === 'Short Answer' || row.itemType === 'Application Based') && (
                   <div className="px-4 pb-4">
                     <label className="text-sm font-medium text-green-700 block mb-2">
-                      Question Text *
+                      Item Sub-Type
                     </label>
                     <textarea
                       placeholder="Enter your question here..."
