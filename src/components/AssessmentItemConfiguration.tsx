@@ -73,7 +73,7 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
   return (
     <div className="space-y-8">
       {/* Selected ELOs Summary */}
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border border-border/50 bg-white">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -89,7 +89,7 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
       </Card>
 
       {/* Item Configuration */}
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border border-border/50 bg-white">
         <CardHeader className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-t-lg">
           <CardTitle className="text-2xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
             Item Configuration
@@ -231,7 +231,7 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
         <div className="text-center animate-fade-in">
           <Button
             onClick={onComplete}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl border border-green-400/20 hover:scale-105 transition-all duration-300 transform"
           >
             Continue to Review
           </Button>

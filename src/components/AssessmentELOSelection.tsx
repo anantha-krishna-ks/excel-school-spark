@@ -116,7 +116,7 @@ const AssessmentELOSelection = ({ assessmentData, updateAssessmentData, onComple
   return (
     <div className="space-y-8">
       {/* Progress Indicator */}
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border border-border/50 bg-white">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -145,7 +145,7 @@ const AssessmentELOSelection = ({ assessmentData, updateAssessmentData, onComple
       </Card>
 
       {/* ELO Selection */}
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border border-border/50 bg-white">
         <CardHeader className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-t-lg">
           <CardTitle className="text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
             Expected Learning Outcomes by Chapter
@@ -203,7 +203,7 @@ const AssessmentELOSelection = ({ assessmentData, updateAssessmentData, onComple
         <div className="text-center animate-fade-in">
           <Button
             onClick={onComplete}
-            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform"
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl border border-blue-400/20 hover:scale-105 transition-all duration-300 transform"
           >
             Continue to Item Configuration
           </Button>

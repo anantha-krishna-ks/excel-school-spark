@@ -219,7 +219,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
   return (
     <div className="space-y-8">
       {/* Basic Information */}
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border border-border/50 bg-white">
         <CardHeader className="pb-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-t-lg">
           <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Basic Information
@@ -230,7 +230,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-3 group">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-200"></div>
+                <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full border border-blue-300/50 group-hover:scale-110 transition-transform duration-200"></div>
                 <label className="text-sm font-semibold text-foreground">Board/Standard *</label>
               </div>
               <Select value={assessmentData.board} onValueChange={(value) => updateAssessmentData({ board: value })}>
@@ -247,7 +247,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
 
             <div className="space-y-3 group">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-200"></div>
+                <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full border border-green-300/50 group-hover:scale-110 transition-transform duration-200"></div>
                 <label className="text-sm font-semibold text-foreground">Grade *</label>
               </div>
               <Select value={assessmentData.grade} onValueChange={handleGradeChange}>
@@ -266,7 +266,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
 
             <div className="space-y-3 group">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-200"></div>
+                <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full border border-purple-300/50 group-hover:scale-110 transition-transform duration-200"></div>
                 <label className="text-sm font-semibold text-foreground">Subject *</label>
               </div>
               <Select value={assessmentData.subject} onValueChange={handleSubjectChange} disabled={!assessmentData.grade}>
@@ -288,7 +288,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
           {assessmentData.subject && (
             <div className="space-y-6 animate-fade-in">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full shadow-lg"></div>
+                <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full border border-orange-300/50"></div>
                 <label className="text-lg font-semibold text-foreground">Chapter Selection</label>
               </div>
               
@@ -297,7 +297,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
                   <p className="text-muted-foreground">Loading chapters...</p>
                 </div>
               ) : chapters.length > 0 ? (
-                <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 p-6 rounded-xl shadow-lg">
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 p-6 rounded-xl">
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-base font-semibold text-orange-900">
                       Selected Chapters ({assessmentData.selectedChapters.length} of {chapters.length})
@@ -351,7 +351,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
       </Card>
 
       {/* Assessment Details */}
-      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+      <Card className="border border-border/50 bg-white">
         <CardHeader className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-t-lg">
           <CardTitle className="text-2xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
             Assessment Details
@@ -416,7 +416,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
         <div className="text-center animate-fade-in">
           <Button
             onClick={onComplete}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-12 py-4 h-auto text-lg rounded-xl border border-purple-400/20 hover:scale-105 transition-all duration-300 transform"
           >
             Continue to ELO Selection
           </Button>
