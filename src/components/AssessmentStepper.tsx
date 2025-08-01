@@ -164,14 +164,14 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
                       onClick={() => handleStepClick(step.number)}
                     >
                       {/* Enhanced Step Circle with Icon */}
-                      <div className={`
-                        relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-2
-                        ${isStepActive(step.number)
-                          ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/30 scale-110 ring-4 ring-purple-100'
-                          : isStepCompleted(step.number)
-                          ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30'
-                          : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-400 hover:from-gray-200 hover:to-gray-300 group-hover:scale-105'
-                        }
+                       <div className={`
+                         relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-2 border
+                         ${isStepActive(step.number)
+                           ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white border-purple-300 scale-110 ring-2 ring-purple-100'
+                           : isStepCompleted(step.number)
+                           ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-300'
+                           : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-400 border-gray-300 hover:from-gray-200 hover:to-gray-300 group-hover:scale-105'
+                         }
                       `}>
                         {isStepCompleted(step.number) ? (
                           <CheckCircle2 size={20} className="drop-shadow-sm" />
@@ -235,7 +235,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent"></div>
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center space-y-6 mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-purple-500/25">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-3xl flex items-center justify-center mx-auto border border-border/20">
                 <FileText className="h-10 w-10 text-white drop-shadow-sm" />
               </div>
               <div className="space-y-2">
@@ -267,7 +267,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center space-y-6 mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-blue-500/25">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-3xl flex items-center justify-center mx-auto border border-border/20">
                 <Target className="h-10 w-10 text-white drop-shadow-sm" />
               </div>
               <div className="space-y-2">
@@ -299,7 +299,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-200 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center space-y-6 mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-green-500/25">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto border border-border/20">
                 <Settings className="h-10 w-10 text-white drop-shadow-sm" />
               </div>
               <div className="space-y-2">
@@ -331,7 +331,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-200 to-transparent"></div>
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center space-y-6 mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-orange-500/25">
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl flex items-center justify-center mx-auto border border-border/20">
                 <CheckSquare className="h-10 w-10 text-white drop-shadow-sm" />
               </div>
               <div className="space-y-2">
@@ -344,7 +344,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
               </div>
             </div>
             
-            <div className="bg-white rounded-2xl shadow-xl border p-8">
+            <div className="bg-white rounded-2xl border border-border/50 p-8">
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-foreground mb-4">Assessment Summary</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
@@ -374,7 +374,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
                       }
                       navigate('/assessment-assist/item-generation', { state: { assessmentData } });
                     }}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-12 py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-12 py-4 rounded-xl border border-purple-400/20 hover:scale-105 transition-all duration-300 transform"
                     disabled={completedSteps.length < 3}
                   >
                     Generate Assessment
