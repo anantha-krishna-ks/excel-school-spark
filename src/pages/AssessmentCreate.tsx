@@ -402,25 +402,6 @@ const AssessmentCreate = () => {
                   </div>
                 )}
 
-                {/* Upload Related Content */}
-                <div className="border-2 border-dashed border-blue-200 rounded-lg p-6 bg-blue-50/30">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-blue-900">Upload Related Content</h4>
-                        <p className="text-sm text-blue-700">PDFs, documents, and materials</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
-                      Browse Files
-                    </Button>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
