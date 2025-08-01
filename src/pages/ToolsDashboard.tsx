@@ -69,13 +69,13 @@ const ToolsDashboard = () => {
       route: '/slide-generator'
     },
     {
-      id: 'grade-assistant',
-      title: 'Grade Assistant',
+      id: 'assessment-assist',
+      title: 'Assessment Assist',
       description: 'Streamline grading with intelligent analytics',
       icon: BarChart3,
       color: 'bg-green-500',
       buttonColor: 'bg-green-500 hover:bg-green-600',
-      route: '/grade-assistant'
+      route: '/assessment-assist'
     },
     {
       id: 'quiz-generator',

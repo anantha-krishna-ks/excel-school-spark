@@ -19,6 +19,9 @@ import QuestionBundlePreview from "./pages/QuestionBundlePreview";
 import SlideGenerator from "./pages/SlideGenerator";
 import SlideGeneratorLessonPlan from "./pages/SlideGeneratorLessonPlan";
 import SlideGeneratorTemplates from "./pages/SlideGeneratorTemplates";
+import AssessmentAssist from "./pages/AssessmentAssist";
+import AssessmentCreate from "./pages/AssessmentCreate";
+import AssessmentELOSelection from "./pages/AssessmentELOSelection";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +40,9 @@ const App = () => (
           <Route path="/slide-generator" element={<SlideGenerator />} />
           <Route path="/slide-generator/lesson-plan" element={<SlideGeneratorLessonPlan />} />
           <Route path="/slide-generator/templates" element={<SlideGeneratorTemplates />} />
+          <Route path="/assessment-assist" element={<AssessmentAssist />} />
+          <Route path="/assessment-assist/create" element={<AssessmentCreate />} />
+          <Route path="/assessment-assist/elo-selection" element={<AssessmentELOSelection />} />
           <Route path="/question-bundle/:bundleId" element={<QuestionBundlePreview />} />
           <Route path="/lesson-plan" element={<Index />} />
           <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />
