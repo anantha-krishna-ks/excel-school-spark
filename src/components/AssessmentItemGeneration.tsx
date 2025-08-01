@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { 
   Eye, Edit, Trash2, CheckCircle2, Clock, BookOpen, Target, 
-  BarChart3, PieChart, Save, Filter, X, Sparkles 
+  BarChart3, PieChart, Save, Filter, X, Sparkles, Image, Upload 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -27,6 +27,8 @@ interface GeneratedItem {
   options?: string[];
   correctAnswer?: string;
   rubric?: string;
+  hasImage?: boolean;
+  imageUrl?: string;
 }
 
 interface AssessmentItemGenerationProps {
@@ -40,6 +42,8 @@ const AssessmentItemGeneration = ({ assessmentData, updateAssessmentData }: Asse
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [editingItem, setEditingItem] = useState<GeneratedItem | null>(null);
   const [previewItem, setPreviewItem] = useState<GeneratedItem | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('all');
   const [filterType, setFilterType] = useState('all');
   const [historicalQuestions] = useState<GeneratedItem[]>([
@@ -173,7 +177,41 @@ const AssessmentItemGeneration = ({ assessmentData, updateAssessmentData }: Asse
       prev.map(item => item.id === updatedItem.id ? updatedItem : item)
     );
     setEditingItem(null);
+    setImageFile(null);
+    setImagePreview(null);
     toast.success('Item updated successfully');
+  };
+
+  const handleImageUpload = (file: File) => {
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (editingItem) {
+      setEditingItem({
+        ...editingItem,
+        hasImage: false,
+        imageUrl: undefined
+      });
+    }
+  };
+
+  const saveItemWithImage = () => {
+    if (editingItem) {
+      const updatedItem = {
+        ...editingItem,
+        hasImage: !!imagePreview || !!editingItem.imageUrl,
+        imageUrl: imagePreview || editingItem.imageUrl
+      };
+      updateItem(updatedItem);
+    }
   };
 
   const getItemsByType = (type: string) => {
@@ -307,6 +345,12 @@ const AssessmentItemGeneration = ({ assessmentData, updateAssessmentData }: Asse
                             <Badge className={getTypeColor(item.itemType)}>{item.itemType}</Badge>
                             <Badge className={getBadgeColor(item.bloomsLevel)}>{item.bloomsLevel}</Badge>
                             <Badge variant="outline">{item.marks} marks</Badge>
+                            {item.hasImage && (
+                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                <Image className="h-3 w-3 mr-1" />
+                                Image
+                              </Badge>
+                            )}
                           </div>
                           <p className="text-foreground font-medium">{item.question}</p>
                           <p className="text-sm text-muted-foreground">ELO: {item.eloTitle}</p>
@@ -351,21 +395,70 @@ const AssessmentItemGeneration = ({ assessmentData, updateAssessmentData }: Asse
                                 <Edit className="h-4 w-4" />
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
+                            <DialogContent className="max-w-3xl">
                               <DialogHeader>
                                 <DialogTitle>Edit Question</DialogTitle>
                               </DialogHeader>
-                              <div className="space-y-4">
-                                <Textarea 
-                                  value={editingItem?.question || ''} 
-                                  onChange={(e) => setEditingItem(prev => prev ? {...prev, question: e.target.value} : null)}
-                                  className="min-h-[100px]"
-                                />
+                              <div className="space-y-6">
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">Question Text</label>
+                                  <Textarea 
+                                    value={editingItem?.question || ''} 
+                                    onChange={(e) => setEditingItem(prev => prev ? {...prev, question: e.target.value} : null)}
+                                    className="min-h-[100px]"
+                                  />
+                                </div>
+                                
+                                <div className="space-y-4">
+                                  <label className="text-sm font-medium">Image (Optional)</label>
+                                  {(imagePreview || editingItem?.imageUrl) ? (
+                                    <div className="space-y-3">
+                                      <div className="relative border border-border rounded-lg p-4">
+                                        <img 
+                                          src={imagePreview || editingItem?.imageUrl} 
+                                          alt="Question image" 
+                                          className="max-w-full h-auto max-h-64 rounded-md"
+                                        />
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={removeImage}
+                                          className="absolute top-2 right-2 bg-red-100 hover:bg-red-200"
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                                      <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                                      <p className="text-sm text-muted-foreground mb-2">Upload an image for this question</p>
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+                                        className="hidden"
+                                        id="image-upload"
+                                      />
+                                      <label 
+                                        htmlFor="image-upload"
+                                        className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 cursor-pointer"
+                                      >
+                                        Choose File
+                                      </label>
+                                    </div>
+                                  )}
+                                </div>
+                                
                                 <div className="flex gap-2">
-                                  <Button onClick={() => editingItem && updateItem(editingItem)}>
+                                  <Button onClick={saveItemWithImage}>
                                     Save Changes
                                   </Button>
-                                  <Button variant="outline" onClick={() => setEditingItem(null)}>
+                                  <Button variant="outline" onClick={() => {
+                                    setEditingItem(null);
+                                    setImageFile(null);
+                                    setImagePreview(null);
+                                  }}>
                                     Cancel
                                   </Button>
                                 </div>

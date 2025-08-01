@@ -11,6 +11,7 @@ interface ELO {
   title: string;
   description: string;
   selected: boolean;
+  previousAssessments?: string[];
 }
 
 interface AssessmentELOSelectionProps {
@@ -50,7 +51,8 @@ const AssessmentELOSelection = ({ assessmentData, updateAssessmentData, onComple
             id: `${chapter.chapterId}-${index}`,
             title: outcome.co_title || `ELO ${index + 1}`,
             description: outcome.co_description || 'Learning outcome description',
-            selected: false
+            selected: false,
+            previousAssessments: Math.random() > 0.5 ? ['PA1', 'PA2'].slice(0, Math.floor(Math.random() * 3)) : []
           }));
           newChapterELOs[chapter.chapterId] = elos;
         } else {
@@ -72,19 +74,22 @@ const AssessmentELOSelection = ({ assessmentData, updateAssessmentData, onComple
         id: `${chapterId}-1`,
         title: 'Define key concepts and terminology',
         description: 'Students will be able to define and explain the fundamental concepts and terminology related to this chapter.',
-        selected: false
+        selected: false,
+        previousAssessments: ['PA1', 'Mid-Term']
       },
       {
         id: `${chapterId}-2`,
         title: 'Analyze relationships and patterns',
         description: 'Students will be able to analyze relationships between different elements and identify patterns.',
-        selected: false
+        selected: false,
+        previousAssessments: ['PA2']
       },
       {
         id: `${chapterId}-3`,
         title: 'Apply knowledge to solve problems',
         description: 'Students will be able to apply their understanding to solve real-world problems and scenarios.',
-        selected: false
+        selected: false,
+        previousAssessments: []
       }
     ];
   };
@@ -184,7 +189,18 @@ const AssessmentELOSelection = ({ assessmentData, updateAssessmentData, onComple
                             className="mt-1"
                           />
                           <div className="flex-1">
-                            <h4 className="font-medium text-foreground mb-1">{elo.title}</h4>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-medium text-foreground">{elo.title}</h4>
+                              {elo.previousAssessments && elo.previousAssessments.length > 0 && (
+                                <div className="flex gap-1">
+                                  {elo.previousAssessments.map(assessment => (
+                                    <Badge key={assessment} variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                                      {assessment}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                             <p className="text-sm text-muted-foreground">{elo.description}</p>
                           </div>
                         </div>
