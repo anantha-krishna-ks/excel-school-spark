@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus,
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { Loader } from '@/components/ui/loader';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ const SlideGeneratorLessonPlan = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [instructionsText, setInstructionsText] = useState('');
   const [generatedSlides, setGeneratedSlides] = useState<GeneratedSlide[]>([]);
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isEditorMode, setIsEditorMode] = useState(false);
@@ -1851,6 +1853,32 @@ const SlideGeneratorLessonPlan = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Instructions Section */}
+        {file && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                Additional Instructions
+              </CardTitle>
+              <CardDescription>
+                Provide specific instructions or preferences for converting your lesson plan into a presentation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder="Example: Focus on visual diagrams for the photosynthesis process, include interactive elements for student engagement, use a green and blue color scheme to match the nature theme..."
+                value={instructionsText}
+                onChange={(e) => setInstructionsText(e.target.value)}
+                className="min-h-[120px] resize-none"
+              />
+              <p className="text-sm text-muted-foreground mt-2">
+                These instructions will guide the AI in creating a customized presentation that meets your specific needs.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Convert Button */}
         {file && (
