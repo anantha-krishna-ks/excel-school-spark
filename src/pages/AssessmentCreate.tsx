@@ -43,6 +43,55 @@ const AssessmentCreate = () => {
     { ClassId: 12, ClassName: 'Grade 12' }
   ];
 
+  // Fallback subjects based on grade
+  const getSubjectsForGrade = (gradeId: string) => {
+    const grade = parseInt(gradeId);
+    
+    if (grade <= 5) {
+      return [
+        { SubjectId: 1, SubjectName: 'Mathematics', PlanClassId: gradeId },
+        { SubjectId: 2, SubjectName: 'English', PlanClassId: gradeId },
+        { SubjectId: 3, SubjectName: 'Science', PlanClassId: gradeId },
+        { SubjectId: 4, SubjectName: 'Social Studies', PlanClassId: gradeId },
+        { SubjectId: 5, SubjectName: 'Hindi', PlanClassId: gradeId }
+      ];
+    } else if (grade <= 8) {
+      return [
+        { SubjectId: 1, SubjectName: 'Mathematics', PlanClassId: gradeId },
+        { SubjectId: 2, SubjectName: 'English', PlanClassId: gradeId },
+        { SubjectId: 3, SubjectName: 'General Science', PlanClassId: gradeId },
+        { SubjectId: 4, SubjectName: 'Social Science', PlanClassId: gradeId },
+        { SubjectId: 5, SubjectName: 'Hindi', PlanClassId: gradeId },
+        { SubjectId: 6, SubjectName: 'Computer Science', PlanClassId: gradeId }
+      ];
+    } else if (grade <= 10) {
+      return [
+        { SubjectId: 1, SubjectName: 'Mathematics', PlanClassId: gradeId },
+        { SubjectId: 2, SubjectName: 'English', PlanClassId: gradeId },
+        { SubjectId: 3, SubjectName: 'Physics', PlanClassId: gradeId },
+        { SubjectId: 4, SubjectName: 'Chemistry', PlanClassId: gradeId },
+        { SubjectId: 5, SubjectName: 'Biology', PlanClassId: gradeId },
+        { SubjectId: 6, SubjectName: 'Social Science', PlanClassId: gradeId },
+        { SubjectId: 7, SubjectName: 'Hindi', PlanClassId: gradeId },
+        { SubjectId: 8, SubjectName: 'Computer Science', PlanClassId: gradeId }
+      ];
+    } else {
+      return [
+        { SubjectId: 1, SubjectName: 'Mathematics', PlanClassId: gradeId },
+        { SubjectId: 2, SubjectName: 'English', PlanClassId: gradeId },
+        { SubjectId: 3, SubjectName: 'Physics', PlanClassId: gradeId },
+        { SubjectId: 4, SubjectName: 'Chemistry', PlanClassId: gradeId },
+        { SubjectId: 5, SubjectName: 'Biology', PlanClassId: gradeId },
+        { SubjectId: 6, SubjectName: 'Economics', PlanClassId: gradeId },
+        { SubjectId: 7, SubjectName: 'Political Science', PlanClassId: gradeId },
+        { SubjectId: 8, SubjectName: 'History', PlanClassId: gradeId },
+        { SubjectId: 9, SubjectName: 'Geography', PlanClassId: gradeId },
+        { SubjectId: 10, SubjectName: 'Computer Science', PlanClassId: gradeId },
+        { SubjectId: 11, SubjectName: 'Hindi', PlanClassId: gradeId }
+      ];
+    }
+  };
+
   const boards = [
     { value: 'cbse', label: 'CBSE' },
     { value: 'icse', label: 'ICSE' },
@@ -91,9 +140,11 @@ const AssessmentCreate = () => {
       try {
         setLoading(true);
         const subjectsData = await getSubjects('ORG001', parseInt(gradeId));
-        setSubjects(subjectsData);
+        setSubjects(subjectsData.length > 0 ? subjectsData : getSubjectsForGrade(gradeId));
       } catch (error) {
         console.error('Error fetching subjects:', error);
+        // Use fallback subjects if API fails
+        setSubjects(getSubjectsForGrade(gradeId));
       } finally {
         setLoading(false);
       }
@@ -214,7 +265,7 @@ const AssessmentCreate = () => {
                         <SelectValue placeholder="Select Subject" />
                       </SelectTrigger>
                       <SelectContent>
-                        {subjects.map(subject => (
+                        {(subjects.length > 0 ? subjects : formData.grade ? getSubjectsForGrade(formData.grade) : []).map(subject => (
                           <SelectItem key={subject.SubjectId} value={subject.SubjectId.toString()}>
                             {subject.SubjectName}
                           </SelectItem>
