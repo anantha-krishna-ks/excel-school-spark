@@ -38,7 +38,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
       const sections = sectionRefs.current;
       const stepperElement = stepperRef.current;
       const scrollPosition = window.scrollY;
-      const headerHeight = 80; // Reduced header height
+      const headerHeight = 120; // Actual header height including padding and breadcrumbs
       
       // Check if stepper should be sticky
       if (stepperElement) {
@@ -47,7 +47,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
       }
       
       // Update current step based on scroll position
-      const adjustedScrollPosition = scrollPosition + headerHeight + 50;
+      const adjustedScrollPosition = scrollPosition + headerHeight + 60;
       
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
@@ -148,7 +148,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
         ref={stepperRef}
         className={`${
           isSticky 
-            ? `fixed top-[80px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm bg-white/95 backdrop-blur-md` 
+            ? `fixed top-[120px] left-0 right-0 z-40 border-b border-gray-200/30 shadow-sm bg-white/95 backdrop-blur-md` 
             : 'bg-white border-b border-gray-200'
         } py-4 transition-all duration-300`}
       >
@@ -223,7 +223,7 @@ const AssessmentStepper = ({ onComplete }: AssessmentStepperProps) => {
       </div>
 
       {/* Dynamic spacer for sticky stepper */}
-      {isSticky && <div className="h-[80px]"></div>}
+      {isSticky && <div className="h-[88px]"></div>}
 
       {/* Sections Container */}
       <div className="relative">
