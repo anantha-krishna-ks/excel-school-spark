@@ -27,6 +27,22 @@ const AssessmentCreate = () => {
   const [selectedChapters, setSelectedChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Fallback grades in case API fails
+  const fallbackGrades = [
+    { ClassId: 1, ClassName: 'Grade 1' },
+    { ClassId: 2, ClassName: 'Grade 2' },
+    { ClassId: 3, ClassName: 'Grade 3' },
+    { ClassId: 4, ClassName: 'Grade 4' },
+    { ClassId: 5, ClassName: 'Grade 5' },
+    { ClassId: 6, ClassName: 'Grade 6' },
+    { ClassId: 7, ClassName: 'Grade 7' },
+    { ClassId: 8, ClassName: 'Grade 8' },
+    { ClassId: 9, ClassName: 'Grade 9' },
+    { ClassId: 10, ClassName: 'Grade 10' },
+    { ClassId: 11, ClassName: 'Grade 11' },
+    { ClassId: 12, ClassName: 'Grade 12' }
+  ];
+
   const boards = [
     { value: 'cbse', label: 'CBSE' },
     { value: 'icse', label: 'ICSE' },
@@ -55,9 +71,11 @@ const AssessmentCreate = () => {
     const fetchGrades = async () => {
       try {
         const gradesData = await getGrades('ORG001');
-        setGrades(gradesData);
+        setGrades(gradesData.length > 0 ? gradesData : fallbackGrades);
       } catch (error) {
         console.error('Error fetching grades:', error);
+        // Use fallback grades if API fails
+        setGrades(fallbackGrades);
       }
     };
     fetchGrades();
@@ -180,7 +198,7 @@ const AssessmentCreate = () => {
                         <SelectValue placeholder="Select Grade" />
                       </SelectTrigger>
                       <SelectContent>
-                        {grades.map(grade => (
+                        {(grades.length > 0 ? grades : fallbackGrades).map(grade => (
                           <SelectItem key={grade.ClassId} value={grade.ClassId.toString()}>
                             {grade.ClassName}
                           </SelectItem>
