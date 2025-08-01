@@ -42,14 +42,7 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
     { value: 'ib', label: 'IB' }
   ];
 
-  const durations = [
-    { value: '30', label: '30 minutes' },
-    { value: '45', label: '45 minutes' },
-    { value: '60', label: '1 hour' },
-    { value: '90', label: '1.5 hours' },
-    { value: '120', label: '2 hours' },
-    { value: '180', label: '3 hours' }
-  ];
+  // Duration will now be stored as "hrs:mins" format
 
   const assessmentTypes = [
     { value: 'PA1', label: 'PA1' },
@@ -371,16 +364,35 @@ const AssessmentBasicSetup = ({ assessmentData, updateAssessmentData, onComplete
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-3">
               <label className="text-base font-semibold text-foreground">Time Duration *</label>
-              <Select value={assessmentData.duration} onValueChange={(value) => updateAssessmentData({ duration: value })}>
-                <SelectTrigger className="h-12 border-2 hover:border-purple-300 transition-colors duration-200 bg-white/50">
-                  <SelectValue placeholder="Select Duration" />
-                </SelectTrigger>
-                <SelectContent>
-                  {durations.map(duration => (
-                    <SelectItem key={duration.value} value={duration.value}>{duration.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="number"
+                  min="0"
+                  max="23"
+                  placeholder="Hrs"
+                  value={assessmentData.duration ? assessmentData.duration.split(':')[0] || '' : ''}
+                  onChange={(e) => {
+                    const hours = e.target.value;
+                    const minutes = assessmentData.duration ? assessmentData.duration.split(':')[1] || '00' : '00';
+                    updateAssessmentData({ duration: `${hours}:${minutes}` });
+                  }}
+                  className="h-12 text-base border-2 hover:border-purple-300 focus:border-purple-500 transition-colors duration-200 bg-white/50 flex-1"
+                />
+                <span className="text-muted-foreground font-semibold">:</span>
+                <Input
+                  type="number"
+                  min="0"
+                  max="59"
+                  placeholder="Mins"
+                  value={assessmentData.duration ? assessmentData.duration.split(':')[1] || '' : ''}
+                  onChange={(e) => {
+                    const minutes = e.target.value.padStart(2, '0');
+                    const hours = assessmentData.duration ? assessmentData.duration.split(':')[0] || '0' : '0';
+                    updateAssessmentData({ duration: `${hours}:${minutes}` });
+                  }}
+                  className="h-12 text-base border-2 hover:border-purple-300 focus:border-purple-500 transition-colors duration-200 bg-white/50 flex-1"
+                />
+              </div>
             </div>
 
             <div className="space-y-3">

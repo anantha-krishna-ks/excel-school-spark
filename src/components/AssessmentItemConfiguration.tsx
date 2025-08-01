@@ -13,6 +13,7 @@ interface ItemConfigRow {
   difficulty: string;
   noOfItems: number;
   marksPerItem: number;
+  questionText?: string;
 }
 
 interface AssessmentItemConfigurationProps {
@@ -31,7 +32,7 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
 
   const itemTypes = [
     'Multiple Choice', 'True/False', 'Short Answer', 'Long Answer', 
-    'Problem Solving', 'Case Study', 'Essay'
+    'Problem Solving', 'Case Study', 'Essay', 'Application Based'
   ];
 
   const difficultyLevels = ['Easy', 'Medium', 'Hard'];
@@ -43,7 +44,8 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
       itemType: '',
       difficulty: '',
       noOfItems: 1,
-      marksPerItem: 1
+      marksPerItem: 1,
+      questionText: ''
     };
     const updatedConfig = [...itemConfig, newRow];
     setItemConfig(updatedConfig);
@@ -112,73 +114,91 @@ const AssessmentItemConfiguration = ({ assessmentData, updateAssessmentData, onC
               <div>Actions</div>
             </div>
             {itemConfig.map(row => (
-              <div key={row.id} className="px-4 py-4 grid grid-cols-6 gap-4 border-t border-green-200 bg-white/50">
-                <Select 
-                  value={row.bloomsLevel} 
-                  onValueChange={(value) => updateItemConfigRow(row.id, 'bloomsLevel', value)}
-                >
-                  <SelectTrigger className="h-10 border-green-200 hover:border-green-300 transition-colors">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {bloomsLevels.map(level => (
-                      <SelectItem key={level} value={level}>{level}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={row.id} className="border-t border-green-200 bg-white/50">
+                <div className="px-4 py-4 grid grid-cols-6 gap-4">
+                  <Select 
+                    value={row.bloomsLevel} 
+                    onValueChange={(value) => updateItemConfigRow(row.id, 'bloomsLevel', value)}
+                  >
+                    <SelectTrigger className="h-10 border-green-200 hover:border-green-300 transition-colors">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {bloomsLevels.map(level => (
+                        <SelectItem key={level} value={level}>{level}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select 
+                    value={row.itemType} 
+                    onValueChange={(value) => updateItemConfigRow(row.id, 'itemType', value)}
+                  >
+                    <SelectTrigger className="h-10 border-green-200 hover:border-green-300 transition-colors">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {itemTypes.map(type => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select 
+                    value={row.difficulty} 
+                    onValueChange={(value) => updateItemConfigRow(row.id, 'difficulty', value)}
+                  >
+                    <SelectTrigger className="h-10 border-green-200 hover:border-green-300 transition-colors">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {difficultyLevels.map(level => (
+                        <SelectItem key={level} value={level}>{level}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Input
+                    type="number"
+                    min="1"
+                    value={row.noOfItems}
+                    onChange={(e) => updateItemConfigRow(row.id, 'noOfItems', parseInt(e.target.value) || 1)}
+                    className="h-10 border-green-200 hover:border-green-300 focus:border-green-400 transition-colors"
+                  />
+                  
+                  <Input
+                    type="number"
+                    min="1"
+                    value={row.marksPerItem}
+                    onChange={(e) => updateItemConfigRow(row.id, 'marksPerItem', parseInt(e.target.value) || 1)}
+                    className="h-10 border-green-200 hover:border-green-300 focus:border-green-400 transition-colors"
+                  />
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeItemConfigRow(row.id)}
+                    className="h-10 w-10 p-0 hover:bg-red-100 rounded-full"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
                 
-                <Select 
-                  value={row.itemType} 
-                  onValueChange={(value) => updateItemConfigRow(row.id, 'itemType', value)}
-                >
-                  <SelectTrigger className="h-10 border-green-200 hover:border-green-300 transition-colors">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {itemTypes.map(type => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                <Select 
-                  value={row.difficulty} 
-                  onValueChange={(value) => updateItemConfigRow(row.id, 'difficulty', value)}
-                >
-                  <SelectTrigger className="h-10 border-green-200 hover:border-green-300 transition-colors">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {difficultyLevels.map(level => (
-                      <SelectItem key={level} value={level}>{level}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                <Input
-                  type="number"
-                  min="1"
-                  value={row.noOfItems}
-                  onChange={(e) => updateItemConfigRow(row.id, 'noOfItems', parseInt(e.target.value) || 1)}
-                  className="h-10 border-green-200 hover:border-green-300 focus:border-green-400 transition-colors"
-                />
-                
-                <Input
-                  type="number"
-                  min="1"
-                  value={row.marksPerItem}
-                  onChange={(e) => updateItemConfigRow(row.id, 'marksPerItem', parseInt(e.target.value) || 1)}
-                  className="h-10 border-green-200 hover:border-green-300 focus:border-green-400 transition-colors"
-                />
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeItemConfigRow(row.id)}
-                  className="h-10 w-10 p-0 hover:bg-red-100 rounded-full"
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
+                {/* Question Text Input for specific item types */}
+                {(row.itemType === 'Long Answer' || row.itemType === 'Short Answer' || row.itemType === 'Application Based') && (
+                  <div className="px-4 pb-4">
+                    <label className="text-sm font-medium text-green-700 block mb-2">
+                      Question Text *
+                    </label>
+                    <textarea
+                      placeholder="Enter your question here..."
+                      value={row.questionText || ''}
+                      onChange={(e) => updateItemConfigRow(row.id, 'questionText', e.target.value)}
+                      className="w-full min-h-[80px] rounded-md border border-green-200 bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 hover:border-green-300 transition-colors resize-y"
+                      rows={3}
+                    />
+                  </div>
+                )}
               </div>
             ))}
             
