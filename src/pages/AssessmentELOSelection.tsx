@@ -195,15 +195,15 @@ const AssessmentELOSelection = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-background">
+    <div className="w-full min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-8 animate-fade-in">
           <Button
             variant="ghost"
             onClick={() => navigate('/assessment-assist/create')}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-purple-50 transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Assessment Details
@@ -211,10 +211,17 @@ const AssessmentELOSelection = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">Choose Expected Learning Outcomes</h1>
-            <p className="text-lg text-muted-foreground mb-4">
-              Select the learning outcomes you want to assess
+          <div className="mb-8 text-center animate-fade-in">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+              Choose Expected Learning Outcomes
+            </h1>
+            <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
+              Select the learning outcomes you want to assess with AI-powered precision
             </p>
             <div className="flex gap-2 flex-wrap">
               <Badge variant="outline">{gradeName}</Badge>

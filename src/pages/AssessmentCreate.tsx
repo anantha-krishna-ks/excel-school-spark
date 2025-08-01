@@ -241,16 +241,16 @@ const AssessmentCreate = () => {
     });
   };
 
-  return (
-    <div className="w-full min-h-screen bg-background">
+    return (
+    <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-8 animate-fade-in">
           <Button
             variant="ghost"
             onClick={() => navigate('/assessment-assist')}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-blue-50 transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Assessment Repository
@@ -258,39 +258,48 @@ const AssessmentCreate = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">Create Assessment</h1>
-            <p className="text-lg text-muted-foreground">
-              Set up your assessment details and configure the content
+          <div className="mb-8 text-center animate-fade-in">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+              Create Assessment
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Design comprehensive assessments with intelligent AI assistance
             </p>
           </div>
 
           <div className="space-y-8">
             {/* Basic Setup */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 animate-scale-in">
+              <CardHeader className="pb-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-t-lg">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
                   <div>
-                    <CardTitle className="text-xl">Basic Setup</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">Configure your assessment details in just a few clicks</p>
+                    <CardTitle className="text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Basic Setup
+                    </CardTitle>
+                    <p className="text-muted-foreground mt-1">Configure your assessment details in just a few clicks</p>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-8">
                 {/* Board, Grade, Subject Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="space-y-3 group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-200"></div>
                       <label className="text-sm font-semibold text-foreground">Board/Standard *</label>
                     </div>
                     <Select value={formData.board} onValueChange={(value) => setFormData({ ...formData, board: value })}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 border-2 hover:border-blue-300 transition-colors duration-200 bg-white/50">
                         <SelectValue placeholder="Select Board" />
                       </SelectTrigger>
                       <SelectContent>
@@ -301,13 +310,13 @@ const AssessmentCreate = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="space-y-3 group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-200"></div>
                       <label className="text-sm font-semibold text-foreground">Grade *</label>
                     </div>
                     <Select value={formData.grade} onValueChange={handleGradeChange}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 border-2 hover:border-green-300 transition-colors duration-200 bg-white/50">
                         <SelectValue placeholder="Select Grade" />
                       </SelectTrigger>
                       <SelectContent>
@@ -320,13 +329,13 @@ const AssessmentCreate = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <div className="space-y-3 group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-200"></div>
                       <label className="text-sm font-semibold text-foreground">Subject *</label>
                     </div>
                     <Select value={formData.subject} onValueChange={handleSubjectChange} disabled={!formData.grade}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 border-2 hover:border-purple-300 transition-colors duration-200 bg-white/50 disabled:opacity-50">
                         <SelectValue placeholder="Select Subject" />
                       </SelectTrigger>
                       <SelectContent>
@@ -342,10 +351,10 @@ const AssessmentCreate = () => {
 
                 {/* Chapter/Unit Selection */}
                 {formData.subject && (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                      <label className="text-sm font-semibold text-foreground">Chapter/Unit Selection</label>
+                  <div className="space-y-6 animate-fade-in">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full shadow-lg"></div>
+                      <label className="text-lg font-semibold text-foreground">Chapter/Unit Selection</label>
                     </div>
                     
                     {loading ? (
@@ -353,18 +362,19 @@ const AssessmentCreate = () => {
                         <p className="text-muted-foreground">Loading chapters...</p>
                       </div>
                     ) : chapters.length > 0 ? (
-                      <div className="space-y-4">
-                        <div className="bg-muted/20 p-4 rounded-lg">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="text-sm font-medium text-foreground">
+                      <div className="space-y-6">
+                        <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 p-6 rounded-xl shadow-lg">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="text-base font-semibold text-orange-900">
                               Available Chapters ({selectedChapters.length} of {chapters.length} selected)
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-3">
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setSelectedChapters(chapters)}
                                 disabled={selectedChapters.length === chapters.length}
+                                className="bg-white/70 border-orange-300 text-orange-700 hover:bg-orange-100 hover:border-orange-400 transition-all duration-200"
                               >
                                 Select All
                               </Button>
@@ -373,33 +383,34 @@ const AssessmentCreate = () => {
                                 size="sm"
                                 onClick={() => setSelectedChapters([])}
                                 disabled={selectedChapters.length === 0}
+                                className="bg-white/70 border-orange-300 text-orange-700 hover:bg-orange-100 hover:border-orange-400 transition-all duration-200"
                               >
                                 Clear All
                               </Button>
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {chapters.map(chapter => {
                               const isSelected = selectedChapters.some(sc => sc.chapterId === chapter.chapterId);
                               return (
                                 <div 
                                   key={chapter.chapterId} 
-                                  className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${
+                                  className={`flex items-center justify-between p-4 border-2 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                                     isSelected 
-                                      ? 'border-blue-200 bg-blue-50' 
-                                      : 'border-gray-200 bg-white'
+                                      ? 'border-orange-300 bg-gradient-to-r from-orange-100 to-amber-100 shadow-md' 
+                                      : 'border-gray-200 bg-white hover:border-orange-200 hover:shadow-md'
                                   }`}
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                  <div className="flex items-center gap-4">
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                       isSelected 
-                                        ? 'bg-blue-500 border-blue-500' 
-                                        : 'border-gray-300'
+                                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 border-orange-500 shadow-lg' 
+                                        : 'border-gray-300 hover:border-orange-400'
                                     }`}>
                                       {isSelected && (
                                         <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                         </svg>
                                       )}
                                     </div>
@@ -412,19 +423,19 @@ const AssessmentCreate = () => {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      className="h-6 w-6 p-0 hover:bg-red-100"
+                                      className="h-8 w-8 p-0 hover:bg-red-100 rounded-full transition-all duration-200"
                                       onClick={() => removeChapter(chapter.chapterId)}
                                     >
-                                      <X className="h-4 w-4 text-red-500" />
+                                      <X className="h-5 w-5 text-red-500" />
                                     </Button>
                                   ) : (
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      className="h-6 w-6 p-0 hover:bg-blue-100"
+                                      className="h-8 w-8 p-0 hover:bg-orange-100 rounded-full transition-all duration-200"
                                       onClick={() => setSelectedChapters(prev => [...prev, chapter])}
                                     >
-                                      <svg className="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <svg className="h-5 w-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                       </svg>
                                     </Button>
@@ -435,8 +446,13 @@ const AssessmentCreate = () => {
                           </div>
                           
                           {selectedChapters.length === 0 && (
-                            <div className="text-center py-4">
-                              <p className="text-sm text-muted-foreground">
+                            <div className="text-center py-6">
+                              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                              </div>
+                              <p className="text-orange-700 font-medium">
                                 Please select at least one chapter to continue.
                               </p>
                             </div>
@@ -444,8 +460,13 @@ const AssessmentCreate = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-center py-4">
-                        <p className="text-sm text-muted-foreground">
+                      <div className="text-center py-8">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-500 font-medium">
                           No chapters available for the selected subject.
                         </p>
                       </div>
@@ -457,26 +478,45 @@ const AssessmentCreate = () => {
             </Card>
 
             {/* Assessment Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Assessment Details</CardTitle>
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 animate-scale-in">
+              <CardHeader className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-t-lg">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                  </div>
+                  <CardTitle className="text-2xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                    Assessment Details
+                  </CardTitle>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">Assessment Name *</label>
+              <CardContent className="space-y-8 p-8">
+                <div className="space-y-3">
+                  <label className="text-base font-semibold text-foreground flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    Assessment Name *
+                  </label>
                   <Input
                     placeholder="Enter assessment name"
                     value={formData.assessmentName}
                     onChange={(e) => setFormData({ ...formData, assessmentName: e.target.value })}
-                    className="h-12"
+                    className="h-12 text-base border-2 hover:border-blue-300 focus:border-blue-500 transition-colors duration-200 bg-white/50"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">Time Duration *</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Time Duration *
+                    </label>
                     <Select value={formData.duration} onValueChange={(value) => setFormData({ ...formData, duration: value })}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 border-2 hover:border-purple-300 transition-colors duration-200 bg-white/50">
                         <SelectValue placeholder="Select Duration" />
                       </SelectTrigger>
                       <SelectContent>
@@ -487,21 +527,31 @@ const AssessmentCreate = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">Total Marks *</label>
+                  <div className="space-y-3">
+                    <label className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      Total Marks *
+                    </label>
                     <Input
                       type="number"
                       placeholder="Enter marks"
                       value={formData.marks}
                       onChange={(e) => setFormData({ ...formData, marks: e.target.value })}
-                      className="h-12"
+                      className="h-12 text-base border-2 hover:border-green-300 focus:border-green-500 transition-colors duration-200 bg-white/50"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">Assessment Type *</label>
+                  <div className="space-y-3">
+                    <label className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                      Assessment Type *
+                    </label>
                     <Select value={formData.assessmentType} onValueChange={(value) => setFormData({ ...formData, assessmentType: value })}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 border-2 hover:border-orange-300 transition-colors duration-200 bg-white/50">
                         <SelectValue placeholder="Select Type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -516,16 +566,23 @@ const AssessmentCreate = () => {
             </Card>
 
             {/* Generate Button */}
-            <div className="flex justify-center">
+            <div className="flex justify-center animate-fade-in">
               <Button 
                 onClick={handleGenerate}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-12 py-4 h-auto text-lg rounded-xl"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-16 py-6 h-auto text-xl rounded-2xl shadow-2xl hover:shadow-purple-500/25 hover:scale-105 transition-all duration-300 transform"
                 disabled={loading}
               >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                {loading ? 'Loading...' : 'Generate COs'}
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Generating...
+                  </div>
+                ) : (
+                  'Generate'
+                )}
               </Button>
             </div>
           </div>
