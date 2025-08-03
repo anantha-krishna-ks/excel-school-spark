@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Edit2, Trash2, GripVertical, Eye, Download, Save } from 'lucide-react';
+import { ArrowLeft, Edit2, Trash2, GripVertical, Eye, Download, Save, Sparkles, Target, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -150,9 +150,9 @@ const QuizPreview = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-cyan-50">
+      {/* Animated Header */}
+      <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-purple-100 px-6 py-6 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -160,39 +160,63 @@ const QuizPreview = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/quiz-generator/create')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Create
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Quiz Preview & Editing</h1>
-                <p className="text-sm text-gray-500">Review and edit your generated quiz</p>
+              <div className="animate-fade-in">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-cyan-600 bg-clip-text text-transparent">
+                      Quiz Preview & Editing
+                    </h1>
+                    <p className="text-sm text-purple-600/70">Review and perfect your generated quiz</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Quiz Details */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{quizData.name}</span>
+      <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+        {/* Animated Quiz Details Card */}
+        <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-white to-purple-50/30 backdrop-blur-sm animate-scale-in">
+          <CardHeader className="bg-gradient-to-r from-purple-500 via-violet-500 to-cyan-500 text-white">
+            <CardTitle className="flex items-center justify-between text-2xl">
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-6 h-6" />
+                <span className="font-bold">{quizData.name}</span>
+              </div>
               <div className="flex gap-2">
-                <Badge variant="outline">{quizData.grade}</Badge>
-                <Badge variant="outline">{quizData.subject}</Badge>
+                <Badge variant="secondary" className="bg-white/20 text-white border-white/30 font-medium">
+                  {quizData.grade}
+                </Badge>
+                <Badge variant="secondary" className="bg-white/20 text-white border-white/30 font-medium">
+                  {quizData.subject}
+                </Badge>
               </div>
             </CardTitle>
-            <p className="text-sm text-gray-600">Chapter: {quizData.chapter}</p>
+            <p className="text-purple-100 text-lg font-medium">Chapter: {quizData.chapter}</p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div>
-              <h4 className="font-medium mb-2">Selected Learning Outcomes:</h4>
-              <div className="flex flex-wrap gap-2">
-                {quizData.selectedELOs.map(elo => (
-                  <Badge key={elo.id} variant="secondary">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="w-5 h-5 text-purple-600" />
+                <h4 className="font-semibold text-purple-900 text-lg">Learning Outcomes</h4>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {quizData.selectedELOs.map((elo, index) => (
+                  <Badge 
+                    key={elo.id} 
+                    variant="secondary" 
+                    className="bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200 px-3 py-1 text-sm font-medium hover-scale transition-all duration-200"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     {elo.title}
                   </Badge>
                 ))}
@@ -201,32 +225,57 @@ const QuizPreview = () => {
           </CardContent>
         </Card>
 
-        {/* Questions List */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Questions ({questions.length})</CardTitle>
+        {/* Animated Questions List */}
+        <Card className="overflow-hidden border-0 shadow-xl bg-white/70 backdrop-blur-sm animate-fade-in">
+          <CardHeader className="bg-gradient-to-r from-violet-500 to-purple-500 text-white">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Edit2 className="w-5 h-5" />
+              </div>
+              Questions ({questions.length})
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-6">
             {questions.map((question, index) => (
-              <div key={question.id} className="border rounded-lg p-4 bg-white">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-gray-600">Q{index + 1}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {question.difficulty}
+              <div 
+                key={question.id} 
+                className="group relative border-2 border-purple-100 rounded-xl p-6 bg-gradient-to-br from-white to-purple-50/50 hover:shadow-lg hover:border-purple-200 transition-all duration-300 hover-scale"
+                style={{ animationDelay: `${index * 150}ms` }}
+              >
+                {/* Question Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-lg group-hover:from-purple-600 group-hover:to-violet-600 transition-all duration-300">
+                      <GripVertical className="w-4 h-4 text-white cursor-move" />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-lg text-purple-800 bg-purple-100 px-3 py-1 rounded-full">
+                        Q{index + 1}
+                      </span>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs font-medium transition-all duration-200 ${
+                          question.difficulty === 'easy' ? 'border-green-300 text-green-700 bg-green-50' :
+                          question.difficulty === 'medium' ? 'border-yellow-300 text-yellow-700 bg-yellow-50' :
+                          'border-red-300 text-red-700 bg-red-50'
+                        }`}
+                      >
+                        {question.difficulty.toUpperCase()}
                       </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {question.type}
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 border-cyan-200"
+                      >
+                        {question.type.replace('-', ' ').toUpperCase()}
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleEditQuestion(question)}
+                      className="hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all duration-200"
                     >
                       <Edit2 className="w-3 h-3" />
                     </Button>
@@ -234,48 +283,76 @@ const QuizPreview = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeleteQuestion(question.id)}
-                      className="text-red-600 hover:text-red-700"
+                      className="hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-all duration-200"
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-gray-900">{question.text}</h4>
+                {/* Question Content */}
+                <div className="space-y-4">
+                  <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
+                    <h4 className="font-semibold text-gray-900 text-lg leading-relaxed">{question.text}</h4>
                   </div>
 
                   {question.options && (
-                    <div className="ml-4">
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">Options:</h5>
-                      <ul className="space-y-1">
+                    <div className="ml-4 bg-white/50 rounded-lg p-4 border border-purple-100">
+                      <h5 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        Answer Options:
+                      </h5>
+                      <ul className="space-y-2">
                         {question.options.map((option, optIndex) => (
-                          <li key={optIndex} className={`text-sm ${
-                            option === question.correctAnswer 
-                              ? 'text-green-600 font-medium' 
-                              : 'text-gray-600'
-                          }`}>
-                            {String.fromCharCode(65 + optIndex)}. {option}
-                            {option === question.correctAnswer && ' ✓'}
+                          <li 
+                            key={optIndex} 
+                            className={`text-sm p-3 rounded-lg transition-all duration-200 ${
+                              option === question.correctAnswer 
+                                ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 font-semibold border border-green-200 shadow-sm' 
+                                : 'bg-gray-50 text-gray-700 border border-gray-200'
+                            }`}
+                          >
+                            <span className="font-medium text-purple-600 mr-2">
+                              {String.fromCharCode(65 + optIndex)}.
+                            </span>
+                            {option}
+                            {option === question.correctAnswer && (
+                              <span className="ml-2 text-green-600 font-bold">✓</span>
+                            )}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
-                  <div className="ml-4">
-                    <h5 className="text-sm font-medium text-gray-700">Correct Answer:</h5>
-                    <p className="text-sm text-green-600 font-medium">{question.correctAnswer}</p>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                      <h5 className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        Correct Answer:
+                      </h5>
+                      <p className="text-sm text-green-800 font-medium bg-white/60 p-2 rounded border border-green-100">
+                        {question.correctAnswer}
+                      </p>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+                      <h5 className="text-sm font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        Explanation:
+                      </h5>
+                      <p className="text-sm text-blue-800 bg-white/60 p-2 rounded border border-blue-100 leading-relaxed">
+                        {question.explanation}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="ml-4">
-                    <h5 className="text-sm font-medium text-gray-700">Explanation:</h5>
-                    <p className="text-sm text-gray-600">{question.explanation}</p>
-                  </div>
-
-                  <div className="ml-4">
-                    <Badge variant="outline" className="text-xs">
+                  <div className="flex justify-start">
+                    <Badge 
+                      variant="outline" 
+                      className="bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200 px-3 py-1"
+                    >
+                      <Target className="w-3 h-3 mr-1" />
                       ELO: {question.elo}
                     </Badge>
                   </div>
@@ -285,49 +362,59 @@ const QuizPreview = () => {
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-center">
+        {/* Enhanced Action Buttons */}
+        <div className="flex gap-6 justify-center pt-8">
           <Button
             variant="outline"
             onClick={handleDisplay}
-            className="min-w-32"
+            className="min-w-36 h-12 text-lg font-medium bg-white/70 hover:bg-purple-50 border-purple-200 text-purple-700 hover:border-purple-300 transition-all duration-300 hover-scale"
           >
-            <Eye className="w-4 h-4 mr-2" />
-            Display
+            <Eye className="w-5 h-5 mr-2" />
+            Preview
           </Button>
           <Button
             variant="outline"
             onClick={handleExport}
-            className="min-w-32"
+            className="min-w-36 h-12 text-lg font-medium bg-white/70 hover:bg-cyan-50 border-cyan-200 text-cyan-700 hover:border-cyan-300 transition-all duration-300 hover-scale"
           >
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="w-5 h-5 mr-2" />
             Export
           </Button>
           <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-purple-600 hover:bg-purple-700 min-w-32">
-                <Save className="w-4 h-4 mr-2" />
-                Save
+              <Button className="min-w-36 h-12 text-lg font-medium bg-gradient-to-r from-purple-600 via-violet-600 to-purple-700 hover:from-purple-700 hover:via-violet-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover-scale">
+                <Save className="w-5 h-5 mr-2" />
+                Save Quiz
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-white/95 backdrop-blur-lg border-purple-200">
               <DialogHeader>
-                <DialogTitle>Save Quiz</DialogTitle>
+                <DialogTitle className="text-xl font-bold text-purple-900">Save Your Quiz</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Quiz Name</label>
+                  <label className="text-sm font-medium text-purple-700">Quiz Name</label>
                   <Input
                     value={quizName}
                     onChange={(e) => setQuizName(e.target.value)}
                     placeholder="Enter quiz name"
+                    className="mt-1 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                   />
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+                <div className="flex justify-end gap-3 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSaveDialogOpen(false)}
+                    className="hover:bg-gray-50"
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleSaveQuiz}>Save Quiz</Button>
+                  <Button 
+                    onClick={handleSaveQuiz}
+                    className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                  >
+                    Save Quiz
+                  </Button>
                 </div>
               </div>
             </DialogContent>
@@ -335,27 +422,31 @@ const QuizPreview = () => {
         </div>
       </div>
 
-      {/* Edit Question Dialog */}
+      {/* Enhanced Edit Question Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-lg border-purple-200">
           <DialogHeader>
-            <DialogTitle>Edit Question</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-purple-900 flex items-center gap-2">
+              <Edit2 className="w-5 h-5" />
+              Edit Question
+            </DialogTitle>
           </DialogHeader>
           {editingQuestion && (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Question Text</label>
+                <label className="text-sm font-medium text-purple-700">Question Text</label>
                 <Textarea
                   value={editingQuestion.text}
                   onChange={(e) => setEditingQuestion(prev => prev ? { ...prev, text: e.target.value } : null)}
                   rows={3}
+                  className="mt-1 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
               {editingQuestion.options && (
                 <div>
-                  <label className="text-sm font-medium">Options</label>
-                  <div className="space-y-2">
+                  <label className="text-sm font-medium text-purple-700">Answer Options</label>
+                  <div className="space-y-2 mt-1">
                     {editingQuestion.options.map((option, index) => (
                       <Input
                         key={index}
@@ -366,6 +457,7 @@ const QuizPreview = () => {
                           setEditingQuestion(prev => prev ? { ...prev, options: newOptions } : null);
                         }}
                         placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                        className="border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       />
                     ))}
                   </div>
@@ -373,27 +465,38 @@ const QuizPreview = () => {
               )}
 
               <div>
-                <label className="text-sm font-medium">Correct Answer</label>
+                <label className="text-sm font-medium text-purple-700">Correct Answer</label>
                 <Input
                   value={editingQuestion.correctAnswer}
                   onChange={(e) => setEditingQuestion(prev => prev ? { ...prev, correctAnswer: e.target.value } : null)}
+                  className="mt-1 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Explanation</label>
+                <label className="text-sm font-medium text-purple-700">Explanation</label>
                 <Textarea
                   value={editingQuestion.explanation}
                   onChange={(e) => setEditingQuestion(prev => prev ? { ...prev, explanation: e.target.value } : null)}
                   rows={2}
+                  className="mt-1 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              <div className="flex justify-end gap-3 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="hover:bg-gray-50"
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleSaveEdit}>Save Changes</Button>
+                <Button 
+                  onClick={handleSaveEdit}
+                  className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                >
+                  Save Changes
+                </Button>
               </div>
             </div>
           )}
