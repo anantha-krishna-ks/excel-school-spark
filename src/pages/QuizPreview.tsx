@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Edit2, Trash2, GripVertical, Eye, Download, Save } from 'lucide-react';
+import { ArrowLeft, Edit2, Trash2, GripVertical, Eye, Download, Save, Sparkles, Target, BookOpen, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -150,9 +150,9 @@ const QuizPreview = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+      <header className="bg-background/80 backdrop-blur-sm border-b border-border/50 px-6 py-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -160,14 +160,21 @@ const QuizPreview = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/quiz-generator/create')}
-                className="text-gray-600 hover:text-gray-900"
+                className="hover:bg-primary/10 transition-all duration-200"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Create
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Quiz Preview & Editing</h1>
-                <p className="text-sm text-gray-500">Review and edit your generated quiz</p>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent animate-fade-in">
+                    Quiz Preview & Editing
+                  </h1>
+                  <p className="text-muted-foreground">Review and edit your generated quiz</p>
+                </div>
               </div>
             </div>
           </div>
@@ -176,23 +183,38 @@ const QuizPreview = () => {
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Quiz Details */}
-        <Card className="mb-6">
-          <CardHeader>
+        <Card className="mb-8 bg-gradient-to-r from-background to-primary/5 border-primary/20 shadow-lg animate-fade-in">
+          <CardHeader className="pb-4">
             <CardTitle className="flex items-center justify-between">
-              <span>{quizData.name}</span>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Target className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-2xl font-bold">{quizData.name}</span>
+              </div>
               <div className="flex gap-2">
-                <Badge variant="outline">{quizData.grade}</Badge>
-                <Badge variant="outline">{quizData.subject}</Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  {quizData.grade}
+                </Badge>
+                <Badge variant="secondary" className="bg-secondary/10 text-secondary-foreground border-secondary/20">
+                  {quizData.subject}
+                </Badge>
               </div>
             </CardTitle>
-            <p className="text-sm text-gray-600">Chapter: {quizData.chapter}</p>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <BookOpen className="w-4 h-4" />
+              <p>Chapter: {quizData.chapter}</p>
+            </div>
           </CardHeader>
           <CardContent>
             <div>
-              <h4 className="font-medium mb-2">Selected Learning Outcomes:</h4>
+              <h4 className="font-semibold mb-3 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-primary" />
+                Selected Learning Outcomes:
+              </h4>
               <div className="flex flex-wrap gap-2">
                 {quizData.selectedELOs.map(elo => (
-                  <Badge key={elo.id} variant="secondary">
+                  <Badge key={elo.id} variant="outline" className="bg-secondary/5 hover:bg-secondary/10 transition-colors">
                     {elo.title}
                   </Badge>
                 ))}
@@ -202,31 +224,48 @@ const QuizPreview = () => {
         </Card>
 
         {/* Questions List */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Questions ({questions.length})</CardTitle>
+        <Card className="mb-8 bg-gradient-to-r from-background to-secondary/5 border-border/50 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-t-lg">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <BookOpen className="w-5 h-5 text-primary" />
+              </div>
+              Questions ({questions.length})
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6 pt-6">
             {questions.map((question, index) => (
-              <div key={question.id} className="border rounded-lg p-4 bg-white">
-                <div className="flex items-start justify-between mb-3">
+              <div key={question.id} className="group border border-border/50 rounded-xl p-6 bg-gradient-to-r from-background to-primary/5 hover:shadow-md transition-all duration-300 hover:border-primary/30">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-gray-600">Q{index + 1}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {question.difficulty}
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {question.type}
-                      </Badge>
+                    <GripVertical className="w-4 h-4 text-muted-foreground cursor-move group-hover:text-primary transition-colors" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="font-bold text-sm text-primary">Q{index + 1}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            question.difficulty === 'easy' ? 'bg-green-50 text-green-700 border-green-200' :
+                            question.difficulty === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                            'bg-red-50 text-red-700 border-red-200'
+                          }`}
+                        >
+                          {question.difficulty}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs bg-secondary/10 text-secondary-foreground">
+                          {question.type.replace('-', ' ')}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleEditQuestion(question)}
+                      className="hover:bg-primary/10 hover:border-primary/30"
                     >
                       <Edit2 className="w-3 h-3" />
                     </Button>
@@ -234,48 +273,58 @@ const QuizPreview = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeleteQuestion(question.id)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 hover:border-destructive/30"
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-gray-900">{question.text}</h4>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-4 border border-primary/10">
+                    <h4 className="font-semibold text-foreground text-lg leading-relaxed">{question.text}</h4>
                   </div>
 
                   {question.options && (
-                    <div className="ml-4">
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">Options:</h5>
-                      <ul className="space-y-1">
+                    <div className="bg-background/50 rounded-lg p-4 border border-border/30">
+                      <h5 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                        Options:
+                      </h5>
+                      <ul className="space-y-2">
                         {question.options.map((option, optIndex) => (
-                          <li key={optIndex} className={`text-sm ${
+                          <li key={optIndex} className={`text-sm p-2 rounded-md transition-colors ${
                             option === question.correctAnswer 
-                              ? 'text-green-600 font-medium' 
-                              : 'text-gray-600'
+                              ? 'bg-green-50 text-green-700 font-medium border border-green-200' 
+                              : 'bg-muted/30 text-muted-foreground hover:bg-muted/50'
                           }`}>
-                            {String.fromCharCode(65 + optIndex)}. {option}
-                            {option === question.correctAnswer && ' ✓'}
+                            <span className="font-semibold mr-2">{String.fromCharCode(65 + optIndex)}.</span>
+                            {option}
+                            {option === question.correctAnswer && <CheckCircle2 className="w-4 h-4 inline ml-2 text-green-600" />}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
 
-                  <div className="ml-4">
-                    <h5 className="text-sm font-medium text-gray-700">Correct Answer:</h5>
-                    <p className="text-sm text-green-600 font-medium">{question.correctAnswer}</p>
+                  <div className="bg-green-50/50 rounded-lg p-4 border border-green-200/50">
+                    <h5 className="text-sm font-semibold text-green-800 mb-2 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Correct Answer:
+                    </h5>
+                    <p className="text-sm text-green-700 font-medium bg-green-100/50 p-2 rounded">{question.correctAnswer}</p>
                   </div>
 
-                  <div className="ml-4">
-                    <h5 className="text-sm font-medium text-gray-700">Explanation:</h5>
-                    <p className="text-sm text-gray-600">{question.explanation}</p>
+                  <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-200/50">
+                    <h5 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                      <BookOpen className="w-4 h-4" />
+                      Explanation:
+                    </h5>
+                    <p className="text-sm text-blue-700 leading-relaxed">{question.explanation}</p>
                   </div>
 
-                  <div className="ml-4">
-                    <Badge variant="outline" className="text-xs">
+                  <div className="flex justify-between items-center pt-2">
+                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
                       ELO: {question.elo}
                     </Badge>
                   </div>
@@ -286,11 +335,11 @@ const QuizPreview = () => {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 justify-center py-6">
           <Button
             variant="outline"
             onClick={handleDisplay}
-            className="min-w-32"
+            className="min-w-32 hover:bg-primary/10 hover:border-primary/30 transition-all duration-200 hover:scale-105"
           >
             <Eye className="w-4 h-4 mr-2" />
             Display
@@ -298,14 +347,14 @@ const QuizPreview = () => {
           <Button
             variant="outline"
             onClick={handleExport}
-            className="min-w-32"
+            className="min-w-32 hover:bg-secondary/10 hover:border-secondary/30 transition-all duration-200 hover:scale-105"
           >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
           <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-purple-600 hover:bg-purple-700 min-w-32">
+              <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 min-w-32 transition-all duration-200 hover:scale-105 shadow-lg">
                 <Save className="w-4 h-4 mr-2" />
                 Save
               </Button>
@@ -337,9 +386,14 @@ const QuizPreview = () => {
 
       {/* Edit Question Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Question</DialogTitle>
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-background to-primary/5">
+          <DialogHeader className="pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Edit2 className="w-5 h-5 text-primary" />
+              </div>
+              Edit Question
+            </DialogTitle>
           </DialogHeader>
           {editingQuestion && (
             <div className="space-y-4">
