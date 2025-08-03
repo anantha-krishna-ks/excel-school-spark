@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft, Eye, Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft, Eye, Download, FileText, FileSpreadsheet, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
@@ -231,53 +232,44 @@ const QuizListing = () => {
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(quiz.id)}
-                        className="flex-1"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handlePreview(quiz)}
-                        className="flex-1"
-                      >
-                        <Eye className="w-3 h-3 mr-1" />
-                        Preview
-                      </Button>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleExport(quiz)}
-                        className="flex-1"
-                      >
-                        <Download className="w-3 h-3 mr-1" />
-                        Export
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDuplicate(quiz)}
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(quiz.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePreview(quiz)}
+                      className="flex-1"
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      Preview
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <MoreHorizontal className="w-3 h-3" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(quiz.id)}>
+                          <Edit className="w-3 h-3 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExport(quiz)}>
+                          <Download className="w-3 h-3 mr-2" />
+                          Export
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDuplicate(quiz)}>
+                          <Copy className="w-3 h-3 mr-2" />
+                          Duplicate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(quiz.id)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="w-3 h-3 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </CardContent>
               </Card>
