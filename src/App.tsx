@@ -22,6 +22,10 @@ import SlideGeneratorTemplates from "./pages/SlideGeneratorTemplates";
 import AssessmentAssist from "./pages/AssessmentAssist";
 import AssessmentCreate from "./pages/AssessmentCreate";
 import AssessmentELOSelection from "./pages/AssessmentELOSelection";
+import QuizListing from "./pages/QuizListing";
+import QuizCreate from "./pages/QuizCreate";
+import QuizPreview from "./pages/QuizPreview";
+import QuizDisplay from "./pages/QuizDisplay";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +47,11 @@ const App = () => (
           <Route path="/assessment-assist" element={<AssessmentAssist />} />
           <Route path="/assessment-assist/create" element={<AssessmentCreate />} />
           <Route path="/assessment-assist/elo-selection" element={<AssessmentELOSelection />} />
+          <Route path="/quiz-generator" element={<QuizListing />} />
+          <Route path="/quiz-generator/create" element={<QuizCreate />} />
+          <Route path="/quiz-generator/preview" element={<QuizPreview />} />
+          <Route path="/quiz-generator/preview/:id" element={<QuizPreview />} />
+          <Route path="/quiz-generator/display" element={<QuizDisplay />} />
           <Route path="/question-bundle/:bundleId" element={<QuestionBundlePreview />} />
           <Route path="/lesson-plan" element={<Index />} />
           <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />
