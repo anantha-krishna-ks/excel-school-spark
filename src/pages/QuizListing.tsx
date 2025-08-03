@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft, Eye, Download, FileText, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/hooks/use-toast';
 
 interface SavedQuiz {
   id: string;
@@ -19,6 +23,12 @@ interface SavedQuiz {
 const QuizListing = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [selectedQuizForExport, setSelectedQuizForExport] = useState<SavedQuiz | null>(null);
+  const [exportFormat, setExportFormat] = useState('pdf');
+  const [exportVersion, setExportVersion] = useState('both');
+  const [includeAnswers, setIncludeAnswers] = useState(true);
+  const [includeExplanations, setIncludeExplanations] = useState(true);
 
   // Mock data for saved quizzes
   const [savedQuizzes] = useState<SavedQuiz[]>([
@@ -64,14 +74,71 @@ const QuizListing = () => {
     navigate(`/quiz-generator/preview/${quizId}`);
   };
 
+  const handlePreview = (quiz: SavedQuiz) => {
+    // Generate mock questions for the quiz
+    const mockQuestions = generateMockQuestions(quiz);
+    const quizData = {
+      name: quiz.name,
+      grade: quiz.grade,
+      subject: quiz.subject,
+      chapter: quiz.chapter,
+      questionCount: quiz.questionCount,
+      selectedELOs: [
+        { id: '1', title: 'Understanding Core Concepts', description: 'Basic understanding of the topic' },
+        { id: '2', title: 'Problem Solving', description: 'Apply knowledge to solve problems' }
+      ]
+    };
+    navigate('/quiz-generator/display', { state: { questions: mockQuestions, quizData } });
+  };
+
+  const handleExport = (quiz: SavedQuiz) => {
+    setSelectedQuizForExport(quiz);
+    setExportDialogOpen(true);
+  };
+
   const handleDuplicate = (quiz: SavedQuiz) => {
     console.log('Duplicating quiz:', quiz);
-    // Implementation for duplicating quiz
+    toast({
+      title: "Quiz duplicated",
+      description: `"${quiz.name}" has been duplicated successfully.`,
+    });
   };
 
   const handleDelete = (quizId: string) => {
     console.log('Deleting quiz:', quizId);
-    // Implementation for deleting quiz
+    toast({
+      title: "Quiz deleted",
+      description: "The quiz has been deleted successfully.",
+    });
+  };
+
+  const generateMockQuestions = (quiz: SavedQuiz) => {
+    const questions = [];
+    for (let i = 0; i < quiz.questionCount; i++) {
+      questions.push({
+        id: `q-${i + 1}`,
+        text: `Sample question ${i + 1} for ${quiz.name}. This is a ${quiz.subject} question related to ${quiz.chapter}.`,
+        type: ['multiple-choice', 'true-false', 'short-answer'][i % 3] as any,
+        options: i % 3 === 0 ? ['Option A', 'Option B', 'Option C', 'Option D'] : 
+                 i % 3 === 1 ? ['True', 'False'] : undefined,
+        correctAnswer: i % 3 === 0 ? 'Option A' : i % 3 === 1 ? 'True' : 'Sample answer',
+        explanation: `This is the explanation for question ${i + 1}.`,
+        difficulty: ['easy', 'medium', 'hard'][i % 3] as any,
+        elo: 'Understanding Core Concepts'
+      });
+    }
+    return questions;
+  };
+
+  const handleExportConfirm = () => {
+    if (selectedQuizForExport) {
+      toast({
+        title: "Export started",
+        description: `Exporting "${selectedQuizForExport.name}" as ${exportFormat.toUpperCase()}...`,
+      });
+      setExportDialogOpen(false);
+      setSelectedQuizForExport(null);
+    }
   };
 
   return (
@@ -164,31 +231,53 @@ const QuizListing = () => {
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(quiz.id)}
-                      className="flex-1"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDuplicate(quiz)}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(quiz.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(quiz.id)}
+                        className="flex-1"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePreview(quiz)}
+                        className="flex-1"
+                      >
+                        <Eye className="w-3 h-3 mr-1" />
+                        Preview
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleExport(quiz)}
+                        className="flex-1"
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        Export
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDuplicate(quiz)}
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(quiz.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -196,6 +285,105 @@ const QuizListing = () => {
           </div>
         )}
       </div>
+
+      {/* Export Dialog */}
+      <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Export Quiz</DialogTitle>
+          </DialogHeader>
+          {selectedQuizForExport && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-sm mb-2">Quiz: {selectedQuizForExport.name}</h4>
+                <p className="text-sm text-gray-500">
+                  {selectedQuizForExport.subject} • {selectedQuizForExport.grade} • {selectedQuizForExport.questionCount} questions
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium block mb-2">Export Format</label>
+                  <Select value={exportFormat} onValueChange={setExportFormat}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pdf">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          PDF Document
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="docx">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          Word Document
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="xlsx">
+                        <div className="flex items-center gap-2">
+                          <FileSpreadsheet className="w-4 h-4" />
+                          Excel Spreadsheet
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-2">Version</label>
+                  <Select value={exportVersion} onValueChange={setExportVersion}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student Version (Questions Only)</SelectItem>
+                      <SelectItem value="teacher">Teacher Version (With Answers)</SelectItem>
+                      <SelectItem value="both">Both Versions</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {(exportVersion === 'teacher' || exportVersion === 'both') && (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="include-answers"
+                        checked={includeAnswers}
+                        onCheckedChange={(checked) => setIncludeAnswers(checked === true)}
+                      />
+                      <label htmlFor="include-answers" className="text-sm">
+                        Include correct answers
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="include-explanations"
+                        checked={includeExplanations}
+                        onCheckedChange={(checked) => setIncludeExplanations(checked === true)}
+                      />
+                      <label htmlFor="include-explanations" className="text-sm">
+                        Include explanations
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setExportDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleExportConfirm} className="bg-purple-600 hover:bg-purple-700">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
