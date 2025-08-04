@@ -157,10 +157,6 @@ const SlideGenerator = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Create Stunning Presentations in Minutes
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Transform your lesson plans into engaging slides or start fresh with professional templates. 
-            Our AI-powered editor makes presentation creation effortless and beautiful.
-          </p>
         </div>
 
 
