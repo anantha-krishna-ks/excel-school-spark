@@ -184,30 +184,6 @@ const SlideGenerator = () => {
           </Card>
         </div>
 
-        {/* Features Grid */}
-        <div className="bg-white rounded-2xl p-8 border border-gray-200">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Powerful Features</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Everything you need to create professional presentations that engage and educate
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => {
-              const IconComponent = feature.icon;
-              return (
-                <div key={index} className="text-center p-6 rounded-xl hover:bg-gray-50 transition-colors">
-                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-700 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                  <p className="text-sm text-gray-600">{feature.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );
