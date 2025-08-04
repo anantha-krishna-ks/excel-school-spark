@@ -154,9 +154,11 @@ const ToolsDashboard = () => {
                 Back to Role Selection
               </Button>
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-                  <GraduationCap className="text-white" size={24} />
-                </div>
+                <img 
+                  src="/lovable-uploads/08e4c437-f2d4-4044-a08b-8900a0c61e0a.png" 
+                  alt="ExcelSchoolAi Logo" 
+                  className="w-12 h-12"
+                />
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">Excel School AI</h1>
                   <p className="text-sm text-gray-500">Teacher Dashboard</p>
