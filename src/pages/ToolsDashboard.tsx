@@ -183,10 +183,6 @@ const ToolsDashboard = () => {
             Powerful AI-assisted tools designed to enhance your educational management experience
           </p>
           
-          <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            All systems operational
-          </div>
         </div>
 
 
