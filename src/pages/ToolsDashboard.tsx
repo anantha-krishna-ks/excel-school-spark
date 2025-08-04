@@ -1,4 +1,4 @@
-import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap, Presentation } from 'lucide-react';
+import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap, Presentation, Video } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -67,6 +67,15 @@ const ToolsDashboard = () => {
       color: 'bg-rose-500',
       buttonColor: 'bg-rose-500 hover:bg-rose-600',
       route: '/slide-generator'
+    },
+    {
+      id: 'video-clip-editor',
+      title: 'Video Clip Editor',
+      description: 'Create and edit video clips with advanced editing tools',
+      icon: Video,
+      color: 'bg-cyan-500',
+      buttonColor: 'bg-cyan-500 hover:bg-cyan-600',
+      route: '/video-clip-editor'
     },
     {
       id: 'assessment-assist',

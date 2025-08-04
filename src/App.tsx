@@ -26,6 +26,7 @@ import QuizListing from "./pages/QuizListing";
 import QuizCreate from "./pages/QuizCreate";
 import QuizPreview from "./pages/QuizPreview";
 import QuizDisplay from "./pages/QuizDisplay";
+import VideoClipEditor from "./pages/VideoClipEditor";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/slide-generator" element={<SlideGenerator />} />
           <Route path="/slide-generator/lesson-plan" element={<SlideGeneratorLessonPlan />} />
           <Route path="/slide-generator/templates" element={<SlideGeneratorTemplates />} />
+          <Route path="/video-clip-editor" element={<VideoClipEditor />} />
           <Route path="/assessment-assist" element={<AssessmentAssist />} />
           <Route path="/assessment-assist/create" element={<AssessmentCreate />} />
           <Route path="/assessment-assist/elo-selection" element={<AssessmentELOSelection />} />
