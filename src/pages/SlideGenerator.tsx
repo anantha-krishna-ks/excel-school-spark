@@ -270,7 +270,7 @@ const SlideGenerator = () => {
                     Generate Images with AI
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle className="text-2xl">AI Image Generator</DialogTitle>
                     <DialogDescription>
@@ -278,9 +278,9 @@ const SlideGenerator = () => {
                     </DialogDescription>
                   </DialogHeader>
                   
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                    {/* Left Panel - Input */}
-                    <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+                    {/* Left Panel - Input (40%) */}
+                    <div className="lg:col-span-2 space-y-4">
                       <div className="space-y-2">
                         <label htmlFor="prompt" className="text-sm font-medium text-gray-700">
                           Image Description
@@ -307,14 +307,48 @@ const SlideGenerator = () => {
                         ) : (
                           <>
                             <Sparkles className="w-4 h-4 mr-2" />
-                            {generatedImage ? 'Regenerate Image' : 'Generate Image'}
+                            Generate Image
                           </>
                         )}
                       </Button>
+                    </div>
 
+                    {/* Right Panel - Image Display (60%) */}
+                    <div className="lg:col-span-3 space-y-4">
+                      <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 relative">
+                        {isGenerating ? (
+                          <div className="flex flex-col items-center justify-center py-12">
+                            <Loader size="lg" text="Creating your image..." />
+                            <p className="text-sm text-gray-500 mt-4">This may take a few moments</p>
+                          </div>
+                        ) : generatedImage ? (
+                          <div className="w-full h-full flex items-center justify-center p-4">
+                            <img 
+                              src={generatedImage} 
+                              alt="Generated image"
+                              className="max-w-full max-h-full object-contain rounded-lg shadow-md"
+                            />
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400">
+                            <Image className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                            <p className="text-lg font-medium">Your generated image will appear here</p>
+                            <p className="text-sm">Enter a prompt and click generate to start</p>
+                          </div>
+                        )}
+                      </div>
+                      
                       {/* Action Buttons */}
                       {generatedImage && (
                         <div className="flex gap-3">
+                          <Button 
+                            onClick={handleRegenerateImage}
+                            className="flex-1 bg-green-600 hover:bg-green-700"
+                            disabled={isGenerating}
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Regenerate Image
+                          </Button>
                           <Button 
                             onClick={handleDownloadImage}
                             className="flex-1 bg-blue-600 hover:bg-blue-700"
@@ -323,30 +357,6 @@ const SlideGenerator = () => {
                             <Download className="w-4 h-4 mr-2" />
                             Download
                           </Button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Right Panel - Image Display */}
-                    <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                      {isGenerating ? (
-                        <div className="flex flex-col items-center justify-center py-12">
-                          <Loader size="lg" text="Creating your image..." />
-                          <p className="text-sm text-gray-500 mt-4">This may take a few moments</p>
-                        </div>
-                      ) : generatedImage ? (
-                        <div className="w-full h-full flex items-center justify-center p-4">
-                          <img 
-                            src={generatedImage} 
-                            alt="Generated image"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-md"
-                          />
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400">
-                          <Image className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                          <p className="text-lg font-medium">Your generated image will appear here</p>
-                          <p className="text-sm">Enter a prompt and click generate to start</p>
                         </div>
                       )}
                     </div>
