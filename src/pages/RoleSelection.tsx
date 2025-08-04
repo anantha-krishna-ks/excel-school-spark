@@ -56,9 +56,11 @@ const RoleSelection = () => {
       <div className="w-full max-w-5xl">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mb-4">
-            EXCEL
-          </h1>
+          <img 
+            src="/lovable-uploads/dff94d5b-83b8-4c9a-a098-85ed8d6db26b.png" 
+            alt="ExcelSchoolAi Logo" 
+            className="h-20 mx-auto mb-4"
+          />
           <h2 className="text-3xl text-blue-600 font-medium mb-8">
             SCHOOL AI
           </h2>
