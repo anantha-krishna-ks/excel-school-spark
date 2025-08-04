@@ -1894,38 +1894,6 @@ const SlideGeneratorLessonPlan = () => {
           </div>
         )}
 
-        {/* Features Preview */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Type className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Smart Content Analysis</h3>
-              <p className="text-sm text-gray-600">AI analyzes your lesson plan and extracts key points for slides</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Layout className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Professional Layouts</h3>
-              <p className="text-sm text-gray-600">Automatically applies appropriate layouts for different content types</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Edit className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Rich Editor</h3>
-              <p className="text-sm text-gray-600">Comprehensive editing tools for customizing your presentation</p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
