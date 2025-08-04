@@ -308,6 +308,62 @@ const QuizCreate = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {selectedChapter && (
+                  <div>
+                    <Label>Expected Learning Outcomes</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder={
+                          eloLoading 
+                            ? "Loading ELOs..." 
+                            : getSelectedELOsCount() > 0 
+                              ? `${getSelectedELOsCount()} ELO${getSelectedELOsCount() > 1 ? 's' : ''} selected`
+                              : "Select ELOs"
+                        } />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {eloLoading ? (
+                          <div className="flex items-center justify-center py-4">
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                            Loading ELOs...
+                          </div>
+                        ) : (
+                          <>
+                            <div className="p-2 border-b">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const allSelected = elos.every(elo => elo.selected);
+                                  setElos(prev => prev.map(elo => ({ ...elo, selected: !allSelected })));
+                                }}
+                                className="w-full justify-start text-xs"
+                              >
+                                {elos.every(elo => elo.selected) ? 'Deselect All' : 'Select All'}
+                              </Button>
+                            </div>
+                            {elos.map(elo => (
+                              <div key={elo.id} className="flex items-start space-x-2 p-2 hover:bg-gray-50">
+                                <Checkbox
+                                  id={`dropdown-${elo.id}`}
+                                  checked={elo.selected}
+                                  onCheckedChange={() => handleELOSelection(elo.id)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <label htmlFor={`dropdown-${elo.id}`} className="text-sm font-medium cursor-pointer block">
+                                    {elo.title}
+                                  </label>
+                                  <p className="text-xs text-gray-500 truncate">{elo.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
