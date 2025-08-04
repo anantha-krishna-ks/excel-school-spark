@@ -61,9 +61,6 @@ const RoleSelection = () => {
             alt="ExcelSchoolAi Logo" 
             className="h-20 mx-auto mb-4"
           />
-          <h2 className="text-3xl text-blue-600 font-medium mb-8">
-            SCHOOL AI
-          </h2>
           <div className="flex justify-center gap-2 mb-16">
             <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
             <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
