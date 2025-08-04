@@ -371,27 +371,33 @@ const SlideGeneratorLessonPlan = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'database' | 'upload')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="database" className="flex items-center gap-2">
+              <TabsList className="grid w-full grid-cols-2 mb-6 h-12 bg-muted/50 p-1 rounded-lg">
+                <TabsTrigger 
+                  value="database" 
+                  className="flex items-center gap-2 h-10 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all"
+                >
                   <ChevronDown className="w-4 h-4" />
                   Select from Database
                 </TabsTrigger>
-                <TabsTrigger value="upload" className="flex items-center gap-2">
+                <TabsTrigger 
+                  value="upload" 
+                  className="flex items-center gap-2 h-10 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all"
+                >
                   <Upload className="w-4 h-4" />
                   Upload Document
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="database" className="space-y-6 mt-0">
+              <TabsContent value="database" className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Class Dropdown */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Class</label>
                     <Select value={selectedClass} onValueChange={setSelectedClass}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-11 bg-background">
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-background z-50">
                         {classes.map((cls) => (
                           <SelectItem key={cls} value={cls}>
                             {cls}
@@ -405,10 +411,10 @@ const SlideGeneratorLessonPlan = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Subject</label>
                     <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-11 bg-background">
                         <SelectValue placeholder="Select subject" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-background z-50">
                         {subjects.map((subject) => (
                           <SelectItem key={subject} value={subject}>
                             {subject}
@@ -422,10 +428,10 @@ const SlideGeneratorLessonPlan = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Chapter</label>
                     <Select value={selectedChapter} onValueChange={setSelectedChapter}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-11 bg-background">
                         <SelectValue placeholder="Select chapter" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-background z-50">
                         {chapters.map((chapter) => (
                           <SelectItem key={chapter} value={chapter}>
                             {chapter}
@@ -439,51 +445,60 @@ const SlideGeneratorLessonPlan = () => {
                 {/* Session Plan Multi-Select */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Session Plans</label>
-                  <div className="border rounded-lg p-4 bg-gray-50">
+                  <div className="border border-input rounded-lg p-4 bg-background">
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 border-b border-border pb-2">
                         <Checkbox
                           id="select-all"
                           checked={selectedSessionPlans.length === sessionPlans.length}
                           onCheckedChange={handleSelectAllSessionPlans}
+                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         />
-                        <label htmlFor="select-all" className="text-sm font-medium text-gray-900 cursor-pointer">
+                        <label htmlFor="select-all" className="text-sm font-semibold text-foreground cursor-pointer">
                           Select All
                         </label>
+                        {selectedSessionPlans.length > 0 && (
+                          <Badge variant="secondary" className="ml-auto">
+                            {selectedSessionPlans.length} selected
+                          </Badge>
+                        )}
                       </div>
-                      {sessionPlans.map((plan) => (
-                        <div key={plan} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={plan}
-                            checked={selectedSessionPlans.includes(plan)}
-                            onCheckedChange={(checked) => handleSessionPlanChange(plan, checked as boolean)}
-                          />
-                          <label htmlFor={plan} className="text-sm text-gray-700 cursor-pointer flex-1">
-                            {plan}
-                          </label>
-                        </div>
-                      ))}
+                      <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
+                        {sessionPlans.map((plan) => (
+                          <div key={plan} className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-md transition-colors">
+                            <Checkbox
+                              id={plan}
+                              checked={selectedSessionPlans.includes(plan)}
+                              onCheckedChange={(checked) => handleSessionPlanChange(plan, checked as boolean)}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            />
+                            <label htmlFor={plan} className="text-sm text-foreground cursor-pointer flex-1">
+                              {plan}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </TabsContent>
               
-              <TabsContent value="upload" className="space-y-6 mt-0">
+              <TabsContent value="upload" className="space-y-6 mt-6">
                 <div
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
+                  className="border-2 border-dashed border-input rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors bg-background"
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                 >
                   {isUploading ? (
                     <div className="flex flex-col items-center">
-                      <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
-                      <p className="text-gray-600">Uploading your lesson plan...</p>
+                      <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+                      <p className="text-muted-foreground">Uploading your lesson plan...</p>
                     </div>
                   ) : file ? (
                     <div className="flex flex-col items-center">
                       <FileText className="w-12 h-12 text-green-600 mb-4" />
-                      <p className="text-lg font-medium text-gray-900 mb-2">{file.name}</p>
-                      <p className="text-gray-600 mb-4">File uploaded successfully!</p>
+                      <p className="text-lg font-medium text-foreground mb-2">{file.name}</p>
+                      <p className="text-muted-foreground mb-4">File uploaded successfully!</p>
                       <Button
                         variant="outline"
                         onClick={() => setFile(null)}
@@ -494,14 +509,14 @@ const SlideGeneratorLessonPlan = () => {
                     </div>
                   ) : (
                     <div>
-                      <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-lg font-medium text-gray-900 mb-2">
+                      <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-lg font-medium text-foreground mb-2">
                         Drop your lesson plan here
                       </p>
-                      <p className="text-gray-600 mb-4">
+                      <p className="text-muted-foreground mb-4">
                         or click to browse for files
                       </p>
-                      <p className="text-sm text-gray-500 mb-4">
+                      <p className="text-sm text-muted-foreground/70 mb-4">
                         Supported formats: DOCX, PDF, TXT (Max 10MB)
                       </p>
                       <input
@@ -513,6 +528,7 @@ const SlideGeneratorLessonPlan = () => {
                       />
                       <label htmlFor="file-upload">
                         <Button variant="outline" className="cursor-pointer">
+                          <Upload className="w-4 h-4 mr-2" />
                           Browse Files
                         </Button>
                       </label>
