@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Loader } from '@/components/ui/loader';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { toast } from 'sonner';
@@ -64,6 +66,19 @@ const SlideGeneratorLessonPlan = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showPreview, setShowPreview] = useState(false);
   const [currentPresentationTitle, setCurrentPresentationTitle] = useState('Photosynthesis Presentation');
+  
+  // New dropdown states
+  const [selectedClass, setSelectedClass] = useState<string>('');
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [selectedChapter, setSelectedChapter] = useState<string>('');
+  const [selectedSessionPlans, setSelectedSessionPlans] = useState<string[]>([]);
+  const [generationMode, setGenerationMode] = useState<'dropdown' | 'upload'>('dropdown');
+
+  // Mock data for dropdowns
+  const classes = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+  const subjects = ['Science', 'Mathematics', 'English', 'Social Studies', 'Hindi', 'Physics', 'Chemistry', 'Biology'];
+  const chapters = ['Chapter 1: Introduction', 'Chapter 2: Basic Concepts', 'Chapter 3: Advanced Topics', 'Chapter 4: Applications'];
+  const sessionPlans = ['Session 1: Overview', 'Session 2: Theory', 'Session 3: Practical', 'Session 4: Review', 'Session 5: Assessment'];
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -98,9 +113,16 @@ const SlideGeneratorLessonPlan = () => {
   }, []);
 
   const generatePPT = () => {
-    if (!file) {
+    if (generationMode === 'upload' && !file) {
       toast.error('Please upload a lesson plan first');
       return;
+    }
+    
+    if (generationMode === 'dropdown') {
+      if (!selectedClass || !selectedSubject || !selectedChapter || selectedSessionPlans.length === 0) {
+        toast.error('Please select Class, Subject, Chapter, and at least one Session Plan');
+        return;
+      }
     }
 
     setIsGenerating(true);
@@ -150,6 +172,14 @@ const SlideGeneratorLessonPlan = () => {
       setIsEditorMode(true);
       toast.success('Presentation generated successfully!');
     }, 3000);
+  };
+
+  const handleSessionPlanChange = (sessionPlan: string, checked: boolean) => {
+    if (checked) {
+      setSelectedSessionPlans([...selectedSessionPlans, sessionPlan]);
+    } else {
+      setSelectedSessionPlans(selectedSessionPlans.filter(plan => plan !== sessionPlan));
+    }
   };
 
   // Text options handlers
@@ -1796,66 +1826,162 @@ const SlideGeneratorLessonPlan = () => {
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Upload Section */}
+        {/* Generation Mode Selection */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Upload className="w-5 h-5" />
-              Upload Lesson Plan
+              <FileText className="w-5 h-5" />
+              Create Presentation
             </CardTitle>
             <CardDescription>
-              Upload your lesson plan or session plan document (PDF, DOC, DOCX)
+              Choose how you want to create your presentation from lesson plan content
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors"
-            >
-              {isUploading ? (
-                <div className="flex flex-col items-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-4" />
-                  <p className="text-gray-600">Uploading file...</p>
-                </div>
-              ) : file ? (
-                <div className="flex flex-col items-center">
-                  <FileText className="w-12 h-12 text-green-500 mb-4" />
-                  <p className="font-medium text-gray-900">{file.name}</p>
-                  <p className="text-sm text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                  <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700">
-                    Ready to convert
-                  </Badge>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                  <p className="text-lg font-medium text-gray-700 mb-2">
-                    Drag and drop your file here, or click to browse
-                  </p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Supports PDF, DOC, DOCX files up to 10MB
-                  </p>
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    accept=".pdf,.doc,.docx"
-                    className="hidden"
-                    id="file-upload"
-                  />
-                  <label htmlFor="file-upload">
-                    <Button variant="outline" className="cursor-pointer">
-                      Choose File
-                    </Button>
-                  </label>
-                </div>
-              )}
+            <div className="flex gap-4 mb-6">
+              <Button
+                variant={generationMode === 'dropdown' ? 'default' : 'outline'}
+                onClick={() => setGenerationMode('dropdown')}
+                className="flex-1 justify-start"
+              >
+                <ChevronDown className="w-4 h-4 mr-2" />
+                Select from Database
+              </Button>
+              <Button
+                variant={generationMode === 'upload' ? 'default' : 'outline'}
+                onClick={() => setGenerationMode('upload')}
+                className="flex-1 justify-start"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Document
+              </Button>
             </div>
+
+            {generationMode === 'dropdown' ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Class Dropdown */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Class</label>
+                    <Select value={selectedClass} onValueChange={setSelectedClass}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select class" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classes.map((cls) => (
+                          <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Subject Dropdown */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Subject</label>
+                    <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subjects.map((subject) => (
+                          <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Chapter Dropdown */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Chapter</label>
+                    <Select value={selectedChapter} onValueChange={setSelectedChapter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select chapter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {chapters.map((chapter) => (
+                          <SelectItem key={chapter} value={chapter}>{chapter}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Session Plan Multi-Select */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Session Plans</label>
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <div className="space-y-3">
+                      {sessionPlans.map((plan) => (
+                        <div key={plan} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={plan}
+                            checked={selectedSessionPlans.includes(plan)}
+                            onCheckedChange={(checked) => handleSessionPlanChange(plan, checked as boolean)}
+                          />
+                          <label htmlFor={plan} className="text-sm text-gray-700 cursor-pointer flex-1">
+                            {plan}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {selectedSessionPlans.length > 0 && (
+                    <p className="text-sm text-gray-500">
+                      {selectedSessionPlans.length} session plan{selectedSessionPlans.length > 1 ? 's' : ''} selected
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors"
+              >
+                {isUploading ? (
+                  <div className="flex flex-col items-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-4" />
+                    <p className="text-gray-600">Uploading file...</p>
+                  </div>
+                ) : file ? (
+                  <div className="flex flex-col items-center">
+                    <FileText className="w-12 h-12 text-green-500 mb-4" />
+                    <p className="font-medium text-gray-900">{file.name}</p>
+                    <p className="text-sm text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700">
+                      Ready to convert
+                    </Badge>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                    <p className="text-lg font-medium text-gray-700 mb-2">
+                      Drag and drop your file here, or click to browse
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Supports PDF, DOC, DOCX files up to 10MB
+                    </p>
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      accept=".pdf,.doc,.docx"
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label htmlFor="file-upload">
+                      <Button variant="outline" className="cursor-pointer">
+                        Choose File
+                      </Button>
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Instructions Section */}
-        {file && (
+        {((generationMode === 'upload' && file) || (generationMode === 'dropdown' && selectedClass && selectedSubject && selectedChapter && selectedSessionPlans.length > 0)) && (
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -1881,7 +2007,7 @@ const SlideGeneratorLessonPlan = () => {
         )}
 
         {/* Convert Button */}
-        {file && (
+        {((generationMode === 'upload' && file) || (generationMode === 'dropdown' && selectedClass && selectedSubject && selectedChapter && selectedSessionPlans.length > 0)) && (
           <div className="text-center mb-8">
             <Button
               onClick={generatePPT}
@@ -1889,7 +2015,7 @@ const SlideGeneratorLessonPlan = () => {
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3"
             >
               <Play className="w-5 h-5 mr-2" />
-              Convert to PPT
+              {generationMode === 'upload' ? 'Convert to PPT' : 'Generate PPT'}
             </Button>
           </div>
         )}
