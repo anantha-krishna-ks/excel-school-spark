@@ -160,7 +160,6 @@ const ToolsDashboard = () => {
                   className="h-12"
                 />
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Excel School AI</h1>
                   <p className="text-sm text-gray-500">Teacher Dashboard</p>
                 </div>
               </div>
