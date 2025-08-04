@@ -270,7 +270,7 @@ const SlideGenerator = () => {
                     Generate Images with AI
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
                   <DialogHeader>
                     <DialogTitle className="text-2xl">AI Image Generator</DialogTitle>
                     <DialogDescription>
@@ -278,24 +278,22 @@ const SlideGenerator = () => {
                     </DialogDescription>
                   </DialogHeader>
                   
-                  <div className="space-y-6">
-                    {/* Prompt Input */}
-                    <div className="space-y-2">
-                      <label htmlFor="prompt" className="text-sm font-medium text-gray-700">
-                        Image Description
-                      </label>
-                      <Textarea
-                        id="prompt"
-                        placeholder="Describe the image you want to generate... (e.g., 'A beautiful sunset over mountains with colorful clouds')"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        className="min-h-[100px]"
-                        disabled={isGenerating}
-                      />
-                    </div>
-
-                    {/* Generate Button */}
-                    {!generatedImage && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    {/* Left Panel - Input */}
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label htmlFor="prompt" className="text-sm font-medium text-gray-700">
+                          Image Description
+                        </label>
+                        <Textarea
+                          id="prompt"
+                          placeholder="Describe the image you want to generate... (e.g., 'A beautiful sunset over mountains with colorful clouds')"
+                          value={prompt}
+                          onChange={(e) => setPrompt(e.target.value)}
+                          className="min-h-[200px] resize-none"
+                        />
+                      </div>
+                      
                       <Button 
                         onClick={handleGenerateImage}
                         disabled={isGenerating || !prompt.trim()}
@@ -309,62 +307,49 @@ const SlideGenerator = () => {
                         ) : (
                           <>
                             <Sparkles className="w-4 h-4 mr-2" />
-                            Generate Image
+                            {generatedImage ? 'Regenerate Image' : 'Generate Image'}
                           </>
                         )}
                       </Button>
-                    )}
 
-                    {/* Loading State */}
-                    {isGenerating && (
-                      <div className="flex flex-col items-center justify-center py-12">
-                        <Loader size="lg" text="Creating your image..." />
-                        <p className="text-sm text-gray-500 mt-4">This may take a few moments</p>
-                      </div>
-                    )}
-
-                    {/* Generated Image Display */}
-                    {generatedImage && !isGenerating && (
-                      <div className="space-y-4">
-                        <div className="rounded-lg overflow-hidden border border-gray-200">
-                          <img 
-                            src={generatedImage} 
-                            alt="Generated image"
-                            className="w-full h-auto max-h-96 object-contain bg-gray-50"
-                          />
-                        </div>
-                        
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap gap-3 justify-center">
-                          <Button 
-                            onClick={handleRegenerateImage}
-                            variant="outline"
-                            disabled={isGenerating}
-                          >
-                            <RefreshCw className="w-4 h-4 mr-2" />
-                            Regenerate
-                          </Button>
-                          
-                          <Button 
-                            onClick={handleEditPrompt}
-                            variant="outline"
-                            disabled={isGenerating}
-                          >
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit Prompt
-                          </Button>
-                          
+                      {/* Action Buttons */}
+                      {generatedImage && (
+                        <div className="flex gap-3">
                           <Button 
                             onClick={handleDownloadImage}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="flex-1 bg-blue-600 hover:bg-blue-700"
                             disabled={isGenerating}
                           >
                             <Download className="w-4 h-4 mr-2" />
                             Download
                           </Button>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
+
+                    {/* Right Panel - Image Display */}
+                    <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                      {isGenerating ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                          <Loader size="lg" text="Creating your image..." />
+                          <p className="text-sm text-gray-500 mt-4">This may take a few moments</p>
+                        </div>
+                      ) : generatedImage ? (
+                        <div className="w-full h-full flex items-center justify-center p-4">
+                          <img 
+                            src={generatedImage} 
+                            alt="Generated image"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-md"
+                          />
+                        </div>
+                      ) : (
+                        <div className="text-center text-gray-400">
+                          <Image className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                          <p className="text-lg font-medium">Your generated image will appear here</p>
+                          <p className="text-sm">Enter a prompt and click generate to start</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </DialogContent>
               </Dialog>
