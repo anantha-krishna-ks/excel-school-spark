@@ -457,51 +457,116 @@ const SlideGeneratorLessonPlan = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {savedPresentations.map((presentation) => (
                   <ContextMenu key={presentation.id}>
                     <ContextMenuTrigger>
-                      <Card className="cursor-pointer hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                          <div className={`w-full h-24 rounded-lg mb-3 ${presentation.thumbnail}`}></div>
-                          <h3 className="font-semibold text-gray-900 mb-1 truncate">{presentation.title}</h3>
-                          <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-                            <span>{presentation.slideCount} slides</span>
-                            {presentation.isPrivate && <Lock className="w-3 h-3" />}
+                      <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/50 hover:from-white hover:to-blue-50/30 overflow-hidden">
+                        <CardContent className="p-0">
+                          {/* Thumbnail with overlay */}
+                          <div className="relative">
+                            <div className={`w-full h-32 ${presentation.thumbnail} relative`}>
+                              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors"></div>
+                              <div className="absolute top-3 right-3 flex gap-1">
+                                {presentation.isPrivate && (
+                                  <Badge variant="secondary" className="bg-white/90 text-gray-700 h-6 px-2">
+                                    <Lock className="w-3 h-3 mr-1" />
+                                    Private
+                                  </Badge>
+                                )}
+                                <Badge variant="secondary" className="bg-white/90 text-gray-700 h-6 px-2">
+                                  {presentation.slideCount} slides
+                                </Badge>
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-400">
-                            <div>Created: {presentation.createdAt.toLocaleDateString()}</div>
-                            <div>Last viewed: {presentation.lastViewed.toLocaleDateString()}</div>
-                          </div>
-                          <div className="flex gap-2 mt-3">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1"
-                              onClick={() => openPresentation(presentation)}
-                            >
-                              <Edit className="w-3 h-3 mr-1" />
-                              Edit
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => openPresentation(presentation)}
-                            >
-                              <Eye className="w-3 h-3" />
-                            </Button>
+                          
+                          {/* Content */}
+                          <div className="p-5">
+                            <h3 className="font-bold text-gray-900 mb-2 text-lg leading-tight group-hover:text-blue-600 transition-colors truncate">
+                              {presentation.title}
+                            </h3>
+                            
+                            <div className="text-xs text-gray-500 space-y-1 mb-4">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                Created {presentation.createdAt.toLocaleDateString()}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                Last viewed {presentation.lastViewed.toLocaleDateString()}
+                              </div>
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="space-y-2">
+                              {/* Primary Download Button */}
+                              <Button 
+                                size="sm" 
+                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-md hover:shadow-lg transition-all"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toast.success('Downloading presentation...');
+                                }}
+                              >
+                                <Download className="w-4 h-4 mr-2" />
+                                Download PPT
+                              </Button>
+                              
+                              {/* Secondary Actions */}
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="flex-1 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openPresentation(presentation);
+                                  }}
+                                >
+                                  <Edit className="w-3 h-3 mr-1" />
+                                  Edit
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openPresentation(presentation);
+                                  }}
+                                >
+                                  <Eye className="w-3 h-3" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 hover:text-red-700"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deletePresentation(presentation.id);
+                                  }}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
                     </ContextMenuTrigger>
-                    <ContextMenuContent>
+                    <ContextMenuContent className="w-56">
                       <ContextMenuItem onClick={() => openPresentation(presentation)}>
                         <Edit className="w-4 h-4 mr-2" />
                         Edit Presentation
                       </ContextMenuItem>
                       <ContextMenuItem onClick={() => openPresentation(presentation)}>
                         <Eye className="w-4 h-4 mr-2" />
-                        View Presentation
+                        Preview Presentation
+                      </ContextMenuItem>
+                      <ContextMenuItem onClick={() => toast.success('Downloading presentation...')}>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download PPT
                       </ContextMenuItem>
                       <ContextMenuItem onClick={() => duplicatePresentation(presentation)}>
                         <Copy className="w-4 h-4 mr-2" />
@@ -510,10 +575,10 @@ const SlideGeneratorLessonPlan = () => {
                       <ContextMenuSeparator />
                       <ContextMenuItem 
                         onClick={() => deletePresentation(presentation.id)}
-                        className="text-red-600"
+                        className="text-red-600 focus:text-red-600"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
+                        Delete Presentation
                       </ContextMenuItem>
                     </ContextMenuContent>
                   </ContextMenu>
