@@ -1,12 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, Home, Video, Upload, Plus, Play, Pause, Download, Trash2, GripVertical, Link, X } from 'lucide-react';
+import { ArrowLeft, Home, Video, Upload, Plus, Play, Pause, Download, Trash2, GripVertical, Link } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 interface VideoClip {
@@ -33,7 +32,6 @@ const VideoClipEditor = () => {
   const [duration, setDuration] = useState(0);
   const [trimStart, setTrimStart] = useState(0);
   const [trimEnd, setTrimEnd] = useState(0);
-  const [isAddVideoDialogOpen, setIsAddVideoDialogOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,7 +49,6 @@ const VideoClipEditor = () => {
     }
     
     setCurrentVideo(youtubeUrl);
-    setIsAddVideoDialogOpen(false);
     toast.success('YouTube video loaded successfully');
   };
 
@@ -67,7 +64,6 @@ const VideoClipEditor = () => {
       setUploadedFile(file);
       const videoUrl = URL.createObjectURL(file);
       setCurrentVideo(videoUrl);
-      setIsAddVideoDialogOpen(false);
       toast.success('Video file uploaded successfully');
     } else {
       toast.error('Please select a valid video file');
@@ -205,132 +201,94 @@ const VideoClipEditor = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Video Input and Player Section - Full Width */}
-        <div className="mb-8">{/* Placeholder for video editor section */}
-
-          {/* Video Editor Card */}
-          <Card>
+        <div className="mb-8">
+          <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Video className="w-5 h-5" />
-                  Video Editor
-                </div>
-                <Dialog open={isAddVideoDialogOpen} onOpenChange={setIsAddVideoDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline"
-                      size="sm"
-                      className="bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-200 text-cyan-700 hover:from-cyan-100 hover:to-blue-100 hover:border-cyan-300"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add clip from new video
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2 text-xl">
-                        <Video className="w-6 h-6 text-cyan-600" />
-                        Add Video Source
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-6 pt-4">
-                      <Tabs 
-                        value={activeTab} 
-                        onValueChange={(value) => setActiveTab(value as 'youtube' | 'upload')} 
-                        className="w-full"
-                      >
-                        <TabsList className="grid w-full grid-cols-2 mb-6 h-12 bg-gray-100 p-1 rounded-xl">
-                          <TabsTrigger 
-                            value="youtube" 
-                            className="flex items-center gap-2 h-10 px-4 rounded-lg transition-all font-medium text-sm data-[state=active]:bg-white data-[state=active]:text-cyan-700 data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800"
-                          >
-                            <Link className="w-4 h-4" />
-                            YouTube URL
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="upload" 
-                            className="flex items-center gap-2 h-10 px-4 rounded-lg transition-all font-medium text-sm data-[state=active]:bg-white data-[state=active]:text-cyan-700 data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800"
-                          >
-                            <Upload className="w-4 h-4" />
-                            Upload File
-                          </TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="youtube" className="space-y-4">
-                          <div className="space-y-3">
-                            <Label htmlFor="modal-youtube-url" className="text-sm font-medium text-gray-700">
-                              Paste YouTube Video URL
-                            </Label>
-                            <div className="space-y-3">
-                              <Input
-                                id="modal-youtube-url"
-                                placeholder="https://www.youtube.com/watch?v=..."
-                                value={youtubeUrl}
-                                onChange={(e) => setYoutubeUrl(e.target.value)}
-                                className="w-full h-11 border-gray-200 focus:border-cyan-500 focus:ring-cyan-500"
-                              />
-                              <Button 
-                                onClick={handleYouTubeLoad} 
-                                className="w-full h-11 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all"
-                                disabled={!youtubeUrl.trim()}
-                              >
-                                <Link className="w-4 h-4 mr-2" />
-                                Load YouTube Video
-                              </Button>
-                            </div>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="upload" className="space-y-4">
-                          <div className="space-y-3">
-                            <Label className="text-sm font-medium text-gray-700">
-                              Upload Video File
-                            </Label>
-                            <div 
-                              className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-cyan-300 hover:bg-cyan-50/50 transition-all cursor-pointer group"
-                              onClick={() => fileInputRef.current?.click()}
-                            >
-                              <div className="flex flex-col items-center space-y-3">
-                                <div className="w-16 h-16 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full flex items-center justify-center group-hover:from-cyan-200 group-hover:to-blue-200 transition-all">
-                                  <Upload className="w-8 h-8 text-cyan-600" />
-                                </div>
-                                <div className="space-y-1">
-                                  <p className="text-gray-700 font-medium">Click to upload or drag and drop</p>
-                                  <p className="text-sm text-gray-500">MP4, MOV, AVI, WebM files supported</p>
-                                </div>
-                              </div>
-                            </div>
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              accept="video/*"
-                              onChange={handleFileUpload}
-                              className="hidden"
-                            />
-                            {uploadedFile && (
-                              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <p className="text-sm text-green-700 font-medium flex items-center gap-2">
-                                  <Video className="w-4 h-4" />
-                                  Selected: {uploadedFile.name}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                Video Source
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {!currentVideo ? (
-                <div className="text-center py-12 text-gray-500">
-                  <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg">No video loaded</p>
-                  <p className="text-sm">Click "Add clip from new video" to get started</p>
-                </div>
-              ) : (
+              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'youtube' | 'upload')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6 h-auto bg-gray-100 p-1 rounded-2xl">
+                  <TabsTrigger 
+                    value="youtube" 
+                    className="flex items-center gap-3 h-14 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800"
+                  >
+                    <Link className="w-4 h-4" />
+                    Paste YouTube URL
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="upload" 
+                    className="flex items-center gap-3 h-14 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload Video File
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="youtube" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="youtube-url">YouTube URL</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="youtube-url"
+                        placeholder="Paste YouTube URL here..."
+                        value={youtubeUrl}
+                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button onClick={handleYouTubeLoad} className="bg-cyan-500 hover:bg-cyan-600">
+                        Load Video
+                      </Button>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="upload" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="video-upload">Upload Video File</Label>
+                    <div className="flex flex-col gap-4">
+                      <div 
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-cyan-400 transition-colors cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-600">Click to upload or drag and drop</p>
+                        <p className="text-sm text-gray-400 mt-1">MP4, MOV, AVI files supported</p>
+                      </div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="video/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      {uploadedFile && (
+                        <p className="text-sm text-green-600">
+                          Selected: {uploadedFile.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              <Button className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                <Plus className="w-4 h-4 mr-2" />
+                Add clip from new video
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Video Player */}
+          {currentVideo && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Video Editor</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
                   <div className="relative bg-black rounded-lg overflow-hidden">
                     <video
@@ -536,9 +494,9 @@ const VideoClipEditor = () => {
                     </div>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Saved Clips Section - Full Width at Bottom */}
