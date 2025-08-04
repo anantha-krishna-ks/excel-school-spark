@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move, BookOpen } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move, BookOpen, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader } from '@/components/ui/loader';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/ui/context-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
@@ -461,7 +462,7 @@ const SlideGeneratorLessonPlan = () => {
                 {savedPresentations.map((presentation) => (
                   <ContextMenu key={presentation.id}>
                     <ContextMenuTrigger>
-                      <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/50 hover:from-white hover:to-blue-50/30 overflow-hidden">
+                      <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300 bg-gradient-to-br from-white to-gray-50/50 hover:from-white hover:to-blue-50/30 overflow-hidden">
                         <CardContent className="p-0">
                           {/* Thumbnail with overlay */}
                           <div className="relative">
@@ -499,7 +500,7 @@ const SlideGeneratorLessonPlan = () => {
                             </div>
                             
                             {/* Action Buttons */}
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               {/* Primary Download Button */}
                               <Button 
                                 size="sm" 
@@ -513,42 +514,39 @@ const SlideGeneratorLessonPlan = () => {
                                 Download PPT
                               </Button>
                               
-                              {/* Secondary Actions */}
-                              <div className="flex gap-2">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  className="flex-1 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openPresentation(presentation);
-                                  }}
-                                >
-                                  <Edit className="w-3 h-3 mr-1" />
-                                  Edit
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  className="border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openPresentation(presentation);
-                                  }}
-                                >
-                                  <Eye className="w-3 h-3" />
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 hover:text-red-700"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deletePresentation(presentation.id);
-                                  }}
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
+                              {/* More Actions Dropdown */}
+                              <div className="flex justify-center">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      className="border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <MoreHorizontal className="w-4 h-4 mr-2" />
+                                      More Options
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="center" className="w-48">
+                                    <DropdownMenuItem onClick={() => openPresentation(presentation)}>
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Edit Presentation
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => openPresentation(presentation)}>
+                                      <Eye className="w-4 h-4 mr-2" />
+                                      Preview Presentation
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                      onClick={() => deletePresentation(presentation.id)}
+                                      className="text-red-600 focus:text-red-600"
+                                    >
+                                      <Trash2 className="w-4 h-4 mr-2" />
+                                      Delete Presentation
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
                               </div>
                             </div>
                           </div>
