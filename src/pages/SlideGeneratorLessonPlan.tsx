@@ -40,6 +40,8 @@ const SlideGeneratorLessonPlan = () => {
   const [generatedSlides, setGeneratedSlides] = useState<GeneratedSlide[]>([]);
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isEditorMode, setIsEditorMode] = useState(false);
+  const [savedPresentations, setSavedPresentations] = useState<SavedPresentation[]>([]);
+  const [showSavedPresentations, setShowSavedPresentations] = useState(false);
   
   // New dropdown states
   const [selectedClass, setSelectedClass] = useState<string>('');
@@ -53,6 +55,33 @@ const SlideGeneratorLessonPlan = () => {
   const subjects = ['Science', 'Mathematics', 'English', 'Social Studies', 'Hindi', 'Physics', 'Chemistry', 'Biology'];
   const chapters = ['Chapter 1: Introduction', 'Chapter 2: Basic Concepts', 'Chapter 3: Advanced Topics', 'Chapter 4: Applications'];
   const sessionPlans = ['Session 1: Overview', 'Session 2: Theory', 'Session 3: Practical', 'Session 4: Review', 'Session 5: Assessment'];
+
+  // Load saved presentations on mount
+  useEffect(() => {
+    const mockSavedPresentations: SavedPresentation[] = [
+      {
+        id: '1',
+        title: 'Photosynthesis Overview',
+        thumbnail: 'bg-gradient-to-br from-green-400 to-blue-500',
+        createdAt: new Date('2024-01-15'),
+        lastViewed: new Date('2024-01-20'),
+        isPrivate: false,
+        slideCount: 5,
+        slides: []
+      },
+      {
+        id: '2',
+        title: 'Chemical Bonding',
+        thumbnail: 'bg-gradient-to-br from-purple-400 to-pink-500',
+        createdAt: new Date('2024-01-10'),
+        lastViewed: new Date('2024-01-18'),
+        isPrivate: true,
+        slideCount: 8,
+        slides: []
+      }
+    ];
+    setSavedPresentations(mockSavedPresentations);
+  }, []);
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -162,6 +191,49 @@ const SlideGeneratorLessonPlan = () => {
     }
   };
 
+  const savePresentation = () => {
+    const newPresentation: SavedPresentation = {
+      id: Date.now().toString(),
+      title: `${selectedSubject || 'New'} Presentation`,
+      thumbnail: 'bg-gradient-to-br from-blue-400 to-purple-500',
+      createdAt: new Date(),
+      lastViewed: new Date(),
+      isPrivate: false,
+      slideCount: generatedSlides.length,
+      slides: generatedSlides
+    };
+    
+    setSavedPresentations(prev => [newPresentation, ...prev]);
+    setShowSavedPresentations(true);
+    toast.success('Presentation saved successfully!');
+  };
+
+  const deletePresentation = (id: string) => {
+    setSavedPresentations(prev => prev.filter(p => p.id !== id));
+    toast.success('Presentation deleted successfully!');
+  };
+
+  const duplicatePresentation = (presentation: SavedPresentation) => {
+    const duplicated: SavedPresentation = {
+      ...presentation,
+      id: Date.now().toString(),
+      title: `${presentation.title} (Copy)`,
+      createdAt: new Date(),
+      lastViewed: new Date()
+    };
+    setSavedPresentations(prev => [duplicated, ...prev]);
+    toast.success('Presentation duplicated successfully!');
+  };
+
+  const openPresentation = (presentation: SavedPresentation) => {
+    setGeneratedSlides(presentation.slides);
+    setActiveSlide(0);
+    setIsEditorMode(true);
+    setSavedPresentations(prev => 
+      prev.map(p => p.id === presentation.id ? { ...p, lastViewed: new Date() } : p)
+    );
+  };
+
   // Loading overlay during generation
   if (isGenerating) {
     return (
@@ -218,7 +290,7 @@ const SlideGeneratorLessonPlan = () => {
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={savePresentation}>
                 <Save className="w-4 h-4 mr-2" />
                 Save
               </Button>
@@ -350,13 +422,106 @@ const SlideGeneratorLessonPlan = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to Slide Generator
           </Button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Lesson Plan to PPT
-          </h1>
-          <p className="text-xl text-gray-600">
-            Transform your lesson plans into engaging presentations with AI assistance
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Lesson Plan to PPT
+              </h1>
+              <p className="text-xl text-gray-600">
+                Transform your lesson plans into engaging presentations with AI assistance
+              </p>
+            </div>
+            {savedPresentations.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => setShowSavedPresentations(!showSavedPresentations)}
+                className="flex items-center gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                {showSavedPresentations ? 'Hide' : 'View'} Saved PPTs ({savedPresentations.length})
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* Saved Presentations List */}
+        {showSavedPresentations && savedPresentations.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                Saved Presentations
+              </CardTitle>
+              <CardDescription>
+                Manage your previously created presentations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {savedPresentations.map((presentation) => (
+                  <ContextMenu key={presentation.id}>
+                    <ContextMenuTrigger>
+                      <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className={`w-full h-24 rounded-lg mb-3 ${presentation.thumbnail}`}></div>
+                          <h3 className="font-semibold text-gray-900 mb-1 truncate">{presentation.title}</h3>
+                          <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+                            <span>{presentation.slideCount} slides</span>
+                            {presentation.isPrivate && <Lock className="w-3 h-3" />}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            <div>Created: {presentation.createdAt.toLocaleDateString()}</div>
+                            <div>Last viewed: {presentation.lastViewed.toLocaleDateString()}</div>
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="flex-1"
+                              onClick={() => openPresentation(presentation)}
+                            >
+                              <Edit className="w-3 h-3 mr-1" />
+                              Edit
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => openPresentation(presentation)}
+                            >
+                              <Eye className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <ContextMenuItem onClick={() => openPresentation(presentation)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Presentation
+                      </ContextMenuItem>
+                      <ContextMenuItem onClick={() => openPresentation(presentation)}>
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Presentation
+                      </ContextMenuItem>
+                      <ContextMenuItem onClick={() => duplicatePresentation(presentation)}>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Duplicate
+                      </ContextMenuItem>
+                      <ContextMenuSeparator />
+                      <ContextMenuItem 
+                        onClick={() => deletePresentation(presentation.id)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Main Form */}
         <Card className="mb-8">
