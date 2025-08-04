@@ -100,16 +100,6 @@ const SlideGenerator = () => {
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl p-6 border border-gray-200 text-center">
-              <div className="text-3xl font-bold text-rose-600 mb-2">{stat.value}</div>
-              <div className="text-sm font-medium text-gray-900 mb-1">{stat.label}</div>
-              <div className="text-xs text-gray-500">{stat.trend}</div>
-            </div>
-          ))}
-        </div>
 
         {/* Main Options */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
