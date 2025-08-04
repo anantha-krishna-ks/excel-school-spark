@@ -1,15 +1,13 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move, Database, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader } from '@/components/ui/loader';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { toast } from 'sonner';
-import { getGrades, getSubjects, getChapters, Grade, Subject, Chapter } from '../../api';
 
 interface GeneratedSlide {
   id: string;
@@ -39,26 +37,6 @@ const SlideGeneratorLessonPlan = () => {
   const [generatedSlides, setGeneratedSlides] = useState<GeneratedSlide[]>([]);
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isEditorMode, setIsEditorMode] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<'dropdown' | 'upload' | null>(null);
-  
-  // Dropdown-related state
-  const [grades, setGrades] = useState<Grade[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [selectedGrade, setSelectedGrade] = useState<string>('');
-  const [selectedSubject, setSelectedSubject] = useState<string>('');
-  const [selectedChapter, setSelectedChapter] = useState<string>('');
-  const [selectedSessionPlans, setSelectedSessionPlans] = useState<string[]>([]);
-  const [isLoadingDropdowns, setIsLoadingDropdowns] = useState(false);
-  
-  // Mock session plans for demo
-  const sessionPlans = [
-    { id: '1', name: 'Introduction to Photosynthesis' },
-    { id: '2', name: 'The Photosynthesis Process' },
-    { id: '3', name: 'Factors Affecting Photosynthesis' },
-    { id: '4', name: 'Light and Dark Reactions' },
-    { id: '5', name: 'Practical Applications' }
-  ];
   const [showTextOptions, setShowTextOptions] = useState(false);
   const textButtonRef = useRef<HTMLButtonElement>(null);
   const [contextMenu, setContextMenu] = useState<{
@@ -119,100 +97,9 @@ const SlideGeneratorLessonPlan = () => {
     }
   }, []);
 
-  // Load grades on component mount
-  useEffect(() => {
-    const loadGrades = async () => {
-      try {
-        setIsLoadingDropdowns(true);
-        const gradesData = await getGrades('ORG001'); // Mock org code
-        setGrades(gradesData);
-      } catch (error) {
-        console.error('Error loading grades:', error);
-        // Use mock data if API fails
-        setGrades([
-          { ClassId: 1, ClassName: 'Grade 1' },
-          { ClassId: 2, ClassName: 'Grade 2' },
-          { ClassId: 3, ClassName: 'Grade 3' },
-          { ClassId: 4, ClassName: 'Grade 4' },
-          { ClassId: 5, ClassName: 'Grade 5' },
-        ]);
-      } finally {
-        setIsLoadingDropdowns(false);
-      }
-    };
-    
-    loadGrades();
-  }, []);
-
-  // Load subjects when grade changes
-  useEffect(() => {
-    const loadSubjects = async () => {
-      if (!selectedGrade) {
-        setSubjects([]);
-        return;
-      }
-      
-      try {
-        setIsLoadingDropdowns(true);
-        const subjectsData = await getSubjects('ORG001', parseInt(selectedGrade));
-        setSubjects(subjectsData);
-      } catch (error) {
-        console.error('Error loading subjects:', error);
-        // Use mock data if API fails
-        setSubjects([
-          { SubjectId: 1, SubjectName: 'Mathematics', PlanClassId: `${selectedGrade}_MATH` },
-          { SubjectId: 2, SubjectName: 'Science', PlanClassId: `${selectedGrade}_SCI` },
-          { SubjectId: 3, SubjectName: 'English', PlanClassId: `${selectedGrade}_ENG` },
-          { SubjectId: 4, SubjectName: 'Social Studies', PlanClassId: `${selectedGrade}_SOC` },
-        ]);
-      } finally {
-        setIsLoadingDropdowns(false);
-      }
-    };
-    
-    loadSubjects();
-  }, [selectedGrade]);
-
-  // Load chapters when subject changes
-  useEffect(() => {
-    const loadChapters = async () => {
-      if (!selectedSubject) {
-        setChapters([]);
-        return;
-      }
-      
-      const subject = subjects.find(s => s.SubjectId.toString() === selectedSubject);
-      if (!subject) return;
-      
-      try {
-        setIsLoadingDropdowns(true);
-        const chaptersData = await getChapters('ORG001', subject.PlanClassId);
-        setChapters(chaptersData);
-      } catch (error) {
-        console.error('Error loading chapters:', error);
-        // Use mock data if API fails
-        setChapters([
-          { chapterId: '1', chapterName: 'Chapter 1: Introduction to Photosynthesis' },
-          { chapterId: '2', chapterName: 'Chapter 2: The Process of Photosynthesis' },
-          { chapterId: '3', chapterName: 'Chapter 3: Factors Affecting Photosynthesis' },
-          { chapterId: '4', chapterName: 'Chapter 4: Applications and Importance' },
-        ]);
-      } finally {
-        setIsLoadingDropdowns(false);
-      }
-    };
-    
-    loadChapters();
-  }, [selectedSubject, subjects]);
-
   const generatePPT = () => {
-    if (selectedMethod === 'upload' && !file) {
+    if (!file) {
       toast.error('Please upload a lesson plan first');
-      return;
-    }
-    
-    if (selectedMethod === 'dropdown' && (!selectedGrade || !selectedSubject || !selectedChapter || selectedSessionPlans.length === 0)) {
-      toast.error('Please select all required fields');
       return;
     }
 
@@ -263,14 +150,6 @@ const SlideGeneratorLessonPlan = () => {
       setIsEditorMode(true);
       toast.success('Presentation generated successfully!');
     }, 3000);
-  };
-
-  const handleSessionPlanToggle = (sessionPlanId: string) => {
-    setSelectedSessionPlans(prev => 
-      prev.includes(sessionPlanId) 
-        ? prev.filter(id => id !== sessionPlanId)
-        : [...prev, sessionPlanId]
-    );
   };
 
   // Text options handlers
