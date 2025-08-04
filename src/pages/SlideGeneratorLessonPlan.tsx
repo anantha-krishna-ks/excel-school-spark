@@ -371,17 +371,17 @@ const SlideGeneratorLessonPlan = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'database' | 'upload')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 h-14 bg-muted/30 p-1.5 rounded-xl border border-border/50">
+              <TabsList className="grid w-full grid-cols-2 mb-6 h-auto bg-transparent p-0 gap-3">
                 <TabsTrigger 
                   value="database" 
-                  className="flex items-center gap-3 h-11 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md rounded-lg transition-all font-medium text-sm data-[state=active]:border data-[state=active]:border-border/20"
+                  className="flex items-center gap-3 h-12 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/70 shadow-sm data-[state=active]:shadow-md"
                 >
                   <BookOpen className="w-4 h-4" />
                   Select from Database
                 </TabsTrigger>
                 <TabsTrigger 
                   value="upload" 
-                  className="flex items-center gap-3 h-11 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md rounded-lg transition-all font-medium text-sm data-[state=active]:border data-[state=active]:border-border/20"
+                  className="flex items-center gap-3 h-12 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/70 shadow-sm data-[state=active]:shadow-md"
                 >
                   <Upload className="w-4 h-4" />
                   Upload Document
