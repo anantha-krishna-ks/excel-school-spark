@@ -371,17 +371,17 @@ const SlideGeneratorLessonPlan = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'database' | 'upload')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 h-auto bg-transparent p-0 gap-3">
+              <TabsList className="grid w-full grid-cols-2 mb-6 h-auto bg-gray-100 p-1 rounded-2xl">
                 <TabsTrigger 
                   value="database" 
-                  className="flex items-center gap-3 h-12 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/70 shadow-sm data-[state=active]:shadow-md"
+                  className="flex items-center gap-3 h-14 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 shadow-none data-[state=active]:shadow-lg"
                 >
                   <BookOpen className="w-4 h-4" />
                   Select from Database
                 </TabsTrigger>
                 <TabsTrigger 
                   value="upload" 
-                  className="flex items-center gap-3 h-12 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/70 shadow-sm data-[state=active]:shadow-md"
+                  className="flex items-center gap-3 h-14 px-6 rounded-xl transition-all font-medium text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 shadow-none data-[state=active]:shadow-lg"
                 >
                   <Upload className="w-4 h-4" />
                   Upload Document
@@ -463,7 +463,7 @@ const SlideGeneratorLessonPlan = () => {
                           </Badge>
                         )}
                       </div>
-                      <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
+                      <div className="grid grid-cols-1 gap-2">
                         {sessionPlans.map((plan) => (
                           <div key={plan} className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-md transition-colors">
                             <Checkbox
