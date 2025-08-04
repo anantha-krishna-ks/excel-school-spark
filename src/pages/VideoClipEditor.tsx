@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, Home, Video, Upload, Plus, Play, Pause, Download, Trash2, GripVertical, Link } from 'lucide-react';
+import { ArrowLeft, Home, Video, Upload, Plus, Play, Pause, Download, Trash2, GripVertical, Link, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 interface VideoClip {
@@ -32,8 +33,12 @@ const VideoClipEditor = () => {
   const [duration, setDuration] = useState(0);
   const [trimStart, setTrimStart] = useState(0);
   const [trimEnd, setTrimEnd] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalYoutubeUrl, setModalYoutubeUrl] = useState('');
+  const [modalActiveTab, setModalActiveTab] = useState<'youtube' | 'upload'>('youtube');
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const modalFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleYouTubeLoad = () => {
     if (!youtubeUrl) {
@@ -68,6 +73,37 @@ const VideoClipEditor = () => {
     } else {
       toast.error('Please select a valid video file');
     }
+  };
+
+  const handleModalFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('video/')) {
+      const videoUrl = URL.createObjectURL(file);
+      setCurrentVideo(videoUrl);
+      setIsModalOpen(false);
+      setModalYoutubeUrl('');
+      toast.success('Video file uploaded successfully');
+    } else {
+      toast.error('Please select a valid video file');
+    }
+  };
+
+  const handleModalYouTubeLoad = () => {
+    if (!modalYoutubeUrl) {
+      toast.error('Please enter a valid YouTube URL');
+      return;
+    }
+    
+    const videoId = extractYouTubeVideoId(modalYoutubeUrl);
+    if (!videoId) {
+      toast.error('Invalid YouTube URL');
+      return;
+    }
+    
+    setCurrentVideo(modalYoutubeUrl);
+    setIsModalOpen(false);
+    setModalYoutubeUrl('');
+    toast.success('YouTube video loaded successfully');
   };
 
   const handleVideoLoadedMetadata = () => {
@@ -275,10 +311,105 @@ const VideoClipEditor = () => {
                 </TabsContent>
               </Tabs>
 
-              <Button className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
-                <Plus className="w-4 h-4 mr-2" />
-                Add clip from new video
-              </Button>
+              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add clip from new video
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center justify-between">
+                      Clip from a New Video
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsModalOpen(false)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </DialogTitle>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900 mb-4">Video Source</h3>
+                      
+                      <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
+                        <Button
+                          variant={modalActiveTab === 'youtube' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setModalActiveTab('youtube')}
+                          className="flex-1 h-10"
+                        >
+                          YouTube URL
+                        </Button>
+                        <Button
+                          variant={modalActiveTab === 'upload' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setModalActiveTab('upload')}
+                          className="flex-1 h-10"
+                        >
+                          Upload File
+                        </Button>
+                      </div>
+                      
+                      {modalActiveTab === 'youtube' ? (
+                        <div className="space-y-4">
+                          <Input
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            value={modalYoutubeUrl}
+                            onChange={(e) => setModalYoutubeUrl(e.target.value)}
+                            className="w-full"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={handleModalYouTubeLoad}
+                              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                            >
+                              Load Video
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setIsModalOpen(false)}
+                              className="flex-1"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div 
+                            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
+                            onClick={() => modalFileInputRef.current?.click()}
+                          >
+                            <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                            <p className="text-sm text-gray-600">Click to upload a video file</p>
+                            <p className="text-xs text-gray-400 mt-1">MP4, MOV, AVI supported</p>
+                          </div>
+                          <input
+                            ref={modalFileInputRef}
+                            type="file"
+                            accept="video/*"
+                            onChange={handleModalFileUpload}
+                            className="hidden"
+                          />
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsModalOpen(false)}
+                            className="w-full"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
 
