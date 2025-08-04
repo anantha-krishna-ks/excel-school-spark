@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Loader2, Play, Edit, Save, Download, Plus, Trash2, Eye, Type, Table, List, MessageSquare, Image as ImageIcon, BarChart3, Video, Shapes, Layout, Grid, LayoutList, Lock, User, Clock, Copy, Move, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -165,7 +165,7 @@ const SlideGeneratorLessonPlan = () => {
   // Loading overlay during generation
   if (isGenerating) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 mb-4 mx-auto" />
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">Creating Your Presentation</h2>
@@ -338,7 +338,7 @@ const SlideGeneratorLessonPlan = () => {
 
   // Initial form view
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -371,17 +371,17 @@ const SlideGeneratorLessonPlan = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'database' | 'upload')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 h-12 bg-muted/50 p-1 rounded-lg">
+              <TabsList className="grid w-full grid-cols-2 mb-6 h-14 bg-muted/30 p-1.5 rounded-xl border border-border/50">
                 <TabsTrigger 
                   value="database" 
-                  className="flex items-center gap-2 h-10 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all"
+                  className="flex items-center gap-3 h-11 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md rounded-lg transition-all font-medium text-sm data-[state=active]:border data-[state=active]:border-border/20"
                 >
-                  <ChevronDown className="w-4 h-4" />
+                  <BookOpen className="w-4 h-4" />
                   Select from Database
                 </TabsTrigger>
                 <TabsTrigger 
                   value="upload" 
-                  className="flex items-center gap-2 h-10 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all"
+                  className="flex items-center gap-3 h-11 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md rounded-lg transition-all font-medium text-sm data-[state=active]:border data-[state=active]:border-border/20"
                 >
                   <Upload className="w-4 h-4" />
                   Upload Document
