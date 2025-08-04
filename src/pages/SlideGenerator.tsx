@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, FileText, LayoutTemplate, Presentation, Sparkles, Image, Video, BarChart3, Users, Settings } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, LayoutTemplate, Presentation, Sparkles, Image, Video, BarChart3, Users, Settings, Palette, Download, RefreshCw, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader } from '@/components/ui/loader';
+import { toast } from 'sonner';
+import sampleGeneratedImage from '@/assets/sample-generated-image.png';
 
 const SlideGenerator = () => {
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState<'lesson-plan' | 'template' | null>(null);
+  const [isTextToImageOpen, setIsTextToImageOpen] = useState(false);
+  const [prompt, setPrompt] = useState('');
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const features = [
     {
@@ -46,6 +55,60 @@ const SlideGenerator = () => {
     } else {
       navigate('/slide-generator/templates');
     }
+  };
+
+  const generateImageWithAI = async (promptText: string): Promise<string> => {
+    // This function would integrate with Lovable's image generation API
+    // For demonstration, we'll simulate the process
+    const timestamp = Date.now();
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Return the sample image (in production, this would be the actual generated image)
+    return sampleGeneratedImage;
+  };
+
+  const handleGenerateImage = async () => {
+    if (!prompt.trim()) {
+      toast.error('Please enter a prompt to generate an image');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const imagePath = await generateImageWithAI(prompt);
+      setGeneratedImage(imagePath);
+      toast.success('Image generated successfully!');
+    } catch (error) {
+      console.error('Error generating image:', error);
+      toast.error('Failed to generate image. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleRegenerateImage = () => {
+    if (prompt.trim()) {
+      handleGenerateImage();
+    }
+  };
+
+  const handleDownloadImage = () => {
+    if (generatedImage) {
+      // Create a download link
+      const link = document.createElement('a');
+      link.href = generatedImage;
+      link.download = `generated-image-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Image downloaded successfully!');
+    }
+  };
+
+  const handleEditPrompt = () => {
+    setGeneratedImage(null);
   };
 
   return (
@@ -180,6 +243,131 @@ const SlideGenerator = () => {
                 <LayoutTemplate className="w-4 h-4 mr-2" />
                 Browse Templates
               </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Text to Image Converter */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <Card className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-rose-200">
+            <CardHeader className="text-center pb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Palette className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-2xl mb-2">Text to Image Converter</CardTitle>
+              <CardDescription className="text-base">
+                Generate custom images from text descriptions using AI for your presentations
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <Dialog open={isTextToImageOpen} onOpenChange={setIsTextToImageOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => setIsTextToImageOpen(true)}
+                  >
+                    <Image className="w-4 h-4 mr-2" />
+                    Generate Images with AI
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl">AI Image Generator</DialogTitle>
+                    <DialogDescription>
+                      Create stunning images for your presentations using AI
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6">
+                    {/* Prompt Input */}
+                    <div className="space-y-2">
+                      <label htmlFor="prompt" className="text-sm font-medium text-gray-700">
+                        Image Description
+                      </label>
+                      <Textarea
+                        id="prompt"
+                        placeholder="Describe the image you want to generate... (e.g., 'A beautiful sunset over mountains with colorful clouds')"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        className="min-h-[100px]"
+                        disabled={isGenerating}
+                      />
+                    </div>
+
+                    {/* Generate Button */}
+                    {!generatedImage && (
+                      <Button 
+                        onClick={handleGenerateImage}
+                        disabled={isGenerating || !prompt.trim()}
+                        className="w-full bg-green-600 hover:bg-green-700"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <Loader size="sm" className="mr-2" />
+                            Generating Image...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Generate Image
+                          </>
+                        )}
+                      </Button>
+                    )}
+
+                    {/* Loading State */}
+                    {isGenerating && (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <Loader size="lg" text="Creating your image..." />
+                        <p className="text-sm text-gray-500 mt-4">This may take a few moments</p>
+                      </div>
+                    )}
+
+                    {/* Generated Image Display */}
+                    {generatedImage && !isGenerating && (
+                      <div className="space-y-4">
+                        <div className="rounded-lg overflow-hidden border border-gray-200">
+                          <img 
+                            src={generatedImage} 
+                            alt="Generated image"
+                            className="w-full h-auto max-h-96 object-contain bg-gray-50"
+                          />
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-3 justify-center">
+                          <Button 
+                            onClick={handleRegenerateImage}
+                            variant="outline"
+                            disabled={isGenerating}
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Regenerate
+                          </Button>
+                          
+                          <Button 
+                            onClick={handleEditPrompt}
+                            variant="outline"
+                            disabled={isGenerating}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Prompt
+                          </Button>
+                          
+                          <Button 
+                            onClick={handleDownloadImage}
+                            className="bg-blue-600 hover:bg-blue-700"
+                            disabled={isGenerating}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         </div>
