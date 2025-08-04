@@ -312,12 +312,6 @@ const VideoClipEditor = () => {
               </Tabs>
 
               <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogTrigger asChild>
-                  <Button className="w-full mt-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add clip from new video
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle className="flex items-center justify-between">
@@ -417,7 +411,17 @@ const VideoClipEditor = () => {
           {currentVideo && (
             <Card>
               <CardHeader>
-                <CardTitle>Video Editor</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Video Editor</CardTitle>
+                  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add clip from new video
+                      </Button>
+                    </DialogTrigger>
+                  </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
