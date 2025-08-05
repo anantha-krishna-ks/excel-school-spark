@@ -190,7 +190,7 @@ const QuizPreview = () => {
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Target className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-2xl font-bold">{quizData.name}</span>
+                <span className="text-2xl font-bold break-words overflow-wrap-anywhere">{quizData.name}</span>
               </div>
               <div className="flex gap-2">
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
