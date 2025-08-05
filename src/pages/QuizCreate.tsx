@@ -415,7 +415,7 @@ const QuizCreate = () => {
               <CardContent className="space-y-4">
                 <div>
                   <div className="text-sm text-gray-500">Quiz Name</div>
-                  <div className="font-medium">{quizName || 'Not specified'}</div>
+                  <div className="font-medium break-words overflow-wrap-anywhere">{quizName || 'Not specified'}</div>
                 </div>
 
                 {selectedGrade && (
