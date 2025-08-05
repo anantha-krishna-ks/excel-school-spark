@@ -186,11 +186,11 @@ const QuizPreview = () => {
         <Card className="mb-8 bg-gradient-to-r from-background to-primary/5 border-primary/20 shadow-lg animate-fade-in">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Target className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-2xl font-bold break-words overflow-wrap-anywhere">{quizData.name}</span>
+                <span className="text-2xl font-bold break-words overflow-wrap-anywhere min-w-0 flex-1">{quizData.name}</span>
               </div>
               <div className="flex gap-2">
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
