@@ -386,8 +386,8 @@ const QuizPreview = () => {
 
       {/* Edit Question Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl bg-gradient-to-br from-background to-primary/5">
-          <DialogHeader className="pb-4">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-gradient-to-br from-background to-primary/5 flex flex-col">
+          <DialogHeader className="pb-4 flex-shrink-0">
             <DialogTitle className="flex items-center gap-3 text-xl">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Edit2 className="w-5 h-5 text-primary" />
@@ -396,7 +396,7 @@ const QuizPreview = () => {
             </DialogTitle>
           </DialogHeader>
           {editingQuestion && (
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto flex-1 pr-2">
               <div>
                 <label className="text-sm font-medium">Question Text</label>
                 <Textarea
@@ -442,15 +442,14 @@ const QuizPreview = () => {
                   rows={2}
                 />
               </div>
-
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveEdit}>Save Changes</Button>
-              </div>
             </div>
           )}
+          <div className="flex justify-end gap-2 pt-4 flex-shrink-0 border-t border-border/20">
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
