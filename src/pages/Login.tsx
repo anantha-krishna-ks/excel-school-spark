@@ -150,19 +150,6 @@ const Login = () => {
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
-
-            {/* Footer Links */}
-            <div className="mt-6 text-center space-y-2">
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-700 hover:underline">
-                Forgot your password?
-              </a>
-              <div className="text-sm text-gray-500">
-                Don't have an account?{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
-                  Contact Administrator
-                </a>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
