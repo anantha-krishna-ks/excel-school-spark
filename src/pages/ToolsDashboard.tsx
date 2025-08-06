@@ -136,7 +136,7 @@ const ToolsDashboard = () => {
       <header className="border-b border-gray-100 px-6 py-3" style={{ backgroundColor: '#3B54A5' }}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <img 
-            src="/lovable-uploads/734bb1ed-9bb4-4713-8f80-f0ea40a1f03e.png" 
+            src="/lovable-uploads/c278e3c9-20de-45b8-a466-41c546111a8a.png" 
             alt="ExcelSchoolAi" 
             className="h-12 w-auto"
           />
