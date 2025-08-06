@@ -138,7 +138,7 @@ const ToolsDashboard = () => {
           <img 
             src="/lovable-uploads/734bb1ed-9bb4-4713-8f80-f0ea40a1f03e.png" 
             alt="ExcelSchoolAi" 
-            className="h-12 w-auto"
+            className="h-10 w-auto"
           />
         </div>
       </header>
