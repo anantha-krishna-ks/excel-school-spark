@@ -142,33 +142,6 @@ const ToolsDashboard = () => {
             <span className="text-blue-600 font-medium">Teacher Tools</span>
           </nav>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/')}
-                className="text-gray-600 hover:text-gray-900 hover:bg-blue-50 transition-colors duration-200"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Role Selection
-              </Button>
-              <div className="flex items-center space-x-3">
-                <img 
-                  src="/lovable-uploads/08e4c437-f2d4-4044-a08b-8900a0c61e0a.png" 
-                  alt="ExcelSchoolAi Logo" 
-                  className="h-12"
-                />
-                <div>
-                  <p className="text-sm text-gray-500">Teacher Dashboard</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-600">Online</span>
-            </div>
-          </div>
         </div>
       </header>
 
