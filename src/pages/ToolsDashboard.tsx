@@ -148,7 +148,10 @@ const ToolsDashboard = () => {
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumbs */}
           <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
-            <Home className="w-4 h-4" />
+            <Home 
+              className="w-4 h-4 cursor-pointer hover:text-blue-600 transition-colors" 
+              onClick={() => navigate('/')}
+            />
             <span className="mx-2">/</span>
             <span className="text-blue-600 font-medium">Teacher Tools</span>
           </nav>
