@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast';
 interface Question {
   id: string;
   text: string;
-  type: 'multiple-choice' | 'true-false' | 'short-answer';
+  type: 'multiple-choice' | 'true-false' | 'short-answer' | 'fill-in-the-blanks';
   options?: string[];
   correctAnswer: string;
   explanation: string;
@@ -44,7 +44,7 @@ const QuizPreview = () => {
   useEffect(() => {
     if (quizData) {
       const mockQuestions: Question[] = [];
-      const questionTypes: Question['type'][] = ['multiple-choice', 'true-false', 'short-answer'];
+      const questionTypes: Question['type'][] = ['multiple-choice', 'true-false', 'short-answer', 'fill-in-the-blanks'];
       
       for (let i = 0; i < quizData.questionCount; i++) {
         const eloIndex = i % quizData.selectedELOs.length;
@@ -65,13 +65,22 @@ const QuizPreview = () => {
         } else if (questionType === 'true-false') {
           options = ['True', 'False'];
           correctAnswer = 'True';
+        } else if (questionType === 'fill-in-the-blanks') {
+          correctAnswer = 'correct word';
         } else {
           correctAnswer = 'Sample answer for short answer question';
         }
 
+        let questionText = '';
+        if (questionType === 'fill-in-the-blanks') {
+          questionText = `Question ${i + 1}: Complete the following sentence related to ${selectedELO.title}. "The key concept of _____ is essential for understanding this topic."`;
+        } else {
+          questionText = `Question ${i + 1}: This is a sample ${questionType} question related to ${selectedELO.title}. What is the correct approach to solve this problem?`;
+        }
+
         mockQuestions.push({
           id: `q-${i + 1}`,
-          text: `Question ${i + 1}: This is a sample ${questionType} question related to ${selectedELO.title}. What is the correct approach to solve this problem?`,
+          text: questionText,
           type: questionType,
           options,
           correctAnswer,
