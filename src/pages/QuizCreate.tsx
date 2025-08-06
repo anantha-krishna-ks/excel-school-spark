@@ -177,7 +177,7 @@ const QuizCreate = () => {
 
   const isFormValid = () => {
     return quizName.trim() && selectedGrade && selectedSubject && selectedChapter && 
-           questionCount && getSelectedELOsCount() > 0;
+           questionCount;
   };
 
   const handleGenerate = async () => {
