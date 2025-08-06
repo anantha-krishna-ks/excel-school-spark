@@ -132,6 +132,17 @@ const ToolsDashboard = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Main Header with Logo */}
+      <header className="bg-white border-b border-gray-100 px-6 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <img 
+            src="/lovable-uploads/3ae3880b-4aa9-49f6-aa10-2a011f8f96d0.png" 
+            alt="ExcelSchoolAi" 
+            className="h-10 w-auto"
+          />
+        </div>
+      </header>
+      
       {/* Header with Breadcrumbs */}
       <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-2">
         <div className="max-w-7xl mx-auto">
