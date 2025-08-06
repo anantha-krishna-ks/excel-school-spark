@@ -133,10 +133,10 @@ const ToolsDashboard = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Main Header with Logo */}
-      <header className="border-b border-gray-100 px-6 py-3" style={{ backgroundColor: '#3B54A5' }}>
+      <header className="bg-white border-b border-gray-100 px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <img 
-            src="/lovable-uploads/734bb1ed-9bb4-4713-8f80-f0ea40a1f03e.png" 
+            src="/lovable-uploads/3ae3880b-4aa9-49f6-aa10-2a011f8f96d0.png" 
             alt="ExcelSchoolAi" 
             className="h-10 w-auto"
           />
