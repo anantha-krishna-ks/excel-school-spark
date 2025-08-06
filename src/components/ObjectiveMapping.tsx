@@ -105,7 +105,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
 
       {/* Beautiful Grid Overview with Dummy Data */}
       <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-xl p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
               <Target className="text-blue-600" size={24} />
@@ -137,6 +137,15 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               {new Set(dummyMappingData.flatMap(item => item.skills)).size}
             </div>
             <div className="text-sm text-orange-700">Unique Skills</div>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <Heart className="text-red-600" size={24} />
+            </div>
+            <div className="text-2xl font-bold text-red-600">
+              {new Set(dummyMappingData.flatMap(item => item.competencies)).size}
+            </div>
+            <div className="text-sm text-red-700">Competencies</div>
           </div>
         </div>
       </div>
