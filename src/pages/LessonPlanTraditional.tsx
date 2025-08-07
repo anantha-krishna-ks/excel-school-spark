@@ -2,8 +2,7 @@ import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Download, Save, Edit, RefreshCw } from 'lucide-react';
-import Header from '@/components/Header';
+import { ArrowLeft, Download, Save, Edit, RefreshCw, ClipboardList } from 'lucide-react';
 import axios from 'axios';
 import config from '@/config';
 import { Dialog, DialogTitle, DialogActions } from '@mui/material';
@@ -189,7 +188,30 @@ const LessonPlanTraditional = () => {
   return (
     <div className="w-full min-h-screen bg-background">
         {loading && <PageLoader text="Please wait..." />}
-      <Header />
+      
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <Button
+            onClick={() => navigate('/lesson-plan-assistant')}
+            variant="ghost"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Lesson Plan Assistant
+          </Button>
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center shadow-lg">
+              <ClipboardList className="text-white" size={24} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Lesson Plan View</h1>
+              <p className="text-sm text-gray-500">Review and download your lesson plan</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
 {saveSuccess && (
      <Dialog
     open={saveSuccess}
@@ -207,16 +229,6 @@ const LessonPlanTraditional = () => {
   </Dialog>
 )}
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Button
-            onClick={() => navigate("/lesson-plan-assistant")}
-            variant="ghost"
-            className="mb-4 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Lesson Plan Repository
-          </Button>
-        </div>  
 
         <div className="flex justify-end gap-2 mb-6">
           <Button
