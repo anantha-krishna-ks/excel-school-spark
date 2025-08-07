@@ -140,6 +140,15 @@ const ToolsDashboard = () => {
             alt="ExcelSchoolAi" 
             className="h-10 w-auto"
           />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/login')}
+            className="text-white hover:bg-white/10 transition-colors"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
         </div>
       </header>
       
