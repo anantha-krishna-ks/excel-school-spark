@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Edit, Eye, Trash2 } from 'lucide-react';
 import Header from '@/components/Header';
+import MainHeader from '@/components/MainHeader';
 import { getGrades, getSubjects, Grade, Subject,getUnitPlanDetails } from './api';
 import { PageLoader } from "@/components/ui/loader"
 
@@ -188,6 +189,7 @@ const LessonPlanAssistant = () => {
       
     <div className="w-full min-h-screen bg-background">
         {loading && <PageLoader text="Please wait..." />}
+      <MainHeader />
       <Header />
       
       <div className="container mx-auto px-4 py-8">
