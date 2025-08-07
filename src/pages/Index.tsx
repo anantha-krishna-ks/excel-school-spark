@@ -34,11 +34,11 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/tools')}
+                onClick={() => navigate('/lesson-plan-assistant')}
                 className="text-gray-600 hover:text-gray-900 hover:bg-blue-50"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Tools
+                Back to Repository
               </Button>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
