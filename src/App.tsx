@@ -27,6 +27,9 @@ import QuizCreate from "./pages/QuizCreate";
 import QuizPreview from "./pages/QuizPreview";
 import QuizDisplay from "./pages/QuizDisplay";
 import VideoClipEditor from "./pages/VideoClipEditor";
+import SessionPlanPreview from "./pages/SessionPlanPreview";
+import SessionPlanOutput from "./pages/SessionPlanOutput";
+import UnitPlanPreview from "./pages/UnitPlanPreview";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +44,16 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/tools" element={<ToolsDashboard />} />
           <Route path="/lesson-plan-assistant" element={<LessonPlanAssistant />} />
+          <Route path="/lesson-plan" element={<Index />} />
+          <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />
+          <Route path="/lesson-plan-output" element={<LessonPlanOutput />} />
+          <Route path="/lesson-plan-traditional" element={<LessonPlanTraditional />} />
+          <Route path="/session/:id/:grade/:subject" element={<SessionList />} />
+          <Route path="/session/:id" element={<SessionList />} />
+          <Route path="/session/create/:lessonId" element={<CreateSession />} />
+          <Route path="/session-plan-preview" element={<SessionPlanPreview />} />
+          <Route path="/session-plan-output" element={<SessionPlanOutput />} />
+          <Route path="/unit-plan-preview" element={<UnitPlanPreview />} />
           <Route path="/exam-assist-prep" element={<ExamAssistPrep />} />
           <Route path="/slide-generator" element={<SlideGenerator />} />
           <Route path="/slide-generator/lesson-plan" element={<SlideGeneratorLessonPlan />} />
@@ -55,12 +68,6 @@ const App = () => (
           <Route path="/quiz-generator/preview/:id" element={<QuizPreview />} />
           <Route path="/quiz-generator/display" element={<QuizDisplay />} />
           <Route path="/question-bundle/:bundleId" element={<QuestionBundlePreview />} />
-          <Route path="/lesson-plan" element={<Index />} />
-          <Route path="/lesson-plan-options" element={<LessonPlanOptions />} />
-          <Route path="/lesson-plan-output" element={<LessonPlanOutput />} />
-          <Route path="/lesson-plan-traditional" element={<LessonPlanTraditional />} />
-          <Route path="/session/:id" element={<SessionList />} />
-          <Route path="/session/create/:lessonId" element={<CreateSession />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

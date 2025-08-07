@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import config from '@/config.js';
 import { ArrowLeft, Home, Video, Upload, Plus, Play, Pause, Download, Trash2, GripVertical, Link, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import axios from 'axios';
+import { PageLoader } from '@/components/ui/loader';
+import { set } from 'date-fns';
 
 interface VideoClip {
   id: string;
@@ -19,6 +23,10 @@ interface VideoClip {
   url?: string;
   file?: File;
   blob?: Blob;
+  videoSrc: string       // URL for previewing the clip
+  backendVideoPath: string // Path for backend processing
+  clipPath: string       // Path to the saved clip file
+  clipFile:string
 }
 
 const VideoClipEditor = () => {
@@ -36,13 +44,18 @@ const VideoClipEditor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalYoutubeUrl, setModalYoutubeUrl] = useState('');
   const [modalActiveTab, setModalActiveTab] = useState<'youtube' | 'upload'>('youtube');
-  const [draggedItem, setDraggedItem] = useState<string | null>(null);
-  const [dragOverItem, setDragOverItem] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleYouTubeLoad = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [backendVideoPath, setBackendVideoPath] = useState('');
+  const [videoSrc, setVideoSrc] = useState('');
+
+ 
+  const BACKEND ="https://ai.excelsoftcorp.com/aiapps/VIDEOTRIM";
+  const handleYouTubeLoad = async() => {
+    setIsLoading(true);
     if (!youtubeUrl) {
       toast.error('Please enter a valid YouTube URL');
       return;
@@ -54,9 +67,25 @@ const VideoClipEditor = () => {
       toast.error('Invalid YouTube URL');
       return;
     }
+    const formData = new FormData();
+    formData.append("youtube_url", youtubeUrl);
+    try{
+      const res = await axios.post(`${BACKEND}/upload`, formData);
+      setBackendVideoPath(res.data.video_path);
+      //const videoUrl = res.data.video_path;
+      //setCurrentVideo(youtubeUrl);
+      setCurrentVideo(`${BACKEND}/video?video_path=${encodeURIComponent(res.data.video_path)}.mp4`);
+      setIsLoading(false);
+      toast.success('YouTube video loaded successfully');
+      setIsModalOpen(false);
+      setModalYoutubeUrl('');
+    }
+    catch(e){
+      setIsLoading(false);
+      toast.error('Failes to load YouTube video');
+    }
     
-    setCurrentVideo(youtubeUrl);
-    toast.success('YouTube video loaded successfully');
+    
   };
 
   const extractYouTubeVideoId = (url: string): string | null => {
@@ -65,19 +94,35 @@ const VideoClipEditor = () => {
     return match ? match[1] : null;
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('video/')) {
+      setIsLoading(true);
       setUploadedFile(file);
       const videoUrl = URL.createObjectURL(file);
-      setCurrentVideo(videoUrl);
-      toast.success('Video file uploaded successfully');
+      const formData = new FormData();
+      formData.append("file", file);
+      try{
+        const res = await axios.post(`${BACKEND}/upload`, formData);
+        setBackendVideoPath(res.data.video_path);
+        setCurrentVideo(`${BACKEND}/video?video_path=${encodeURIComponent(res.data.video_path)}`)        
+        setIsModalOpen(false);
+        setModalYoutubeUrl('');
+        setIsLoading(false);
+        toast.success('Video file uploaded successfully');
+      }
+      catch(e){
+        setIsLoading(false);
+        toast.error('Failed to upload video file');
+      }
+      //setCurrentVideo(videoUrl);
+      
     } else {
       toast.error('Please select a valid video file');
     }
   };
 
-  const handleModalFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleModalFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('video/')) {
       const videoUrl = URL.createObjectURL(file);
@@ -88,9 +133,9 @@ const VideoClipEditor = () => {
     } else {
       toast.error('Please select a valid video file');
     }
-  };
+  };*/
 
-  const handleModalYouTubeLoad = () => {
+  /*const handleModalYouTubeLoad = () => {
     if (!modalYoutubeUrl) {
       toast.error('Please enter a valid YouTube URL');
       return;
@@ -106,7 +151,13 @@ const VideoClipEditor = () => {
     setIsModalOpen(false);
     setModalYoutubeUrl('');
     toast.success('YouTube video loaded successfully');
-  };
+  };*/
+
+  const previewClipInDialog = (clip: VideoClip) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = clip.startTime
+    }
+  }
 
   const handleVideoLoadedMetadata = () => {
     if (videoRef.current) {
@@ -140,7 +191,7 @@ const VideoClipEditor = () => {
     }
   };
 
-  const saveClip = () => {
+  const saveClip = async() => {
     if (!currentVideo) {
       toast.error('No video loaded');
       return;
@@ -150,24 +201,48 @@ const VideoClipEditor = () => {
       toast.error('Invalid trim range');
       return;
     }
+    
+    const formData = new FormData()
+    formData.append('start_time',trimStart.toString())
+    formData.append('end_time', trimEnd.toString())
+    formData.append('video_path', backendVideoPath) // ensure this is the correct path
 
-    const newClip: VideoClip = {
-      id: Date.now().toString(),
-      name: `Clip ${clips.length + 1}`,
-      duration: trimEnd - trimStart,
-      startTime: trimStart,
-      endTime: trimEnd,
-      source: activeTab,
-      url: activeTab === 'youtube' ? youtubeUrl : undefined,
-      file: activeTab === 'upload' ? uploadedFile : undefined,
-    };
-
-    setClips([...clips, newClip]);
-    toast.success('Clip saved successfully');
+    try{
+      setIsLoading(true);
+      const res = await axios.post(`${BACKEND}/saveClip`, formData);
+      const newClip: VideoClip = {
+        id: Date.now().toString(),
+        name: `Clip ${clips.length + 1}`,
+        duration: trimEnd - trimStart,
+        startTime: trimStart,
+        endTime: trimEnd,
+        source: activeTab,
+        url: activeTab === 'youtube' ? youtubeUrl : undefined,
+        file: activeTab === 'upload' ? uploadedFile : undefined,
+        videoSrc,                // <- Current videoSrc
+        backendVideoPath,
+        clipPath: `${BACKEND}/video?video_path=${encodeURIComponent(res.data.clip_path)}`, // <- Path returned from backend
+        clipFile: res.data.clip_path // <- Path to the saved clip file
+      };
+      setClips([...clips, newClip]);
+      setIsLoading(false)
+      toast.success('Clip saved successfully');
+    }
+    catch(e){
+      setIsLoading(false)
+      toast.error('Failed to save clip');
+    }
   };
 
   const deleteClip = (clipId: string) => {
-    setClips(clips.filter(clip => clip.id !== clipId));
+    //setClips(clips.filter(clip => clip.id !== clipId));
+    const updatedClips = clips.filter(clip => clip.id !== clipId)
+
+    const renamedClips = updatedClips.map((clip, index) => ({
+      ...clip,
+      name: "Clip "+(index + 1).toString(), // or use 'id' if that's what you want to rename
+    }));
+    setClips(renamedClips)
     toast.success('Clip deleted');
   };
 
@@ -183,58 +258,31 @@ const VideoClipEditor = () => {
     setClips(newClips);
   };
 
-  const handleDragStart = (e: React.DragEvent, clipId: string) => {
-    setDraggedItem(clipId);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: React.DragEvent, clipId: string) => {
-    e.preventDefault();
-    setDragOverItem(clipId);
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDragLeave = () => {
-    setDragOverItem(null);
-  };
-
-  const handleDrop = (e: React.DragEvent, targetClipId: string) => {
-    e.preventDefault();
-    
-    if (!draggedItem || draggedItem === targetClipId) {
-      setDraggedItem(null);
-      setDragOverItem(null);
-      return;
-    }
-
-    const draggedIndex = clips.findIndex(clip => clip.id === draggedItem);
-    const targetIndex = clips.findIndex(clip => clip.id === targetClipId);
-
-    if (draggedIndex === -1 || targetIndex === -1) return;
-
-    const newClips = [...clips];
-    const [draggedClip] = newClips.splice(draggedIndex, 1);
-    newClips.splice(targetIndex, 0, draggedClip);
-
-    setClips(newClips);
-    setDraggedItem(null);
-    setDragOverItem(null);
-    toast.success('Clip reordered successfully');
-  };
-
-  const handleDragEnd = () => {
-    setDraggedItem(null);
-    setDragOverItem(null);
-  };
-
-  const downloadAllClips = () => {
+  const downloadAllClips = async () => {
     if (clips.length === 0) {
       toast.error('No clips to download');
       return;
     }
+    try{
+      const formData = new FormData();
+      formData.append("clips", JSON.stringify(clips));
+      const res = await axios.post(`${BACKEND}/process`, formData);
+
+      const downloadUrl = `${BACKEND}${res.data.download_url}`;
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = "combined_video.mp4";
+      link.click();
+      toast.success('Download feature would merge and download all clips');
+      setClips([]);
+      setCurrentVideo(null);
+    }
+    catch (e){
+      toast.error('Failed to download clips');
+    }
     
     // In a real implementation, this would use FFmpeg.js or similar to merge clips
-    toast.success('Download feature would merge and download all clips');
+    //toast.success('Download feature would merge and download all clips');
   };
 
   const formatTime = (time: number): string => {
@@ -406,7 +454,7 @@ const VideoClipEditor = () => {
                           />
                           <div className="flex gap-2">
                             <Button
-                              onClick={handleModalYouTubeLoad}
+                              onClick={handleYouTubeLoad}
                               className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
                             >
                               Load Video
@@ -434,7 +482,7 @@ const VideoClipEditor = () => {
                             ref={modalFileInputRef}
                             type="file"
                             accept="video/*"
-                            onChange={handleModalFileUpload}
+                            onChange={handleFileUpload}
                             className="hidden"
                           />
                           <Button
@@ -459,25 +507,33 @@ const VideoClipEditor = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Video Editor</CardTitle>
-                  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add clip from new video
-                      </Button>
-                    </DialogTrigger>
-                  </Dialog>
+                  {/*
+                    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add clip from new video
+                        </Button>
+                      </DialogTrigger>
+                    </Dialog>*/
+                  }
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="relative bg-black rounded-lg overflow-hidden">
+                  <div className="relative bg-black rounded-lg overflow-hidden" style={
+                    {
+                      width:'65%',
+                      marginLeft:'auto',
+                      marginRight:'auto'
+                    }
+                  }>
                     <video
                       ref={videoRef}
                       src={currentVideo}
                       onLoadedMetadata={handleVideoLoadedMetadata}
                       onTimeUpdate={handleTimeUpdate}
-                      className="w-full h-96 object-contain"
+                      className="w-full h-auto max-h-96"
                       controls={false}
                     />
                   </div>
@@ -698,52 +754,32 @@ const VideoClipEditor = () => {
                   {clips.map((clip, index) => (
                     <div
                       key={clip.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, clip.id)}
-                      onDragOver={(e) => handleDragOver(e, clip.id)}
-                      onDragLeave={handleDragLeave}
-                      onDrop={(e) => handleDrop(e, clip.id)}
-                      onDragEnd={handleDragEnd}
-                      className={`bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all cursor-move select-none ${
-                        draggedItem === clip.id 
-                          ? 'opacity-50 scale-95 transform rotate-2' 
-                          : dragOverItem === clip.id 
-                          ? 'border-cyan-400 bg-cyan-50 scale-105' 
-                          : ''
-                      }`}
+                      className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-colors"
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-gray-900 truncate pointer-events-none">{clip.name}</h4>
+                        <h4 className="font-medium text-gray-900 truncate">{clip.name}</h4>
                         <div className="flex items-center gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              moveClip(clip.id, 'up');
-                            }}
+                            onClick={() => moveClip(clip.id, 'up')}
                             disabled={index === 0}
-                            className="h-8 w-8 p-0 cursor-grab active:cursor-grabbing"
-                            onMouseDown={(e) => e.stopPropagation()}
+                            className="h-8 w-8 p-0"
                           >
                             <GripVertical className="w-3 h-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteClip(clip.id);
-                            }}
+                            onClick={() => deleteClip(clip.id)}
                             className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                            onMouseDown={(e) => e.stopPropagation()}
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
                       
-                      <div className="space-y-2 mb-3 text-sm pointer-events-none">
+                      <div className="space-y-2 mb-3 text-sm">
                         <div className="bg-gray-50 rounded p-2">
                           <span className="text-gray-500 text-xs uppercase tracking-wide">Duration</span>
                           <div className="font-mono font-medium text-cyan-600">
@@ -763,17 +799,34 @@ const VideoClipEditor = () => {
                           </div>
                         </div>
                       </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full hover:bg-cyan-50 hover:border-cyan-300 pointer-events-auto"
-                        onClick={(e) => e.stopPropagation()}
-                        onMouseDown={(e) => e.stopPropagation()}
-                      >
-                        <Play className="w-3 h-3 mr-2" />
-                        Preview Clip
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full hover:bg-cyan-50 hover:border-cyan-300"
+                            onClick={() => previewClipInDialog(clip)}
+                          >
+                            <Play className="w-3 h-3 mr-2" />
+                            Preview Clip
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Preview Clip</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <video
+                              src={clip.clipPath}
+                              className="w-full rounded-lg"
+                              controls
+                            />
+                            <p className="text-sm text-gray-600">
+                              Clip: {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
+                            </p>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   ))}
                 </div>
@@ -788,25 +841,14 @@ const VideoClipEditor = () => {
                           {clips.length} clip{clips.length !== 1 ? 's' : ''} will be merged into one video
                         </p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          onClick={() => toast.info('Preview functionality coming soon!')}
-                          className="border-blue-300 text-blue-600 hover:bg-blue-50 px-6 py-3"
-                          size="lg"
-                        >
-                          <Play className="w-4 h-4 mr-2" />
-                          Preview Final Output
-                        </Button>
-                        <Button
-                          onClick={downloadAllClips}
-                          className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-3"
-                          size="lg"
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Download All
-                        </Button>
-                      </div>
+                      <Button
+                        onClick={downloadAllClips}
+                        className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-3"
+                        size="lg"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download All
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -815,6 +857,9 @@ const VideoClipEditor = () => {
           </CardContent>
         </Card>
       </div>
+      {isLoading && (
+        <PageLoader text="Loading ....." />
+      )}
     </div>
   );
 };

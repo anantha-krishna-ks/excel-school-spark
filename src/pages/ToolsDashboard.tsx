@@ -1,49 +1,61 @@
-import { BookOpen, Users, ClipboardList, UserCheck, BarChart3, Home, GraduationCap, Presentation, Video } from 'lucide-react';
+import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap, Presentation, Video } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import MainHeader from '@/components/MainHeader';
+import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const ToolsDashboard = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     navigate('/login');
+
   };
 
-  const stats = [
-    {
-      icon: BookOpen,
-      value: '24',
-      label: 'Active Lessons',
-      trend: '+12% this week',
-      trendColor: 'text-green-600',
-      bgColor: 'bg-blue-500'
-    },
-    {
-      icon: Users,
-      value: '342',
-      label: 'Students',
-      trend: '+5% this month',
-      trendColor: 'text-green-600',
-      bgColor: 'bg-green-500'
-    },
-    {
-      icon: ClipboardList,
-      value: '12',
-      label: 'Pending Grades',
-      trend: 'Due today',
-      trendColor: 'text-orange-600',
-      bgColor: 'bg-purple-500'
-    },
-    {
-      icon: BarChart3,
-      value: '94%',
-      label: 'Attendance',
-      trend: 'Above average',
-      trendColor: 'text-green-600',
-      bgColor: 'bg-orange-500'
-    }
-  ];
+  // const stats = [
+  //   {
+  //     icon: BookOpen,
+  //     value: '24',
+  //     label: 'Active Lessons',
+  //     trend: '+12% this week',
+  //     trendColor: 'text-green-600',
+  //     bgColor: 'bg-blue-500'
+  //   },
+  //   {
+  //     icon: Users,
+  //     value: '342',
+  //     label: 'Students',
+  //     trend: '+5% this month',
+  //     trendColor: 'text-green-600',
+  //     bgColor: 'bg-green-500'
+  //   },
+  //   {
+  //     icon: ClipboardList,
+  //     value: '12',
+  //     label: 'Pending Grades',
+  //     trend: 'Due today',
+  //     trendColor: 'text-orange-600',
+  //     bgColor: 'bg-purple-500'
+  //   },
+  //   {
+  //     icon: BarChart3,
+  //     value: '94%',
+  //     label: 'Attendance',
+  //     trend: 'Above average',
+  //     trendColor: 'text-green-600',
+  //     bgColor: 'bg-orange-500'
+  //   }
+  // ];
 
   const tools = [
     {
@@ -137,21 +149,87 @@ const ToolsDashboard = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <MainHeader />
-      
+      {/* Main Header with Logo */}
+      <header className="border-b border-gray-100 px-6 py-3" style={{ backgroundColor: '#3B54A5' }}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <img 
+            src="/lovable-uploads/c278e3c9-20de-45b8-a466-41c546111a8a.png" 
+            alt="ExcelSchoolAi" 
+            className="h-10 w-auto"
+          />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 hover:text-white border border-white/20 hover:border-white/40 transition-all duration-200"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to logout? You will be redirected to the login page.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleLogout} className="bg-red-600 hover:bg-red-700">
+                  Yes, Logout
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+        </div>
+
+      </header>
       {/* Header with Breadcrumbs */}
-      <header className="bg-white shadow-sm border-b border-gray-200 px-6 pt-2 pb-1">
+      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumbs */}
           <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
-            <Home 
-              className="w-4 h-4 cursor-pointer hover:text-blue-600 transition-colors" 
-              onClick={() => navigate('/')}
-            />
+            <Home className="w-4 h-4" />
             <span className="mx-2">/</span>
             <span className="text-blue-600 font-medium">Teacher Tools</span>
           </nav>
           
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              {/* <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="text-gray-600 hover:text-gray-900 hover:bg-blue-50 transition-colors duration-200"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Role Selection
+              </Button> */}
+              {/* <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/1ea2ca7f-c43c-4495-a861-38cfaec2e5b5.png" 
+                alt="Excel School AI" 
+                className="h-12 w-auto"
+              />
+            </div> */}
+              {/* <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <GraduationCap className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Excel School AI</h1>
+                  <p className="text-sm text-gray-500">Teacher Dashboard</p>
+                </div>
+              </div> */}
+            </div>
+            {/* <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-600">Online</span>
+            </div> */}
+          </div>
         </div>
       </header>
 
@@ -166,8 +244,31 @@ const ToolsDashboard = () => {
             Powerful AI-assisted tools designed to enhance your educational management experience
           </p>
           
+          
         </div>
 
+        {/* Stats Grid */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-xl p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
+                    <IconComponent className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                  <div className="text-sm text-gray-600">{stat.label}</div>
+                  <div className={`text-xs ${stat.trendColor} flex items-center gap-1`}>
+                    {stat.trend}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div> */}
 
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -195,6 +296,37 @@ const ToolsDashboard = () => {
           })}
         </div>
 
+        {/* Quick Actions
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+            <div className="flex items-center gap-2 text-green-600 text-sm">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Ready to use
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {quickActions.map((action, index) => {
+              const IconComponent = action.icon;
+              return (
+                <div 
+                  key={index}
+                  onClick={() => navigate(action.route)}
+                  className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <div className={`w-10 h-10 ${action.color} rounded-lg flex items-center justify-center`}>
+                    <IconComponent className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">{action.title}</div>
+                    <div className="text-sm text-gray-500">{action.description}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div> */}
       </div>
     </div>
   );
