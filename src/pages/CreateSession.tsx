@@ -147,61 +147,58 @@ const CreateSession = () => {
     }
   }
   return (
-    <div className="w-full min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {loading && <PageLoader text="Please wait..." />}
+      
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="text-gray-600 hover:text-gray-900 hover:bg-blue-50"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Sessions
+              </Button>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <Target className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Create Session</h1>
+                  <p className="text-sm text-gray-500">Design Individual Learning Sessions</p>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-medium text-gray-900">Grade {lessonPlan.grade}</div>
+              <div className="text-sm text-gray-500">{lessonPlan.subject}</div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/')} className="cursor-pointer">
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/lesson-plan-assistant')} className="cursor-pointer">
-                Lesson Plan Repository
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate(-1)} className="cursor-pointer">
-                Sessions
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Create Session</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
 
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Sessions
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Create New Session</h1>
-            <div className="flex items-center gap-6 mt-2 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-blue-600" />
-                <span className="font-medium">Subject:</span> {lessonPlan.subject}
-              </div>
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-green-600" />
-                <span className="font-medium">Topic:</span> {lessonPlan.title}
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-purple-600" />
-                <span className="font-medium">Class:</span> Grade {lessonPlan.grade}
+        {/* Session Info & Content */}
+        <div className="mb-8">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{lessonPlan.title}</h2>
+              <p className="text-gray-600 mb-4">Create a new session for this lesson plan</p>
+              <div className="flex gap-4 text-sm text-gray-500">
+                <span className="flex items-center gap-1">
+                  <BookOpen className="h-4 w-4" />
+                  Session Creation
+                </span>
+                <span className="flex items-center gap-1">
+                  <Users className="h-4 w-4" />
+                  Grade {lessonPlan.grade}
+                </span>
               </div>
             </div>
           </div>
