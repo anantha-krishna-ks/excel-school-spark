@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, Edit, Eye, Trash } from 'lucide-react';
+import { Search, Plus, Edit, Eye, Trash, ArrowLeft, BookOpen } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import Header from '@/components/Header';
 import MainHeader from '@/components/MainHeader';
@@ -212,10 +212,36 @@ const LessonPlanAssistant = () => {
       };
 
   return (
-    
-    <div className="w-full min-h-screen bg-background">
-        {loading && <PageLoader text="Please wait..." />}
-      <Header/>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {loading && <PageLoader text="Please wait..." />}
+      
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/tools')}
+                className="text-gray-600 hover:text-gray-900 hover:bg-blue-50"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Tools
+              </Button>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <BookOpen className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Lesson Plan Assistant</h1>
+                  <p className="text-sm text-gray-500">Manage & Create Comprehensive Lesson Plans</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-start mb-8">
