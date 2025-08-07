@@ -788,14 +788,25 @@ const VideoClipEditor = () => {
                           {clips.length} clip{clips.length !== 1 ? 's' : ''} will be merged into one video
                         </p>
                       </div>
-                      <Button
-                        onClick={downloadAllClips}
-                        className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-3"
-                        size="lg"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download All
-                      </Button>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => toast.info('Preview functionality coming soon!')}
+                          className="border-blue-300 text-blue-600 hover:bg-blue-50 px-6 py-3"
+                          size="lg"
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Preview Final Output
+                        </Button>
+                        <Button
+                          onClick={downloadAllClips}
+                          className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-3"
+                          size="lg"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Download All
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
