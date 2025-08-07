@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import Header from '@/components/Header';
+import MainHeader from '@/components/MainHeader';
 import MainStepper from '@/components/MainStepper';
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
 
   return (
     <div className="w-full min-h-screen bg-background">
+      <MainHeader />
       <Header />
       <MainStepper
         board={board}
