@@ -1,6 +1,6 @@
 import { useState , useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft, Eye, Download, FileText, FileSpreadsheet, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft, Eye, Download, FileText, FileSpreadsheet, MoreHorizontal, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -228,9 +228,14 @@ const QuizListing = () => {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Tools
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Quiz Generator</h1>
-                <p className="text-sm text-gray-500">Manage and create interactive quizzes</p>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <ClipboardList className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Quiz Generator</h1>
+                  <p className="text-sm text-gray-500">Manage and create interactive quizzes</p>
+                </div>
               </div>
             </div>
             <Button 
