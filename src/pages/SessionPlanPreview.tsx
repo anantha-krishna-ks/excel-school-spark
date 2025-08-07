@@ -1,77 +1,191 @@
-import React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { useLocation,useNavigate } from 'react-router-dom';
-import CloseIcon from '@mui/icons-material/Close';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import LinkIcon from '@mui/icons-material/Link';
-import axios from 'axios';
-import config from '@/config';
-import { ArrowLeft, BookOpen, Eye } from 'lucide-react';
-import {
-  Container,
-  Paper,
-  Typography,
-  Box,
-  Grid,
-  Link,
-  Divider,
-  TextField,
-  IconButton,
-  Chip,
-  Alert,
-  Collapse,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  CircularProgress as MuiCircularProgress,
-  CardMedia,
-  Tooltip
-} from '@mui/material';
+import { ArrowLeft, BookOpen, Eye, Target, Clock, Users, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  Edit as EditIcon, 
-  Save as SaveIcon, 
-  Delete as DeleteIcon, 
-  Add as AddIcon, 
-  PlayArrow as PlayArrowIcon,
-  ContentCut as ContentCutIcon,
-  Download as DownloadIcon
-} from '@mui/icons-material';
-import { CircularProgress } from '@mui/material';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+  CircularProgress,
+} from '@mui/material';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+
+// Components for better organization
+const SessionHeader = ({ navigate, downloadPDF, loading }) => (
+  <header className="bg-background/80 backdrop-blur-sm border-b border-border/50 px-6 py-6">
+    <div className="max-w-7xl mx-auto">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="hover:bg-primary/10 transition-all duration-200"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Sessions
+          </Button>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Eye className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                Session Preview
+              </h1>
+              <p className="text-muted-foreground">Review & Finalize Session Plan</p>
+            </div>
+          </div>
+        </div>
+        <Button
+          onClick={downloadPDF}
+          disabled={loading}
+          className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200"
+        >
+          {loading ? (
+            <CircularProgress size={16} className="mr-2" />
+          ) : (
+            <PictureAsPdfIcon className="mr-2" style={{ width: 16, height: 16 }} />
+          )}
+          {loading ? 'Generating...' : 'Download PDF'}
+        </Button>
+      </div>
+    </div>
+  </header>
+);
+
+const SessionMetadata = ({ plan }) => (
+  <Card className="mb-6 bg-gradient-to-r from-background to-primary/5 border-primary/20">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-3 text-2xl">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Target className="w-5 h-5 text-primary" />
+        </div>
+        {plan?.structuredData?.title || 'Untitled Session'}
+      </CardTitle>
+      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <BookOpen className="w-4 h-4" />
+          <span>Grade: {plan?.structuredData?.metadata?.grade || 'Not specified'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4" />
+          <span>Subject: {plan?.structuredData?.metadata?.subject || 'Not specified'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4" />
+          <Badge variant="secondary" className="bg-primary/10 text-primary">
+            {plan?.structuredData?.metadata?.duration || 'Not specified'}
+          </Badge>
+        </div>
+      </div>
+    </CardHeader>
+  </Card>
+);
+
+const LearningObjectives = ({ objectives }) => (
+  <Card className="mb-6">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2 text-xl">
+        <Target className="w-5 h-5 text-primary" />
+        Learning Objectives
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      {objectives?.length > 0 ? (
+        <ul className="space-y-2">
+          {objectives.map((obj, i) => (
+            <li key={i} className="flex items-start gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+              <span className="text-foreground">{obj}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-muted-foreground">No learning objectives available</p>
+      )}
+    </CardContent>
+  </Card>
+);
+
+const Materials = ({ materials }) => (
+  <Card className="mb-6">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2 text-xl">
+        🧪 Materials
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      {materials?.length > 0 ? (
+        <div className="space-y-3">
+          {materials.map((mat, idx) => (
+            <div key={idx} className="border border-border/50 rounded-lg p-3 bg-muted/20">
+              <div className="font-medium text-foreground">
+                {mat.name || 'Unnamed material'}
+                {mat.quantity && <span className="text-muted-foreground"> — {mat.quantity}</span>}
+              </div>
+              {mat.notes && (
+                <p className="text-sm text-muted-foreground mt-1">{mat.notes}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground">No materials added</p>
+      )}
+    </CardContent>
+  </Card>
+);
+
+const KeyVocabulary = ({ vocabulary }) => (
+  <Card className="mb-6">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2 text-xl">
+        🗣️ Key Vocabulary
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      {vocabulary?.length > 0 ? (
+        <div className="space-y-4">
+          {vocabulary.map((word, idx) => (
+            <div key={idx} className="border border-border/50 rounded-lg p-4 bg-gradient-to-r from-background to-secondary/5">
+              <div className="font-semibold text-foreground text-lg">
+                {word.term || 'Untitled Term'}
+              </div>
+              {word.definition && (
+                <p className="text-muted-foreground mt-1">{word.definition}</p>
+              )}
+              {word.example && (
+                <div className="mt-2 p-2 bg-primary/5 rounded border border-primary/20">
+                  <span className="font-medium text-primary">Example: </span>
+                  <span className="text-foreground italic">{word.example}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground">No vocabulary terms available</p>
+      )}
+    </CardContent>
+  </Card>
+);
 
 const SessionPlanPreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    selectedLessonPlan
-  } = location.state || {};
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [iframeUrl, setIframeUrl] = useState('');
-  const [loadingPDF, setLoadingPDF] = useState(false);
-  const planRef = useRef(null);
-  React.useEffect(() => {
-      if (selectedLessonPlan) {
-          setSelectedPlan(selectedLessonPlan);
-      } 
-    });
-  const [failedPreviewImages, setFailedPreviewImages] = useState(new Set());
-  const handleOpenDialog = (url) => {
-    setIframeUrl(url);
-    setDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setIframeUrl('');
-  };
-
-  const sessionPlanRef = useRef<HTMLDivElement>(null);
+  const { selectedLessonPlan } = location.state || {};
+  const [selectedPlan, setSelectedPlan] = useState(selectedLessonPlan || null);
   const [loading, setLoading] = useState(false);
+  const sessionPlanRef = useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (selectedLessonPlan) {
+      setSelectedPlan(selectedLessonPlan);
+    }
+  }, [selectedLessonPlan]);
 
   const downloadPDF = async () => {
     setLoading(true);
@@ -122,409 +236,278 @@ const SessionPlanPreview = () => {
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate(-1)}
-                  className="text-gray-600 hover:text-gray-900 hover:bg-blue-50"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Sessions
-                </Button>
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-orange-800 rounded-xl flex items-center justify-center shadow-lg">
-                    <Eye className="text-white" size={24} />
-                  </div>
-                  <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Session Preview</h1>
-                    <p className="text-sm text-gray-500">Review & Finalize Session Plan</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Button
-                  onClick={downloadPDF}
-                  disabled={loading}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  {loading ? (
-                    <CircularProgress size={16} className="mr-2" />
-                  ) : (
-                    <PictureAsPdfIcon className="mr-2" style={{ width: 16, height: 16 }} />
-                  )}
-                  {loading ? 'Generating...' : 'Download PDF'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
-        
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-7xl mx-auto space-y-6" ref={sessionPlanRef}>
-            {selectedPlan ? (
-              <Box sx={{ p: 1, background: '#fff' }}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  {selectedPlan?.structuredData?.title}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, '& .MuiTypography-root': { display: 'inline' }, mb: 1, '& p': { display: 'none' } }}>
-                  <Typography variant="subtitle2" color="textSecondary" component="span">
-                    Grade: {selectedPlan?.structuredData?.metadata?.grade || 'Not specified'}
-                  </Typography>
-                  <Typography variant="subtitle2" color="textSecondary" component="span">
-                    • Subject: {selectedPlan?.structuredData?.metadata?.subject || 'Not specified'}
-                  </Typography>
-                  <Typography variant="subtitle2" color="textSecondary" component="span">
-                    • <span>Duration: </span>
-                    <Box component="span" fontWeight={600} color="text.primary">
-                      {selectedPlan?.structuredData?.metadata?.duration || 'Not specified'}
-                    </Box>
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
-                    🎯 Learning Objectives
-                  </Typography>
-                  {selectedPlan.structuredData.learningObjectives?.length > 0 ? (
-                    <ul style={{ paddingLeft: '1.2rem' }}>
-                      {selectedPlan.structuredData.learningObjectives.map((obj, i) => (
-                        <li key={i}><Typography variant="body2">{obj}</Typography></li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <Typography color="text.secondary">No learning objectives available</Typography>
-                  )}
-                </Box>
-
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
-                    🧪 Materials
-                  </Typography>
-                  {selectedPlan.structuredData.materials?.length > 0 ? (
-                    <Box component="ul" sx={{ pl: 3 }}>
-                      {selectedPlan.structuredData.materials.map((mat, idx) => (
-                        <li key={idx}>
-                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                            {mat.name || 'Unnamed material'} {mat.quantity && `— ${mat.quantity}`}
-                          </Typography>
-                          {mat.notes && (
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                              {mat.notes}
-                            </Typography>
-                          )}
-                        </li>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography color="text.secondary">No materials added</Typography>
-                  )}
-                </Box>
-
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
-                    🗣️ Key Vocabulary
-                  </Typography>
-                  {selectedPlan.structuredData.keyVocabulary?.length > 0 ? (
-                    <Box component="ul" sx={{ pl: 3 }}>
-                      {selectedPlan.structuredData.keyVocabulary.map((word, idx) => (
-                        <li key={idx} style={{ marginBottom: '1.5rem' }}>
-                          <Typography variant="body1" sx={{ mb: 0.5 }}>
-                            <strong>{word.term || 'Untitled Term'}</strong>
-                            {word.definition && `: ${word.definition}`}
-                          </Typography>
-                          {word.example && (
-                            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.95rem', lineHeight: 1.5, fontStyle: 'italic' }}>
-                              <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>Example: </Box>
-                              {word.example}
-                            </Typography>
-                          )}
-                        </li>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography color="text.secondary">No vocabulary terms available</Typography>
-                  )}
-                </Box>
-
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+      <SessionHeader navigate={navigate} downloadPDF={downloadPDF} loading={loading} />
+      
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="space-y-6" ref={sessionPlanRef}>
+          {selectedPlan ? (
+            <div className="bg-background p-6 rounded-lg shadow-sm">
+              <SessionMetadata plan={selectedPlan} />
+              <LearningObjectives objectives={selectedPlan.structuredData?.learningObjectives} />
+              <Materials materials={selectedPlan.structuredData?.materials} />
+              <KeyVocabulary vocabulary={selectedPlan.structuredData?.keyVocabulary} />
+              
+              {/* Assessment */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     📝 Assessment
-                  </Typography>
-
-                  {selectedPlan.structuredData.assessment?.description ? (
-                    <Typography variant="body1" sx={{ mb: 1 }}>
-                      {selectedPlan.structuredData.assessment.description}
-                    </Typography>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.assessment?.description ? (
+                    <p className="text-foreground mb-4">{selectedPlan.structuredData.assessment.description}</p>
                   ) : (
-                    <Typography color="text.secondary" sx={{ mb: 1 }}>
-                      No assessment description provided
-                    </Typography>
+                    <p className="text-muted-foreground mb-4">No assessment description provided</p>
                   )}
-
-                  {selectedPlan.structuredData.assessment?.successCriteria?.length > 0 && (
-                    <Box sx={{ mt: 1 }}>
-                      <Typography variant="subtitle2" sx={{ mb: 1 }}>Success Criteria:</Typography>
-                      <Box component="ul" sx={{ pl: 3, m: 0, listStyle: 'disc' }}>
+                  
+                  {selectedPlan.structuredData?.assessment?.successCriteria?.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2">Success Criteria:</h4>
+                      <ul className="space-y-1">
                         {selectedPlan.structuredData.assessment.successCriteria.map((criteria, index) => (
-                          <Box component="li" key={index} sx={{ mb: 0.5 }}>
-                            <Typography variant="body2">{criteria}</Typography>
-                          </Box>
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                            <span className="text-foreground">{criteria}</span>
+                          </li>
                         ))}
-                      </Box>
-                    </Box>
+                      </ul>
+                    </div>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
+              {/* Differentiation */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     ♿ Differentiation
-                  </Typography>
-
-                  {selectedPlan.structuredData.differentiation?.support ? (
-                    <Typography variant="body1">
-                      {selectedPlan.structuredData.differentiation.support}
-                    </Typography>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.differentiation?.support ? (
+                    <p className="text-foreground">{selectedPlan.structuredData.differentiation.support}</p>
                   ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No support strategies defined
-                    </Typography>
+                    <p className="text-muted-foreground">No support strategies defined</p>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1.5 }}>
+              {/* Introduction */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     🚀 Introduction
-                  </Typography>
-
-                  {selectedPlan.structuredData.lessonFlow?.introduction ? (
-                    <>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.lessonFlow?.introduction ? (
+                    <div className="space-y-3">
                       {selectedPlan.structuredData.lessonFlow.introduction.hook && (
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Hook:</strong> {selectedPlan.structuredData.lessonFlow.introduction.hook}
-                        </Typography>
+                        <div className="border border-border/50 rounded-lg p-3 bg-muted/20">
+                          <span className="font-medium">Hook: </span>
+                          <span className="text-foreground">{selectedPlan.structuredData.lessonFlow.introduction.hook}</span>
+                        </div>
                       )}
                       {selectedPlan.structuredData.lessonFlow.introduction.priorKnowledge && (
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Prior Knowledge:</strong> {selectedPlan.structuredData.lessonFlow.introduction.priorKnowledge}
-                        </Typography>
+                        <div className="border border-border/50 rounded-lg p-3 bg-muted/20">
+                          <span className="font-medium">Prior Knowledge: </span>
+                          <span className="text-foreground">{selectedPlan.structuredData.lessonFlow.introduction.priorKnowledge}</span>
+                        </div>
                       )}
                       {selectedPlan.structuredData.lessonFlow.introduction.duration && (
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Duration:</strong> {selectedPlan.structuredData.lessonFlow.introduction.duration}
-                        </Typography>
+                        <div className="border border-border/50 rounded-lg p-3 bg-muted/20">
+                          <span className="font-medium">Duration: </span>
+                          <span className="text-foreground">{selectedPlan.structuredData.lessonFlow.introduction.duration}</span>
+                        </div>
                       )}
-                    </>
+                    </div>
                   ) : (
-                    <Typography variant="body2" color="textSecondary">
-                      No introduction provided.
-                    </Typography>
+                    <p className="text-muted-foreground">No introduction provided.</p>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
+              {/* Activities */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     🧩 Activities
-                  </Typography>
-
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
                   {selectedPlan?.structuredData?.lessonFlow?.activities?.length > 0 ? (
-                    selectedPlan.structuredData.lessonFlow.activities.map((act, idx) => (
-                      <Box key={idx} sx={{ mb: 3, pl: 2, borderLeft: '4px solid #eee', backgroundColor: '#fafafa', borderRadius: 1, p: 2 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1, color: '#1976d2' }}>
-                          {act.title || `Activity ${idx + 1}`}
-                        </Typography>
+                    <div className="space-y-6">
+                      {selectedPlan.structuredData.lessonFlow.activities.map((act, idx) => (
+                        <div key={idx} className="border-l-4 border-primary/50 bg-gradient-to-r from-background to-primary/5 rounded-lg p-4">
+                          <h4 className="text-lg font-semibold text-primary mb-3">
+                            {act.title || `Activity ${idx + 1}`}
+                          </h4>
 
-                        {act.duration && (
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                            <strong>Duration:</strong> {act.duration} minutes
-                          </Typography>
-                        )}
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                            {act.duration && (
+                              <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {act.duration} minutes
+                                </span>
+                              </div>
+                            )}
+                            {act.grouping && (
+                              <div className="flex items-center gap-2">
+                                <Users className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {act.grouping}
+                                </span>
+                              </div>
+                            )}
+                            {act.materials && Array.isArray(act.materials) && act.materials.length > 0 && (
+                              <div className="flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {act.materials.join(', ')}
+                                </span>
+                              </div>
+                            )}
+                          </div>
 
-                        {act.grouping && (
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                            <strong>Grouping:</strong> {act.grouping}
-                          </Typography>
-                        )}
-
-                        {act.materials && Array.isArray(act.materials) && act.materials.length > 0 && (
-                          <Typography variant="body2" sx={{ mb: 1 }}>
-                            <strong>Materials:</strong> {act.materials.join(', ')}
-                          </Typography>
-                        )}
-
-                        {act.objective && (
-                          <Typography variant="body2" sx={{ mb: 1 }}>
-                            <strong>Objective:</strong> {act.objective}
-                          </Typography>
-                        )}
-
-                        {act.description && act.description.trim() !== '' && (
-                          <Typography variant="body2" sx={{ mb: 1 }}>
-                            <strong>Description:</strong> {act.description}
-                          </Typography>
-                        )}
-
-                        {act.steps && Array.isArray(act.steps) && act.steps.length > 0 && act.steps.some(step => step.trim() !== '') && (
-                          <Box sx={{ mb: 2 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                              Steps:
-                            </Typography>
-                            <Box component="ol" sx={{ pl: 3, mt: 0.5 }}>
-                              {act.steps.filter(step => step.trim() !== '').map((step, stepIndex) => (
-                                <li key={stepIndex} style={{ marginBottom: '4px' }}>
-                                  <Typography variant="body2">{step}</Typography>
-                                </li>
-                              ))}
-                            </Box>
-                          </Box>
-                        )}
-
-                        {act.teacherNotes && act.teacherNotes.trim() !== '' && (
-                          <Typography 
-                            variant="body2" 
-                            sx={{ 
-                              mt: 1, 
-                              fontStyle: 'italic',
-                              backgroundColor: '#fff3cd',
-                              p: 1.5,
-                              borderRadius: 1,
-                              border: '1px solid #ffeaa7'
-                            }}
-                          >
-                            <strong>📝 Teacher Notes:</strong> {act.teacherNotes}
-                          </Typography>
-                        )}
-                      </Box>
-                    ))
-                  ) : (
-                    <Typography color="text.secondary">No activities available.</Typography>
-                  )}
-                </Box>
-
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2, mt: 4 }}>
-                  🌍 Real World Examples
-                </Typography>
-
-                {Array.isArray(selectedPlan?.structuredData?.realWorldExamples) && selectedPlan.structuredData.realWorldExamples.length > 0 ? (
-                  <Grid container spacing={2}>
-                    {selectedPlan.structuredData.realWorldExamples.map((ex, idx) => (
-                      <Grid item xs={12} key={idx}>
-                        <Box
-                          sx={{
-                            p: 2,
-                            border: '1px solid #ddd',
-                            borderRadius: 2,
-                            height: '100%',
-                            bgcolor: 'background.paper',
-                            boxShadow: 1
-                          }}
-                        >
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                            {ex.example || 'No example'}
-                          </Typography>
-                          {ex.explanation && (
-                            <Typography variant="body2" color="text.secondary">
-                              {ex.explanation}
-                            </Typography>
+                          {act.objective && (
+                            <div className="mb-3">
+                              <span className="font-medium">Objective: </span>
+                              <span className="text-foreground">{act.objective}</span>
+                            </div>
                           )}
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">No real world examples added yet</Typography>
-                )}
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
-                    💬 Discussion Questions
-                  </Typography>
+                          {act.description && act.description.trim() !== '' && (
+                            <div className="mb-3">
+                              <span className="font-medium">Description: </span>
+                              <span className="text-foreground">{act.description}</span>
+                            </div>
+                          )}
 
-                  {selectedPlan.structuredData.discussionQuestions?.length > 0 ? (
-                    selectedPlan.structuredData.discussionQuestions.map((dq, index) => (
-                      <Box key={index} sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                          Q{index + 1}: {dq.question}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
-                          <strong>Purpose:</strong> {dq.purpose}
-                        </Typography>
-                      </Box>
-                    ))
+                          {act.steps && Array.isArray(act.steps) && act.steps.length > 0 && act.steps.some(step => step.trim() !== '') && (
+                            <div className="mb-4">
+                              <h5 className="font-medium mb-2">Steps:</h5>
+                              <ol className="list-decimal list-inside space-y-1 pl-4">
+                                {act.steps.filter(step => step.trim() !== '').map((step, stepIndex) => (
+                                  <li key={stepIndex} className="text-foreground text-sm">{step}</li>
+                                ))}
+                              </ol>
+                            </div>
+                          )}
+
+                          {act.teacherNotes && act.teacherNotes.trim() !== '' && (
+                            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                              <span className="font-medium">📝 Teacher Notes: </span>
+                              <span className="text-foreground italic">{act.teacherNotes}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   ) : (
-                    <Typography variant="body2" color="textSecondary">No discussion questions available.</Typography>
+                    <p className="text-muted-foreground">No activities available.</p>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
+              {/* Real World Examples */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    🌍 Real World Examples
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {Array.isArray(selectedPlan?.structuredData?.realWorldExamples) && selectedPlan.structuredData.realWorldExamples.length > 0 ? (
+                    <div className="grid gap-4">
+                      {selectedPlan.structuredData.realWorldExamples.map((ex, idx) => (
+                        <div key={idx} className="border border-border/50 rounded-lg p-4 bg-gradient-to-r from-background to-secondary/5">
+                          <h4 className="font-semibold text-foreground mb-2">
+                            {ex.example || 'No example'}
+                          </h4>
+                          {ex.explanation && (
+                            <p className="text-muted-foreground">{ex.explanation}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">No real world examples added yet</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Discussion Questions */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    💬 Discussion Questions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.discussionQuestions?.length > 0 ? (
+                    <div className="space-y-4">
+                      {selectedPlan.structuredData.discussionQuestions.map((dq, index) => (
+                        <div key={index} className="border border-border/50 rounded-lg p-4 bg-muted/20">
+                          <h4 className="font-medium text-foreground mb-2">
+                            Q{index + 1}: {dq.question}
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            <span className="font-medium">Purpose:</span> {dq.purpose}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">No discussion questions available.</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Current Affairs */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     📰 Current Affairs
-                  </Typography>
-
-                  {((selectedPlan.structuredData.currentAffairs || selectedPlan.structuredData.additionalSections?.currentAffairs)?.length > 0) ? (
-                    <Grid container spacing={3}>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {((selectedPlan.structuredData?.currentAffairs || selectedPlan.structuredData?.additionalSections?.currentAffairs)?.length > 0) ? (
+                    <div className="grid gap-4">
                       {(selectedPlan.structuredData.currentAffairs || selectedPlan.structuredData.additionalSections?.currentAffairs || []).map((item, index) => (
-                        <Grid item xs={12} key={item.url || index}>
-                          <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: 3 }}>
-                            <Link href={item.url} target="_blank" rel="noopener noreferrer" underline="hover" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'none' } }}>
-                              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'inherit' }}>
-                                {item.title}
-                              </Typography>
-                            </Link>
+                        <div key={item.url || index} className="border border-border/50 rounded-lg p-4 bg-gradient-to-r from-background to-primary/5 hover:shadow-md transition-shadow">
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                            <h4 className="font-semibold text-primary hover:text-primary/80 mb-2">
+                              {item.title}
+                            </h4>
                             {item.snippet && (
-                              <Typography variant="body2" sx={{ mt: 1 }}>
-                                {item.snippet}
-                              </Typography>
+                              <p className="text-muted-foreground text-sm mb-2">{item.snippet}</p>
                             )}
                             {item.date && (
-                              <Typography variant="caption" color="text.disabled" sx={{ mt: 1, display: 'block' }}>
-                                {item.date}
-                              </Typography>
+                              <p className="text-xs text-muted-foreground">{item.date}</p>
                             )}
-                          </Paper>
-                        </Grid>
+                          </a>
+                        </div>
                       ))}
-                    </Grid>
+                    </div>
                   ) : (
-                    <Typography variant="body2" color="text.secondary" sx={{ pl: 1 }}>
-                      No current affairs available
-                    </Typography>
+                    <p className="text-muted-foreground">No current affairs available</p>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ 
-                    fontWeight: 600, 
-                    mb: 3, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1.5,
-                    color: 'black',
-                    '& span': {
-                      fontSize: '1.5rem',
-                      lineHeight: 1
-                    }
-                  }}>
-                    <span>🎬</span>
-                    Educational Videos
-                  </Typography>
-
-                  {selectedPlan.structuredData.educationalVideos?.length > 0 ? (
-                    <Box
-                      sx={{
-                        display: 'grid',
-                        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-                        gap: 2,
-                        width: '100%',
-                        justifyItems: 'center',
-                      }}
-                    >
+              {/* Educational Videos */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    🎬 Educational Videos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.educationalVideos?.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {selectedPlan.structuredData.educationalVideos.map((video, index) => {
                         const youtubeMatch = video.url?.match(
                           /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/
@@ -534,455 +517,152 @@ const SessionPlanPreview = () => {
                           : null;
 
                         return (
-                          <Box key={index} sx={{
-                            width: '100%',
-                            height: 'auto',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            bgcolor: 'background.paper',
-                            borderRadius: 2,
-                            overflow: 'hidden',
-                            boxShadow: 2,
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                              transform: 'translateY(-4px)',
-                              boxShadow: 4
-                            },
-                            border: '1px solid',
-                            borderColor: 'divider',
-                            position: 'relative'
-                          }}>
-                            <Tooltip title="Trim Video">
-                              <IconButton 
-                                sx={{ 
-                                  position: 'absolute', 
-                                  top: 8, 
-                                  right: 8, 
-                                  zIndex: 1, 
-                                  backgroundColor: 'rgba(255,255,255,0.8)',
-                                  '&:hover': {
-                                    backgroundColor: 'rgba(255,255,255,1)'
-                                  }
-                                }}
-                                onClick={() => handleOpenDialog("https://eps.excelschool.ai/")}>
-                                <ContentCutIcon fontSize="small" color="primary" />
-                              </IconButton>
-                            </Tooltip>
-                            <Box
-                              sx={{
-                                width: '100%',
-                                maxWidth: 220,
-                                aspectRatio: '16/9',
-                                mx: 'auto',
-                                borderRadius: 2,
-                                boxShadow: 2,
-                                overflow: 'hidden',
-                                position: 'relative',
-                                bgcolor: 'background.default',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => window.open(video.url, '_blank', 'noopener,noreferrer')}
-                            >
+                          <div key={index} className="border border-border/50 rounded-lg overflow-hidden bg-gradient-to-r from-background to-primary/5 hover:shadow-lg transition-all duration-300">
+                            <div className="relative aspect-video bg-muted/20 cursor-pointer" onClick={() => window.open(video.url, '_blank', 'noopener,noreferrer')}>
                               {thumbnailUrl ? (
                                 <img
                                   src={thumbnailUrl}
                                   alt={video.title || `Video ${index + 1}`}
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    display: 'block',
-                                  }}
+                                  className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <Box
-                                  sx={{
-                                    width: '100%',
-                                    height: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#888',
-                                    fontSize: 32,
-                                    bgcolor: '#f9f9f9',
-                                  }}
-                                >
+                                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-2xl bg-muted/50">
                                   No Thumbnail
-                                </Box>
+                                </div>
                               )}
-                              <Box
-                                sx={{
-                                  position: 'absolute',
-                                  top: 0, left: 0, right: 0, bottom: 0,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  pointerEvents: 'none',
-                                }}
-                              >
-                                <PlayArrowIcon sx={{ fontSize: 48, color: 'rgba(255,255,255,0.85)', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }} />
-                              </Box>
-                            </Box>
-                            <Box sx={{ 
-                              p: 2, 
-                              borderTop: '1px solid', 
-                              borderColor: 'divider',
-                              bgcolor: 'background.paper',
-                              flexGrow: 1,
-                              display: 'flex',
-                              flexDirection: 'column'
-                            }}>
-                              <Typography 
-                                variant="subtitle1"
-                                sx={{
-                                  fontWeight: 600,
-                                  mb: 1,
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  lineHeight: 1.3,
-                                  minHeight: '2.6em',
-                                  color: 'text.primary'
-                                }}
-                              >
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-12 h-12 bg-black/50 rounded-full flex items-center justify-center text-white">
+                                  ▶
+                                </div>
+                              </div>
+                            </div>
+                            <div className="p-4">
+                              <h4 className="font-semibold text-foreground mb-2 line-clamp-2">
                                 {video.title || `Video ${index + 1}`}
-                              </Typography>
+                              </h4>
                               {video.description && (
-                                <Typography 
-                                  variant="body2" 
-                                  sx={{
-                                    color: 'text.secondary',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 3,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    flexGrow: 1
-                                  }}
-                                >
+                                <p className="text-sm text-muted-foreground line-clamp-3">
                                   {video.description}
-                                </Typography>
+                                </p>
                               )}
-                            </Box>
-                          </Box>
+                            </div>
+                          </div>
                         );
                       })}
-                    </Box>
+                    </div>
                   ) : (
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      No educational videos available.
-                    </Typography>
+                    <p className="text-muted-foreground">No educational videos available.</p>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" sx={{ 
-                    fontWeight: 600, 
-                    mb: 3, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1.5,
-                    color: 'black',
-                    '& span': {
-                      fontSize: '1.5rem',
-                      lineHeight: 1
-                    }
-                  }}>
-                    <span>🖼️</span>
-                    Visual Aids
-                  </Typography>
-                  {selectedPlan.structuredData.visualAids?.filter(aid => aid?.url && !failedPreviewImages.has(aid.url)).length > 0 ? (
-                    <Grid container spacing={3}>
-                      {selectedPlan.structuredData.visualAids
-                        .filter(aid => aid?.url && !failedPreviewImages.has(aid.url))
-                        .map((aid, index) => (
-                          <Grid item xs={12} sm={6} key={index}>
-                            <Box sx={{
-                              width: '100%',
-                              height: 'auto',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              bgcolor: 'background.paper',
-                              borderRadius: 2,
-                              overflow: 'hidden',
-                              boxShadow: 2,
-                              transition: 'all 0.3s ease',
-                              '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                              },
-                              border: '1px solid',
-                              borderColor: 'divider'
-                            }}>
-                              <a 
-                                href={aid.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                style={{
-                                  textDecoration: 'none',
-                                  display: 'block',
-                                  width: '100%',
-                                  height: '280px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <Box sx={{
-                                  width: '100%',
-                                  height: '100%',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  bgcolor: 'background.default',
-                                  p: 2,
-                                  '&:hover': {
-                                    opacity: 0.9
-                                  }
-                                }}>
-                                  <img
-                                    src={aid.url}
-                                    alt={aid.alt_description || 'Visual aid'}
-                                    style={{
-                                      maxWidth: '100%',
-                                      maxHeight: '100%',
-                                      objectFit: 'contain',
-                                      borderRadius: '4px',
-                                      backgroundColor: 'white',
-                                      padding: '8px',
-                                      pointerEvents: 'none'
-                                    }}
-                                    onError={() => {
-                                      setFailedPreviewImages(prev => new Set([...prev, aid.url]));
-                                    }}
-                                    loading="lazy"
-                                  />
-                                </Box>
-                              </a>
-                              <Box sx={{ 
-                                p: 2, 
-                                borderTop: '1px solid', 
-                                borderColor: 'divider',
-                                bgcolor: 'background.paper'
-                              }}>
-                                <Typography 
-                                  variant="subtitle2"
-                                  sx={{
-                                    fontWeight: 500,
-                                    mb: 0.5,
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    lineHeight: 1.3,
-                                    minHeight: '2.6em',
-                                    color: 'text.primary'
-                                  }}
-                                >
-                                  {aid.alt_description || 'Visual Aid'}
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                                  URL: <Link href={aid.url} target="_blank" rel="noopener noreferrer">{aid.url}</Link>
-                                </Typography>
-                                {aid.source && (
-                                  <Typography 
-                                    variant="caption" 
-                                    sx={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 0.5,
-                                      color: 'text.secondary',
-                                      fontSize: '0.7rem',
-                                      mt: 0.5
-                                    }}
-                                  >
-                                    <span style={{ opacity: 0.7 }}>Source:</span>
-                                    <Box component="span" sx={{ 
-                                      fontWeight: 500,
-                                      color: 'primary.main',
-                                      textOverflow: 'ellipsis',
-                                      overflow: 'hidden',
-                                      whiteSpace: 'nowrap'
-                                    }}>
-                                      {new URL(aid.url).hostname.replace('www.', '')}
-                                    </Box>
-                                  </Typography>
-                                )}
-                              </Box>
-                            </Box>
-                          </Grid>
-                        ))}
-                    </Grid>
+              {/* Visual Aids */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    🖼️ Visual Aids
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.visualAids?.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selectedPlan.structuredData.visualAids.map((aid, index) => (
+                        <a 
+                          key={index}
+                          href={aid.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="block border border-border/50 rounded-lg overflow-hidden bg-gradient-to-r from-background to-secondary/5 hover:shadow-lg transition-all duration-300"
+                        >
+                          <div className="h-64 bg-muted/20 flex items-center justify-center p-4">
+                            <img
+                              src={aid.url}
+                              alt={aid.alt_description || 'Visual aid'}
+                              className="max-w-full max-h-full object-contain rounded"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="p-4 border-t border-border/30">
+                            <h4 className="font-medium text-foreground mb-2 line-clamp-2">
+                              {aid.alt_description || 'Visual Aid'}
+                            </h4>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {aid.url}
+                            </p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
                   ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No visual aids available for this lesson.
-                    </Typography>
+                    <p className="text-muted-foreground">No visual aids available for this lesson.</p>
                   )}
-                </Box>
+                </CardContent>
+              </Card>
 
-                <Box sx={{ mt: 4, mb: 3 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2, display: 'flex', alignItems: 'center' }}>
-                    <span role="img" aria-label="Resources" style={{ marginRight: '8px' }}>📚</span>
-                    Educational Documents
-                  </Typography>
-                  
-                  <Box sx={{ 
-                    backgroundColor: '#f8f9fa', 
-                    borderRadius: 2, 
-                    p: 3,
-                    border: '1px solid #e0e0e0',
-                    mb: 4
-                  }}>
-                    {selectedPlan.structuredData.resources?.length > 0 ? (
-                      <Grid container spacing={3}>
-                        {selectedPlan.structuredData.resources.map((resource, index) => (
-                          <Grid item xs={12} key={index}>
-                            <Box 
-                              component="a"
-                              href={resource.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                height: '100%',
-                                textDecoration: 'none',
-                                color: 'inherit',
-                                backgroundColor: 'white',
-                                borderRadius: 2,
-                                overflow: 'hidden',
-                                boxShadow: 1,
-                                transition: 'all 0.2s ease-in-out',
-                                '&:hover': {
-                                  transform: 'translateY(-4px)',
-                                  boxShadow: 3,
-                                  textDecoration: 'none'
-                                }
-                              }}
-                            >
-                              <Box sx={{ 
-                                p: 2,
-                                flexGrow: 1,
-                                display: 'flex',
-                                flexDirection: 'column'
-                              }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                  {(resource.url || '').toLowerCase().endsWith('.pdf') ? (
-                                    <PictureAsPdfIcon color="error" sx={{ mr: 1 }} />
-                                  ) : (
-                                    <LinkIcon color="primary" sx={{ mr: 1 }} />
-                                  )}
-                                  <Typography 
-                                    variant="subtitle2" 
-                                    sx={{ 
-                                      fontWeight: 600,
-                                      color: (resource.url || '').toLowerCase().endsWith('.pdf') ? '#d32f2f' : 'primary.main',
-                                      textTransform: 'uppercase',
-                                      fontSize: '0.7rem',
-                                      letterSpacing: '0.5px'
-                                    }}
-                                  >
-                                    {(resource.url || '').toLowerCase().endsWith('.pdf') ? 'PDF' : 'Web Resource'}
-                                  </Typography>
-                                </Box>
-                                
-                                <Typography 
-                                  variant="subtitle1" 
-                                  sx={{ 
-                                    fontWeight: 600,
-                                    mb: 1,
-                                    flexGrow: 1,
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
-                                  }}
-                                >
-                                  {resource.title || 'Untitled Resource'}
-                                </Typography>
-                                
-                                <Typography 
-                                  variant="body2" 
-                                  color="text.secondary"
-                                  sx={{
-                                    fontSize: '0.875rem',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 3,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    minHeight: '3.5em'
-                                  }}
-                                >
-                                  {resource.description || 'No description available'}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    ) : (
-                      <Box sx={{ 
-                        textAlign: 'center', 
-                        py: 4,
-                        color: 'text.secondary',
-                        backgroundColor: 'white',
-                        borderRadius: 2,
-                        border: '1px dashed #e0e0e0'
-                      }}>
-                        <LinkIcon sx={{ fontSize: 48, mb: 1, opacity: 0.6 }} />
-                        <Typography variant="body1">No educational resources available</Typography>
-                        <Typography variant="body2" sx={{ mt: 1 }}>We couldn't find any resources for this topic.</Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-            ) : (
-              <Box sx={{ p: 4, textAlign: 'center' }}>
-                <CircularProgress />
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  Loading lesson plan...
-                </Typography>
-              </Box>
-            )}
-          </div>
+              {/* Educational Documents */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    📚 Educational Documents
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedPlan.structuredData?.resources?.length > 0 ? (
+                    <div className="grid gap-4">
+                      {selectedPlan.structuredData.resources.map((resource, index) => (
+                        <a 
+                          key={index}
+                          href={resource.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block border border-border/50 rounded-lg p-4 bg-gradient-to-r from-background to-primary/5 hover:shadow-lg transition-all duration-300"
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="p-2 rounded-lg bg-primary/10">
+                              {(resource.url || '').toLowerCase().endsWith('.pdf') ? (
+                                <FileText className="w-5 h-5 text-red-600" />
+                              ) : (
+                                <FileText className="w-5 h-5 text-primary" />
+                              )}
+                            </div>
+                            <Badge variant="outline" className={`text-xs ${
+                              (resource.url || '').toLowerCase().endsWith('.pdf') 
+                                ? 'bg-red-50 text-red-700 border-red-200' 
+                                : 'bg-primary/10 text-primary border-primary/20'
+                            }`}>
+                              {(resource.url || '').toLowerCase().endsWith('.pdf') ? 'PDF' : 'Web Resource'}
+                            </Badge>
+                          </div>
+                          
+                          <h4 className="font-semibold text-foreground mb-2 line-clamp-2">
+                            {resource.title || 'Untitled Resource'}
+                          </h4>
+                          
+                          <p className="text-sm text-muted-foreground line-clamp-3">
+                            {resource.description || 'No description available'}
+                          </p>
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 border border-dashed border-border/50 rounded-lg bg-muted/20">
+                      <FileText className="w-12 h-12 text-muted-foreground/60 mx-auto mb-2" />
+                      <p className="text-muted-foreground">No educational resources available</p>
+                      <p className="text-sm text-muted-foreground mt-1">We couldn't find any resources for this topic.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <CircularProgress />
+              <p className="text-muted-foreground mt-4">Loading lesson plan...</p>
+            </div>
+          )}
         </div>
       </div>
-
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="lg" fullWidth>
-        <DialogTitle sx={{ minHeight: 40, p: 0 }}>
-          <IconButton
-            aria-label="close"
-            onClick={handleCloseDialog}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          <iframe
-            src={iframeUrl}
-            style={{
-              width: '100%',
-              height: 'calc(100vh - 150px)', // Adjust height as needed
-              border: 'none',
-            }}
-            title="Preview"
-          />
-        </DialogContent>
-      </Dialog>
-    </>
+    </div>
   );
 };
 
