@@ -1,9 +1,25 @@
 import { BookOpen, Users, ClipboardList, UserCheck, Settings, LogOut, BarChart3, Home, ArrowLeft, GraduationCap, Presentation, Video } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const ToolsDashboard = () => {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/login');
+  };
 
   const stats = [
     {
@@ -140,15 +156,32 @@ const ToolsDashboard = () => {
             alt="ExcelSchoolAi" 
             className="h-10 w-auto"
           />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/login')}
-            className="text-white hover:bg-white/10 transition-colors"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 hover:text-white border border-white/20 hover:border-white/40 transition-all duration-200"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to logout? You will be redirected to the teacher login page.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleLogout} className="bg-red-600 hover:bg-red-700">
+                  Yes, Logout
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </header>
       
