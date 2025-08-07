@@ -59,7 +59,7 @@ const ToolsDashboard = () => {
   const tools = [
     {
       id: 'lesson-plan',
-      title: 'Lesson Plan Assistant',
+      title: 'Lesson Plan Assist',
       description: 'Create comprehensive lesson plans with AI assistance',
       icon: BookOpen,
       color: 'bg-blue-500',
@@ -77,7 +77,7 @@ const ToolsDashboard = () => {
     },
     {
       id: 'slide-generator',
-      title: 'Slide Generator',
+      title: 'Slide Assist',
       description: 'Create stunning presentations with AI-powered tools',
       icon: Presentation,
       color: 'bg-rose-500',
@@ -86,7 +86,7 @@ const ToolsDashboard = () => {
     },
     {
       id: 'video-clip-editor',
-      title: 'Video Clip Editor',
+      title: 'Video Clipper',
       description: 'Create and edit video clips with advanced editing tools',
       icon: Video,
       color: 'bg-cyan-500',
@@ -113,7 +113,7 @@ const ToolsDashboard = () => {
     },
     {
       id: 'attendance',
-      title: 'Smart Attendance',
+      title: 'Attendance Assist',
       description: 'Automated tracking with real-time insights',
       icon: UserCheck,
       color: 'bg-orange-500',
