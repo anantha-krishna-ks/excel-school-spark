@@ -17,9 +17,10 @@ const SessionList = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [lessonPlans, setLessonPlans] = useState([]);
   const location = useLocation();
-    const {
+  const {
     selectedsubject,Selectedunittitle,selectedGrade,selectedunitdata
   } = location.state || {};
+  
   // Mock data - in real app this would come from API based on lesson plan ID
   const lessonPlan = {
     id: parseInt(id || '0'),
@@ -132,83 +133,82 @@ const togglePreview = (plan) => {
       alert("Failed to load preview. Try again.");
     }
   };
-  return (
-    <div className="w-full min-h-screen bg-background">
-      <Header />
-      
-      <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/')} className="cursor-pointer">
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/lesson-plan-assistant')} className="cursor-pointer">
-                Lesson Plan Repository
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Sessions</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
 
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6 mb-8">
-          <div className="flex items-start gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/lesson-plan-assistant')}
-              className="mt-1"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">{lessonPlan.title}</h1>
-              <p className="text-muted-foreground mb-4">Manage sessions for this lesson plan</p>
-              <div className="flex gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <BookOpen className="h-4 w-4" />
-                  {lessonPlans.length} Sessions
-                </span>
-                <span className="flex items-center gap-1">
-                  <Users className="h-4 w-4" />
-                  Grade {lessonPlan.grade}
-                </span>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/lesson-plan-assistant')}
+                className="text-gray-600 hover:text-gray-900 hover:bg-blue-50"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Repository
+              </Button>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <BookOpen className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Session Manager</h1>
+                  <p className="text-sm text-gray-500">Organize & Plan Individual Learning Sessions</p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="text-right">
-              <div className="text-sm font-medium text-foreground">Grade {lessonPlan.grade}</div>
-              <div className="text-sm text-muted-foreground">{lessonPlan.subject}</div>
+              <div className="text-sm font-medium text-gray-900">Grade {lessonPlan.grade}</div>
+              <div className="text-sm text-gray-500">{lessonPlan.subject}</div>
             </div>
-            <Button 
-              onClick={() => navigate(`/session/create/${lessonPlan.id}`,
-                {
-                  state: {
-                          selectedGrade: lessonPlan.grade,
-                          selectedsubject: lessonPlan.subject,
-                          Selectedunittitle: lessonPlan.title,
-                          selectedGradeId:grade,
-                          selectedSubjectId:subject,
-                          selectedunitplandata:lessonPlan.selectedunitdata
-                        }
-                }
-              )}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Session
-            </Button>
+          </div>
+        </div>
+      </header>
+      
+      <div className="container mx-auto px-4 py-6">
+        {/* Lesson Plan Info & Content */}
+        <div className="mb-8">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{lessonPlan.title}</h2>
+                <p className="text-gray-600 mb-4">Manage sessions for this lesson plan</p>
+                <div className="flex gap-4 text-sm text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="h-4 w-4" />
+                    {lessonPlans.length} Sessions
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    Grade {lessonPlan.grade}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Button 
+                  onClick={() => navigate(`/session/create/${lessonPlan.id}`,
+                    {
+                      state: {
+                              selectedGrade: lessonPlan.grade,
+                              selectedsubject: lessonPlan.subject,
+                              Selectedunittitle: lessonPlan.title,
+                              selectedGradeId:grade,
+                              selectedSubjectId:subject,
+                              selectedunitplandata:lessonPlan.selectedunitdata
+                            }
+                    }
+                  )}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Session
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
