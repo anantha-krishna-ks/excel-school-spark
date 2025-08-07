@@ -241,37 +241,6 @@ const ToolsDashboard = () => {
           })}
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              Ready to use
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => {
-              const IconComponent = action.icon;
-              return (
-                <div 
-                  key={index}
-                  onClick={() => navigate(action.route)}
-                  className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <div className={`w-10 h-10 ${action.color} rounded-lg flex items-center justify-center`}>
-                    <IconComponent className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">{action.title}</div>
-                    <div className="text-sm text-gray-500">{action.description}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );
