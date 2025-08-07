@@ -171,7 +171,7 @@ const ToolsDashboard = () => {
               <AlertDialogHeader>
                 <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to logout? You will be redirected to the teacher login page.
+                  Are you sure you want to logout? You will be redirected to the login page.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
