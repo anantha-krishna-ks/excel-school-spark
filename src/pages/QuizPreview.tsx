@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { PageLoader } from '@/components/ui/loader';
-import { saveAs } from "file-saver";
+/*import { saveAs } from "file-saver";*/
 import {
   Document,
   Packer,
@@ -249,7 +249,7 @@ const QuizPreview = () => {
   });
 
   const blob = await Packer.toBlob(docContent);
-  saveAs(blob, fileName);
+  //saveAs(blob, fileName);
 };
 
 
