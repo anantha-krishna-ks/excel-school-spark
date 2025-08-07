@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Edit, Trash2, Eye, Expand } from 'lucide-react';
 
 interface GeneratedItem {
@@ -14,13 +15,17 @@ interface GeneratedItem {
   question: string;
   itemType: string;
   eloName: string;
+  bloomsLevel: string;
+  options?: string[];
+  answer?: string;
+  context?: string;
 }
 
 interface QuestionCardProps {
   item: GeneratedItem;
   index: number;
   eloId: string;
-  onEdit: (eloId: string, itemId: string) => void;
+  onEdit: (eloId: string, itemId: string, updatedItem: Partial<GeneratedItem>) => void;
   onDelete: (eloId: string, itemId: string) => void;
 }
 
@@ -29,14 +34,22 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editedQuestion, setEditedQuestion] = useState(item.question);
+  const [editedOptions, setEditedOptions] = useState<string[]>(item.options ? [...item.options] : []);
+  const [editedAnswer, setEditedAnswer] = useState(item.answer || "");
+  const [editedContext, setEditedContext] = useState(item.context || "");
+  const [editError, setEditError] = useState<string>("");
 
-  // Generate sample Bloom's taxonomy level
-  const getBloomsTaxonomy = () => {
-    const taxonomies = ['Knowledge', 'Understanding', 'Application', 'Analysis', 'Synthesis', 'Evaluation'];
-    return taxonomies[Math.floor(Math.random() * taxonomies.length)];
-  };
-
-  const bloomsLevel = getBloomsTaxonomy();
+  // Reset local edit state when dialog is opened
+  React.useEffect(() => {
+    if (isEditOpen) {
+      setEditedQuestion(item.question);
+      setEditedOptions(item.options ? [...item.options] : []);
+      setEditedAnswer(item.answer || "");
+      setEditedContext(item.context || "");
+      setEditError("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditOpen]);
 
   const getTypeColor = (type: string) => {
     const colors = {
@@ -51,83 +64,95 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
   };
 
   const renderPreviewContent = () => {
-    const getMCQOptions = (question: string) => {
-      if (question.includes('chemical symbol for water')) {
-        return ['A) H2O', 'B) CO2', 'C) NaCl', 'D) O2'];
-      } else if (question.includes('closest to the sun')) {
-        return ['A) Mercury', 'B) Venus', 'C) Earth', 'D) Mars'];
-      } else if (question.includes('capital of France')) {
-        return ['A) London', 'B) Berlin', 'C) Paris', 'D) Madrid'];
-      } else {
-        return ['A) Option A', 'B) Option B', 'C) Option C', 'D) Option D'];
-      }
-    };
-
-    const getCaseStudyContext = (question: string) => {
-      if (question.includes('EcoFresh')) {
-        return 'EcoFresh Ltd. is a startup company that produces biodegradable cleaning products. The company was founded in 2022 and has seen moderate growth in local markets. Recently, EcoFresh received investor funding to expand nationwide. However, the company is now facing challenges such as increased competition from established brands, supply chain delays for raw materials, and the need to hire skilled marketing professionals. The CEO is considering whether to invest in digital marketing, form partnerships with eco-friendly retailers, or diversify the product line.';
-      } else if (question.includes('marketing strategy failures')) {
-        return 'TechnoGadget Inc. launched their revolutionary smartphone with advanced AI features. Despite heavy investment in development and initial hype, the product failed to gain significant market share. The company overlooked key market research, priced the product too high for the target demographic, and failed to communicate the unique value proposition effectively to consumers.';
-      } else {
-        return 'This is a case study scenario that provides background context and relevant information for analyzing the situation and answering the associated questions.';
-      }
-    };
-
-    const getFillBlankAnswer = (question: string) => {
-      if (question.includes('group of stars')) {
-        return 'constellation';
-      } else if (question.includes('plants make their own food')) {
-        return 'photosynthesis';
-      } else if (question.includes('largest mammal')) {
-        return 'blue whale';
-      } else {
-        return 'answer';
-      }
-    };
-
     switch (item.itemType) {
-      case 'mcq':
-        const options = getMCQOptions(item.question);
+      case 'mcq': {
+        // Use backend options if present, else fallback to old logic
+        const options = item.options && item.options.length > 0
+          ? item.options
+          : [
+              'A) Option A',
+              'B) Option B',
+              'C) Option C',
+              'D) Option D'
+            ];
         return (
           <div className="space-y-4">
             <div className="font-medium">{item.question}</div>
             <div className="space-y-2">
-              {options.map((option, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <input type="radio" name="option" className="h-4 w-4" />
-                  <span>{option}</span>
+              {options.map((option, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-row items-start gap-2 pl-2 py-1"
+                >
+                  <span className="font-semibold w-6 min-w-[1.5rem] text-right">{String.fromCharCode(65 + idx)}:</span>
+                  <span className="flex-1 break-words">{option}</span>
                 </div>
               ))}
             </div>
+            {item.answer && (
+              <div className="text-sm text-green-700 mt-2">
+                <strong>Answer:</strong> {item.answer}
+              </div>
+            )}
           </div>
         );
-      case 'fill-blank':
-        const answer = getFillBlankAnswer(item.question);
+      }
+      case 'fill-blank': {
+        // Use backend answer if present
+        const answer = item.answer || '';
         return (
           <div className="space-y-4">
             <div className="font-medium">{item.question}</div>
             <div className="border-b-2 border-gray-300 inline-block min-w-[200px] pb-1">
               <span className="text-transparent">{answer}</span>
             </div>
+            {answer && (
+              <div className="text-sm text-green-700 mt-2">
+                <strong>Answer:</strong> {answer}
+              </div>
+            )}
           </div>
         );
-      case 'case-study':
-        const context = getCaseStudyContext(item.question);
+      }
+      case 'case-study': {
+        // Use backend context if present
+        const context = item.context || '';
         return (
           <div className="space-y-4">
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">Case Study</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                {context}
-              </p>
-            </div>
+            {context && (
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Case Study</h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {context}
+                </p>
+              </div>
+            )}
             <div className="font-medium">{item.question}</div>
+            {/* Do NOT show answer for case-study */}
+          </div>
+        );
+      }
+      case 'short-description':
+      case 'long-description':
+      case 'open-ended':
+        return (
+          <div className="space-y-4">
+            <div className="font-medium">{item.question}</div>
+            {/* Do NOT show answer for these types */}
+            <div className="border rounded-lg p-4 bg-muted/30">
+              <span className="text-muted-foreground text-sm">Answer space</span>
+            </div>
           </div>
         );
       default:
         return (
           <div className="space-y-4">
             <div className="font-medium">{item.question}</div>
+            {item.answer && (
+              <div className="text-sm text-green-700 mt-2">
+                <strong>Answer:</strong> {item.answer}
+              </div>
+            )}
             <div className="border rounded-lg p-4 bg-muted/30">
               <span className="text-muted-foreground text-sm">Answer space</span>
             </div>
@@ -137,8 +162,36 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
   };
 
   const handleSaveEdit = () => {
-    // Update the question content and trigger parent component update
-    onEdit(eloId, item.id);
+    // Validation
+    if (!editedQuestion.trim()) {
+      setEditError("Question cannot be empty.");
+      return;
+    }
+    if (item.itemType === "mcq") {
+      if (editedOptions.length < 2 || editedOptions.some(opt => !opt.trim())) {
+        setEditError("All MCQ options must be filled (minimum 2).");
+        return;
+      }
+      if (!editedAnswer.trim() || !editedOptions.map(opt => opt.trim()).includes(editedAnswer.trim())) {
+        setEditError("Answer must match one of the options.");
+        return;
+      }
+    }
+    if (item.itemType === "fill-blank" && !editedAnswer.trim()) {
+      setEditError("Answer cannot be empty for fill in the blank.");
+      return;
+    }
+    // No error, proceed
+    setEditError("");
+    const updatedItem: Partial<GeneratedItem> = {
+      question: editedQuestion,
+      answer: editedAnswer,
+      context: editedContext,
+    };
+    if (item.itemType === "mcq") {
+      updatedItem.options = editedOptions;
+    }
+    onEdit(eloId, item.id, updatedItem);
     setIsEditOpen(false);
   };
 
@@ -169,7 +222,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                       {item.itemType.replace('-', ' ').toUpperCase()}
                     </Badge>
                     <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">
-                      {bloomsLevel}
+                      {item.bloomsLevel}
                     </Badge>
                   </div>
                   
@@ -177,21 +230,22 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                     {item.question}
                   </p>
                   
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {item.eloName}
-                    </Badge>
-                  </div>
+                  
                 </div>
                 
-                {/* Action Buttons */}
                 <div className="flex gap-1 flex-shrink-0">
-                  <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                 {/* Preview Button with Tooltip */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setIsPreviewOpen(true)}>
                         <Eye className="h-4 w-4" />
                       </Button>
-                    </DialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Preview question</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                     <DialogContent className="max-w-2xl">
                       <DialogHeader>
                         <DialogTitle>Question Preview</DialogTitle>
@@ -201,122 +255,133 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ item, index, eloId, onEdit,
                       </div>
                     </DialogContent>
                   </Dialog>
-                  
-                  <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>Edit Question</DialogTitle>
-                      </DialogHeader>
-                      <div className="py-4 space-y-4">
-                        <div>
-                          <Label htmlFor="question">Question</Label>
-                          <Textarea
-                            id="question"
-                            value={editedQuestion}
-                            onChange={(e) => setEditedQuestion(e.target.value)}
-                            className="mt-1"
-                            rows={4}
-                          />
+                    
+                    <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Edit question</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Edit Question</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-4 space-y-4">
+                          <div>
+                            <Label htmlFor="question">Question</Label>
+                            <Textarea
+                              id="question"
+                              value={editedQuestion}
+                              onChange={(e) => setEditedQuestion(e.target.value)}
+                              className="mt-1"
+                              rows={4}
+                            />
+                          </div>
+                          
+                           {item.itemType === 'mcq' && (
+                             <div className="space-y-3">
+                               <Label>Options</Label>
+                               {Array.isArray(editedOptions) && editedOptions.length > 0 ? (
+                                 editedOptions.map((option, idx) => (
+                                   <div key={idx} className="flex items-center gap-2">
+                                     <span className="text-sm font-medium w-6">{String.fromCharCode(65 + idx)}:</span>
+                                     <Input
+                                       value={option}
+                                       onChange={e => {
+                                         const newOptions = [...editedOptions];
+                                         newOptions[idx] = e.target.value;
+                                         setEditedOptions(newOptions);
+                                       }}
+                                     />
+                                   </div>
+                                 ))
+                               ) : (
+                                 ['A', 'B', 'C', 'D'].map((option, idx) => (
+                                   <div key={option} className="flex items-center gap-2">
+                                     <span className="text-sm font-medium w-6">{option}:</span>
+                                     <Input
+                                       placeholder={`Option ${option}`}
+                                       value={editedOptions[idx] || ""}
+                                       onChange={e => {
+                                         const newOptions = [...editedOptions];
+                                         newOptions[idx] = e.target.value;
+                                         setEditedOptions(newOptions);
+                                       }}
+                                     />
+                                   </div>
+                                 ))
+                               )}
+                             </div>
+                           )}
+
+                          {/* Editable answer for MCQ and fill-blank only */}
+                          {(item.itemType === "mcq" || item.itemType === "fill-blank") && (
+                            <div>
+                              <Label htmlFor="answer">Answer</Label>
+                              <Input
+                                id="answer"
+                                value={editedAnswer}
+                                onChange={e => setEditedAnswer(e.target.value)}
+                                className="mt-1"
+                              />
+                            </div>
+                          )}
+
+                          {/* Editable context for case-study */}
+                          {item.itemType === "case-study" && (
+                            <div>
+                              <Label htmlFor="context">Context</Label>
+                              <Textarea
+                                id="context"
+                                value={editedContext}
+                                onChange={e => setEditedContext(e.target.value)}
+                                className="mt-1"
+                                rows={3}
+                              />
+                            </div>
+                          )}
+
+                          {editError && (
+                            <div className="text-red-500 text-sm pb-2">{editError}</div>
+                          )}
+                          <div className="flex justify-end gap-2 pt-4">
+                            <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={handleSaveEdit}
+                            >
+                              Save Changes
+                            </Button>
+                          </div>
                         </div>
-                        
-                         {item.itemType === 'mcq' && (
-                           <div className="space-y-3">
-                             <Label>Options</Label>
-                             {item.question.includes('chemical symbol for water') ? (
-                               <>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">A:</span>
-                                   <Input defaultValue="H2O" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">B:</span>
-                                   <Input defaultValue="CO2" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">C:</span>
-                                   <Input defaultValue="NaCl" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">D:</span>
-                                   <Input defaultValue="O2" />
-                                 </div>
-                               </>
-                             ) : item.question.includes('closest to the sun') ? (
-                               <>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">A:</span>
-                                   <Input defaultValue="Mercury" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">B:</span>
-                                   <Input defaultValue="Venus" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">C:</span>
-                                   <Input defaultValue="Earth" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">D:</span>
-                                   <Input defaultValue="Mars" />
-                                 </div>
-                               </>
-                             ) : item.question.includes('capital of France') ? (
-                               <>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">A:</span>
-                                   <Input defaultValue="London" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">B:</span>
-                                   <Input defaultValue="Berlin" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">C:</span>
-                                   <Input defaultValue="Paris" />
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">D:</span>
-                                   <Input defaultValue="Madrid" />
-                                 </div>
-                               </>
-                             ) : (
-                               ['A', 'B', 'C', 'D'].map((option) => (
-                                 <div key={option} className="flex items-center gap-2">
-                                   <span className="text-sm font-medium w-6">{option}:</span>
-                                   <Input placeholder={`Option ${option}`} />
-                                 </div>
-                               ))
-                             )}
-                           </div>
-                         )}
-                        
-                        <div className="flex justify-end gap-2 pt-4">
-                          <Button variant="outline" onClick={() => setIsEditOpen(false)}>
-                            Cancel
-                          </Button>
-                          <Button onClick={handleSaveEdit}>
-                            Save Changes
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    onClick={() => onDelete(eloId, item.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          onClick={() => onDelete(eloId, item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete question</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                
               </div>
             </div>
           </div>

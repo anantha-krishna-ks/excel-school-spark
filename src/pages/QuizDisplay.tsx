@@ -30,7 +30,12 @@ interface QuizData {
 const QuizDisplay = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { questions, quizData } = location.state as { questions: Question[]; quizData: QuizData };
+  const { questions, quizData, origin } = location.state as {
+    questions: Question[];
+    quizData: QuizData;
+    origin?: 'preview' | 'listing';
+  };
+
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
@@ -84,12 +89,19 @@ const QuizDisplay = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/quiz-generator/preview', { state: { quizData } })}
+                onClick={() => {
+                  if (origin === 'listing') {
+                    navigate('/quiz-generator'); // 👈 go to listing
+                  } else {
+                    navigate('/quiz-generator/preview', { state: { quizData, questions } }); // 👈 go to preview
+                  }
+                }}
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Teacher View
+                Back to {origin === 'listing' ? 'Quiz Listing' : 'Teacher View'}
               </Button>
+
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">{quizData.name}</h1>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -116,7 +128,7 @@ const QuizDisplay = () => {
             <span>{Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-purple-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
             />
@@ -135,7 +147,7 @@ const QuizDisplay = () => {
                   {currentQuestion.difficulty}
                 </Badge>
                 <Badge variant="secondary" className="text-xs">
-                  {currentQuestion.type.replace('-', ' ')}
+                  {currentQuestion.type?.replace('-', ' ') || ''}
                 </Badge>
               </div>
             </div>
@@ -219,13 +231,12 @@ const QuizDisplay = () => {
               <button
                 key={index}
                 onClick={() => setCurrentQuestionIndex(index)}
-                className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                  index === currentQuestionIndex
+                className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${index === currentQuestionIndex
                     ? 'bg-purple-600 text-white'
                     : selectedAnswers[questions[index].id]
-                    ? 'bg-green-100 text-green-600 border border-green-300'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                      ? 'bg-green-100 text-green-600 border border-green-300'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
               >
                 {index + 1}
               </button>
@@ -243,7 +254,7 @@ const QuizDisplay = () => {
         </div>
 
         {/* Quiz Completion */}
-        {currentQuestionIndex === questions.length - 1 && (
+        {/* {currentQuestionIndex === questions.length - 1 && (
           <Card className="mt-6 border-green-200 bg-green-50">
             <CardContent className="pt-6">
               <div className="text-center">
@@ -264,7 +275,7 @@ const QuizDisplay = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
       </div>
     </div>
   );

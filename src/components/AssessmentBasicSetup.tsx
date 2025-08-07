@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
-import { getGrades, getSubjects, getChapters, type Grade, type Subject, type Chapter } from '../../api';
+import { getGrades, getSubjects, getChapters, type Grade, type Subject, type Chapter } from '../pages/api';
 
 interface AssessmentBasicSetupProps {
   assessmentData: any;

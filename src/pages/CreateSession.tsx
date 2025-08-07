@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,14 +9,20 @@ import Header from '@/components/Header';
 import RichTextEditor from '@/components/RichTextEditor';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { useToast } from '@/hooks/use-toast';
-import { PageLoader } from '@/components/ui/loader';
+import axios from 'axios';
+import config from '@/config';
+import { PageLoader } from "@/components/ui/loader"
 
 const CreateSession = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [lessonPlanData, setLessonPlanData] = useState(null);
+  const location = useLocation();
+      const {
+      selectedsubject,Selectedunittitle,selectedGrade,selectedGradeId,selectedSubjectId,selectedunitplandata
+    } = location.state || {};
   const [sessionData, setSessionData] = useState({
     title: '',
     duration: '',
@@ -27,25 +33,21 @@ const CreateSession = () => {
 
   // Mock data - in real app this would come from API
   const lessonPlan = {
-    title: "Understanding Photosynthesis: The Food Factory of Plants",
-    grade: "VII",
-    subject: "General Science"
+    title: Selectedunittitle,
+    grade: selectedGrade,
+    subject: selectedsubject,
+    unitdata:selectedunitplandata
   };
-
-  const availableCOs = [
-    "Students develop gratitude towards farmers for their hard work and their role in ensuring food security",
-    "Students acquire the ability to analyze complex problems and develop sustainable solutions", 
-    "Students gain a holistic understanding of food production and its socio-economic impact"
-  ];
-
-  const availableELOs = [
-    "Recognize the basic components of photosynthesis",
-    "Differentiate between light and dark reactions",
-    "Explain the role of chlorophyll in photosynthesis",
-    "Analyze factors affecting photosynthesis rate",
-    "Evaluate the importance of photosynthesis in ecosystems"
-  ];
-
+  const unitPlan = lessonPlan.unitdata;
+  unitPlan.expectedLearningOutcomes = unitPlan.assessment.map((row: any) => row.fullText);
+  const [availableCOs, setAvailableCOs] = useState<string[]>([]);
+  const [availableELOs, setAvailableELOs] = useState<string[]>(lessonPlan.unitdata.expectedLearningOutcomes);
+  const [error, setError] = useState<string | null>(null);
+  
+  // if (lessonPlan.unitdata.expectedLearningOutcomes) {
+  //   setAvailableELOs(lessonPlan.unitdata.expectedLearningOutcomes);
+  // }
+  
   const handleCOToggle = (co: string) => {
     setSessionData(prev => ({
       ...prev,
@@ -64,8 +66,8 @@ const CreateSession = () => {
     }));
   };
 
-  const handleSave = async () => {
-    if (!sessionData.title || !sessionData.duration || sessionData.selectedCOs.length === 0) {
+  const handleSave = () => {
+    if (!sessionData.title || !sessionData.duration || sessionData.selectedELOs.length === 0) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields and select at least one Core Objective.",
@@ -73,25 +75,81 @@ const CreateSession = () => {
       });
       return;
     }
-
-    setIsLoading(true);
-
-    // Mock save logic with delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    toast({
-      title: "Session Created!",
-      description: "Your session has been successfully created.",
-    });
-
-    navigate(`/session/${lessonId}`);
-    setIsLoading(false);
+    GetLessonPlanData();
   };
 
+   const GetLessonPlanData = async()=>{
+    try {
+      setLoading(true);
+      const getDuration = (durationStr) => {
+        return durationStr || '45'; 
+      };
+      const topic=lessonPlan.title;
+      const subject = lessonPlan.subject;
+      const grade = lessonPlan.grade; 
+      const duration = sessionData.duration; 
+      const keyVocabulary = ''; 
+      const supportingMaterials = ''; 
+      const currentTopic = lessonPlan.title || '';
+      const currentSubject = lessonPlan.subject || '';
+      const currentGrade = String(lessonPlan.grade || '');
+
+      const payload = {
+        "promptType": "lesson_plan",
+        "subject": currentSubject,
+        "grade": currentGrade,
+        "lessonTitle": topic,
+        "duration": duration,
+        "keyVocabulary": keyVocabulary,
+        "supportingMaterials": supportingMaterials,
+        "sessionInstructions": sessionData.instructions,
+        "expectedLearningOutcomes": sessionData.selectedELOs,
+      };
+  
+      const response = await axios.post(config.ENDPOINTS.GENERATE_LESSON_PLAN, payload);
+      const parsedLesson = JSON.parse(response.data.lessonPlan);
+  
+      const inputToken = response.data.inputtoken || 0;
+      const responseToken = response.data.responsetoken || 0;
+  
+      const newLessonPlanData = {
+        structuredData: {
+          ...parsedLesson,
+          currentAffairs: parsedLesson.additionalSections?.currentAffairs || [],
+          educationalVideos: parsedLesson.additionalSections?.educationalVideos || []
+        },
+        markdown: response.data.markdown || '',
+        inputtoken: inputToken,
+        responsetoken: responseToken,
+        ailessonplan: parsedLesson
+      };
+
+      setLessonPlanData(newLessonPlanData);
+      setLoading(false);
+      navigate('/session-plan-output', {
+        state: {
+          lessonPlanData: newLessonPlanData,
+          originalTopic: topic,
+          onSaveSuccess: true,
+          UnitId: lessonId,
+          Grade:currentGrade
+        }
+      });     
+    } catch (err) {
+      setLoading(false);
+      const errorMessage = err.response?.data?.message || 'Please check your input and try again.';
+      let displayMessage = 'Failed to generate lesson plan.';
+      if (errorMessage.includes('topic') && errorMessage.includes('subject')) {
+        displayMessage = 'The topic does not match the selected subject.';
+      }        
+      console.error('Error generating lesson plan:', err);
+    } finally {
+    }
+  }
   return (
     <div className="w-full min-h-screen bg-background">
       <Header />
-      
+      {loading && <PageLoader text="Please wait..." />}
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumbs */}
         <Breadcrumb className="mb-6">
@@ -109,7 +167,7 @@ const CreateSession = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate(`/session/${lessonId}`)} className="cursor-pointer">
+              <BreadcrumbLink onClick={() => navigate(-1)} className="cursor-pointer">
                 Sessions
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -125,7 +183,7 @@ const CreateSession = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/session/${lessonId}`)}
+            onClick={() => navigate(-1)}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Sessions
@@ -197,36 +255,6 @@ const CreateSession = () => {
             </CardContent>
           </Card>
 
-          {/* Section 3: Core Objectives */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-purple-600" />
-                Core Objectives *
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {availableCOs.map((co, index) => (
-                <div key={index} className="flex items-start space-x-2">
-                  <Checkbox
-                    id={`co-${index}`}
-                    checked={sessionData.selectedCOs.includes(co)}
-                    onCheckedChange={() => handleCOToggle(co)}
-                  />
-                  <label
-                    htmlFor={`co-${index}`}
-                    className="text-sm text-foreground leading-tight cursor-pointer"
-                  >
-                    {co}
-                  </label>
-                </div>
-              ))}
-              <div className="text-xs text-muted-foreground mt-2">
-                Selected: {sessionData.selectedCOs.length} of {availableCOs.length}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Section 4: Expected Learning Outcomes */}
           <Card>
             <CardHeader>
@@ -258,21 +286,18 @@ const CreateSession = () => {
           </Card>
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
-            <Button
-              onClick={async () => {
-                setIsLoading(true);
-                await new Promise(resolve => setTimeout(resolve, 1000));
+          <div className="flex gap-4 w-64" style={{float: 'right', marginBottom: '20px'}}>
+            <Button style={{ display: 'none' }}
+              onClick={() => {
+                // Draft save logic
                 toast({
                   title: "Draft Saved",
                   description: "Your session has been saved as a draft.",
                 });
-                setIsLoading(false);
               }}
               variant="outline"
               className="flex-1"
               size="lg"
-              disabled={isLoading}
             >
               <Save className="h-4 w-4 mr-2" />
               Save as Draft
@@ -281,18 +306,13 @@ const CreateSession = () => {
               onClick={handleSave}
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
               size="lg"
-              disabled={isLoading}
             >
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? 'Creating...' : 'Create Session'}
+              Create Session
             </Button>
           </div>
         </div>
       </div>
-      
-      {isLoading && (
-        <PageLoader text="Creating your session..." />
-      )}
     </div>
   );
 };

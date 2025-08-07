@@ -1,17 +1,55 @@
+// --- ADDED/CHANGED CODE BELOW ---
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { X, Brain } from 'lucide-react';
+import axios from 'axios';
+import config from '@/config';
 
-const LearningExperience = () => {
+interface LearningExperienceProps {
+  elos: string[];
+  board: string;
+  grade: string;
+  subject: string;
+  chapter: string;
+  courseOutcomes: any[]; // Accepts array of course outcomes with skills, factor, competencies, etc.
+  onLearningExperienceChange: (data: any) => void;
+}
+
+const LearningExperience: React.FC<LearningExperienceProps> = ({
+  elos = [],
+  board = '',
+  grade = '',
+  subject = '',
+  chapter = '',
+  courseOutcomes = [],
+  onLearningExperienceChange
+}) => {
   const [selectedApproaches, setSelectedApproaches] = useState<string[]>([]);
   const [customSkills, setCustomSkills] = useState<string>('');
-  const [selectedIntelligenceTypes, setSelectedIntelligenceTypes] = useState<string[]>([]);
+  // Hardcode all intelligence types for Learning Experience intelligence integration
+const allIntelligenceTypes = [
+  'Visual-spatial',
+  'Linguistic-verbal',
+  'Logical-mathematical',
+  'Body-kinesthetic',
+  'Musical',
+  'Interpersonal',
+  'Naturalistic'
+];
+const [selectedIntelligenceTypes] = useState<string[]>(allIntelligenceTypes); // always all selected
   const [showLearningContent, setShowLearningContent] = useState<boolean>(false);
+
+  // New state for pedagogical approaches (flat list)
+  const [loadingPedagogical, setLoadingPedagogical] = useState(false);
+  const [pedagogicalError, setPedagogicalError] = useState<string | null>(null);
+  const [loadingLearningExperience, setLoadingLearningExperience] = useState(false);
+  const [learningExperienceError, setLearningExperienceError] = useState<string | null>(null);
+  const [learningExperience, setLearningExperience] = useState<any>(null);
 
   const pedagogicalApproaches = [
     'Constructivism',
@@ -35,7 +73,6 @@ const LearningExperience = () => {
     'Body-kinesthetic', 
     'Musical',
     'Interpersonal',
-    'Intrapersonal',
     'Naturalistic'
   ];
 
@@ -45,14 +82,11 @@ const LearningExperience = () => {
 
   const handleCustomSkillsChange = (value: string) => {
     setCustomSkills(value);
-    
-    // Parse comma, space, or enter separated values
     if (value.includes(',') || value.includes('\n') || value.endsWith(' ')) {
       const skills = value
         .split(/[,\n\s]+/)
         .map(skill => skill.trim())
         .filter(skill => skill.length > 0);
-      
       if (skills.length > 0) {
         const lastSkill = skills[skills.length - 1];
         if (lastSkill && !selectedApproaches.includes(lastSkill)) {
@@ -63,13 +97,7 @@ const LearningExperience = () => {
     }
   };
 
-  const handleIntelligenceChange = (intelligence: string, checked: boolean) => {
-    if (checked) {
-      setSelectedIntelligenceTypes([...selectedIntelligenceTypes, intelligence]);
-    } else {
-      setSelectedIntelligenceTypes(selectedIntelligenceTypes.filter(i => i !== intelligence));
-    }
-  };
+  // Intelligence types are hardcoded and not user-modifiable, so this handler is removed.
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
@@ -82,6 +110,32 @@ const LearningExperience = () => {
     }
   };
 
+  // --- Pedagogical Approaches API Call ---
+  const handleGeneratePedagogicalApproaches = async () => {
+    setLoadingPedagogical(true);
+    setPedagogicalError(null);
+    try {
+      const response = await axios.post(
+        config.ENDPOINTS.GENERATE_PEDAGOGICAL_APPROACHES,
+        {
+          elos,
+          board,
+          grade,
+          subject,
+          chapter
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      setSelectedApproaches(response.data.approaches || []);
+    } catch (err: any) {
+      setPedagogicalError(
+        err?.response?.data?.detail || err?.message || 'Failed to generate pedagogical approaches'
+      );
+    } finally {
+      setLoadingPedagogical(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="bg-gray-50 p-4 rounded-lg">
@@ -89,150 +143,205 @@ const LearningExperience = () => {
         <p className="text-sm text-gray-600 mb-4">By default, all ELOs are selected</p>
         
         <div className="flex justify-end mb-6">
-          <Button 
+          <Button
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2"
-            onClick={() => setSelectedApproaches([
-              'Constructivism',
-              'Collaborative', 
-              'Reflective',
-              'Integrity',
-              'Inquiry',
-              'Contextual',
-              'Inclusive',
-              'Art Integrated'
-            ])}
+            onClick={handleGeneratePedagogicalApproaches}
+            disabled={loadingPedagogical || !elos || elos.length === 0}
           >
-            Generate Pedagogical Approaches
+            {loadingPedagogical ? 'Generating...' : 'Generate Pedagogical Approaches'}
           </Button>
         </div>
 
-        {/* Selected Pedagogical Approaches */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {selectedApproaches.map((approach) => (
-            <Badge 
-              key={approach} 
-              variant="secondary" 
-              className="bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer flex items-center gap-1 px-3 py-1"
-              onClick={() => removeApproach(approach)}
-            >
-              {approach}
-              <X className="h-3 w-3" />
-            </Badge>
-          ))}
-        </div>
+        {/* Pedagogical Approaches Results */}
+        {pedagogicalError && (
+          <div className="text-red-500 mb-4">{pedagogicalError}</div>
+        )}
+        {selectedApproaches.length > 0 && (
+          <div className="mb-8 flex flex-wrap gap-2">
+            {selectedApproaches.map((approach) => (
+              <Badge
+                key={approach}
+                variant="secondary"
+                className="bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer flex items-center gap-1 px-3 py-1"
+                onClick={() => removeApproach(approach)}
+              >
+                {approach}
+                <X className="h-3 w-3" />
+              </Badge>
+            ))}
+          </div>
+        )}
 
+        
         {/* Custom Skills Input */}
         <div className="mb-6">
           <h4 className="text-sm font-medium text-gray-700 mb-2">
-            Add custom skills (comma, space, or enter separated)
+            Add custom pedagogical approaches (comma, space, or enter separated)
           </h4>
           <Input
             value={customSkills}
             onChange={(e) => handleCustomSkillsChange(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type custom skills and press Enter, comma, or space to add..."
+            placeholder="Type custom pedagogical approaches and press Enter, comma, or space to add..."
             className="w-full"
           />
         </div>
 
-        {/* Intelligence Types Selection */}
-        <div className="mb-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-3">Select Intelligence Types</h4>
-          <Card className="p-4">
-            <div className="space-y-3">
-              {intelligenceTypes.map((intelligence) => (
-                <div key={intelligence} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={intelligence}
-                    checked={selectedIntelligenceTypes.includes(intelligence)}
-                    onCheckedChange={(checked) => handleIntelligenceChange(intelligence, !!checked)}
-                  />
-                  <label
-                    htmlFor={intelligence}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                  >
-                    {intelligence}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-
         {/* Generate Learning Experience Button */}
         <div className="flex justify-center">
-          <Button 
-            onClick={() => setShowLearningContent(true)}
+          <Button
+            onClick={async () => {
+              setLoadingLearningExperience(true);
+              setLearningExperienceError(null);
+              setLearningExperience(null);
+              try {
+                const response = await axios.post(
+                  config.ENDPOINTS.GENERATE_LEARNING_EXPERIENCE,
+                  {
+                    elos,
+                    pedagogical_approaches: selectedApproaches,
+                    intelligence_types: selectedIntelligenceTypes,
+                    course_outcomes: courseOutcomes,
+                    grade,
+                    subject,
+                    chapter
+                  },
+                  { headers: { 'Content-Type': 'application/json' } }
+                );
+                let le = response.data.learning_experience;
+                if (typeof le === "string") {
+                  try {
+                    le = JSON.parse(le);
+                  } catch (e) {
+                    setLearningExperienceError("Failed to parse learning experience JSON.");
+                    setLearningExperience(response.data.learning_experience); // set raw string
+                    setShowLearningContent(true);
+                    setLoadingLearningExperience(false);
+                    return;
+                  }
+                }
+                setLearningExperience(le);
+                onLearningExperienceChange(le);
+                setShowLearningContent(true);
+              } catch (err: any) {
+                setLearningExperienceError(
+                  err?.response?.data?.detail || err?.message || 'Failed to generate learning experience'
+                );
+              } finally {
+                setLoadingLearningExperience(false);
+              }
+            }}
             className="px-8 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 font-semibold text-base rounded-lg"
+            disabled={
+              loadingLearningExperience ||
+              selectedApproaches.length === 0 ||
+              selectedIntelligenceTypes.length === 0 ||
+              !elos.length ||
+              !courseOutcomes.length
+            }
           >
-            <Brain className="w-5 h-5 mr-2" />
-            Generate Learning Experience
+            {loadingLearningExperience ? (
+              <>
+                <Brain className="w-5 h-5 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Brain className="w-5 h-5 mr-2" />
+                Generate Learning Experience
+              </>
+            )}
           </Button>
         </div>
 
         {/* Learning Experience Content */}
-        {showLearningContent && (
+        {learningExperienceError && (
+          <div className="text-red-500 mt-4">{learningExperienceError}</div>
+        )}
+        {showLearningContent && learningExperience && (
           <div className="mt-8 animate-fade-in">
             <Card className="p-6 bg-background border-2 border-primary/20">
               <h3 className="text-xl font-bold text-foreground mb-4 flex items-center">
                 <Brain className="w-6 h-6 mr-2 text-primary" />
-                Learning Experience
+                Learning Experience (5E Model)
               </h3>
-              <p className="text-muted-foreground mb-6">
-                (5 E Model/Experiential Learning/Art-Sports Integrated/ Inter/Cross Disciplinary etc. with clear mention of digital tools and resources used)
-              </p>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-lg font-semibold text-foreground mb-3 border-b border-border pb-2">
-                    5E Model
-                  </h4>
-                  <p className="font-medium text-foreground mb-4">Tools used:</p>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-foreground mb-2">• Activity 1:</h5>
-                      <p className="text-muted-foreground">
-                        Introduction of nomenclature with an activity of asking the word used for water. Observe the difficulty and understand the requirement of uniformity in the names of chemical structure, Introduce the nomenclature then.
-                      </p>
+              {/* Robust parsing and fallback */}
+              {(() => {
+                let parsed = learningExperience;
+                if (typeof parsed === "string") {
+                  try {
+                    // Try to extract JSON substring if possible
+                    const jsonStart = parsed.indexOf('{');
+                    const jsonEnd = parsed.lastIndexOf('}') + 1;
+                    if (jsonStart !== -1 && jsonEnd !== -1) {
+                      parsed = JSON.parse(parsed.substring(jsonStart, jsonEnd));
+                    }
+                  } catch (e) {
+                    parsed = null;
+                  }
+                }
+                if (parsed && parsed["5E_Model"]) {
+                  return parsed["5E_Model"].map((phaseObj: any, phaseIdx: number) => (
+                    <div key={phaseIdx} className="mb-8">
+                      <h4 className="text-lg font-bold text-primary mb-4">{phaseObj.phase}</h4>
+                      <div className="space-y-6">
+                        {phaseObj.activities.map((activity: any, actIdx: number) => (
+                          <Card key={actIdx} className="p-4 bg-white/90 border border-primary/10 shadow-sm">
+                            <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                              <span className="text-base font-semibold text-blue-700">{activity.title}</span>
+                              <span className="text-xs bg-blue-100 text-blue-800 rounded px-2 py-1">{activity.pedagogical_approach}</span>
+                            </div>
+                            <div className="mb-2 text-gray-700">{activity.description}</div>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                              {activity.intelligence_types && activity.intelligence_types.map((type: string, i: number) => (
+                                <Badge key={i} className="bg-green-100 text-green-800">{type}</Badge>
+                              ))}
+                            </div>
+                            {activity.elos && (
+                              <div className="mb-2">
+                                <span className="font-medium text-sm text-gray-600">ELOs:</span>
+                                <ul className="list-disc ml-6 text-sm text-gray-800">
+                                  {activity.elos.map((elo: string, i: number) => (
+                                    <li key={i}>{elo}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {activity.course_outcomes && (
+                              <div className="mb-2">
+                                <span className="font-medium text-sm text-gray-600">Course Outcomes:</span>
+                                <ul className="list-disc ml-6 text-sm text-gray-800">
+                                  {activity.course_outcomes.map((co: string, i: number) => (
+                                    <li key={i}>{co}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {activity.materials && (
+                              <div className="mb-2">
+                                <span className="font-medium text-sm text-gray-600">Materials:</span>
+                                <ul className="list-disc ml-6 text-sm text-gray-800">
+                                  {activity.materials.map((mat: string, i: number) => (
+                                    <li key={i}>{mat}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </Card>
+                        ))}
+                      </div>
                     </div>
-                    
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-foreground mb-2">• Activity 2:</h5>
-                      <p className="text-muted-foreground">
-                        Tracing carbon inside me and carbon around me.
-                      </p>
-                    </div>
-                    
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-foreground mb-2">• Activity 3:</h5>
-                      <p className="text-muted-foreground">
-                        Resonance and reaction intermediates by storytelling.
-                      </p>
-                    </div>
-                    
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-foreground mb-2">• Activity 4:</h5>
-                      <p className="text-muted-foreground mb-3">
-                        Experience the following using ball and stick models,
-                      </p>
-                      <ul className="ml-6 space-y-1 text-muted-foreground">
-                        <li>1. Structures</li>
-                        <li>2. Free rotation in alkanes</li>
-                        <li>3. Restricted rotation in alkenes and alkynes.</li>
-                        <li>4. Structures of different functional groups like nitriles, carbonyl compounds.</li>
-                      </ul>
-                    </div>
-                    
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-foreground mb-2">• Digital Resources:</h5>
-                      <p className="text-muted-foreground">
-                        Animated videos on purification techniques and understand the principle of it.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  ));
+                }
+                // Fallback: show raw string
+                return (
+                  <pre className="bg-gray-100 rounded-lg p-4 text-xs overflow-x-auto max-h-[500px] text-red-700">
+                    {typeof learningExperience === "string"
+                      ? learningExperience
+                      : JSON.stringify(learningExperience, null, 2)}
+                  </pre>
+                );
+              })()}
             </Card>
           </div>
         )}

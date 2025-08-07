@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +10,42 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ArrowLeft, Edit, FileText, Calendar, Hash, Save, X, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
+// API call to get paper question details
+export async function getPaperQuestionDetails(par_paperid: number) {
+  const response = await fetch(`https://ai.excelsoftcorp.com/aiapps/EXAMPREP/uspgetpaperquestiondetails`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ par_paperid }),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch paper question details: ${response.statusText}`);
+  }
+  return response.json();
+}
+// API call to update paper name
+export async function updatePaper(paperId: number, papername: string, par_status: string) {
+  const response = await fetch(`https://ai.excelsoftcorp.com/aiapps/EXAMPREP/paperedit/${paperId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ papername, par_status }),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to update paper: ${response.statusText}`);
+  }
+  return response.json();
+}
+
 interface Question {
   id: string;
   text: string;
   type: 'Knowledge' | 'Understanding' | 'Application';
   marks: number;
   isBookmarked?: boolean;
+  questionformat?: string;
 }
 
 interface QuestionBundle {
@@ -30,9 +60,89 @@ const QuestionBundlePreview = () => {
   const { bundleId } = useParams();
   const location = useLocation();
   
-  // Get bundle data from location state or fetch from storage
-  const initialBundle: QuestionBundle | null = location.state?.bundle || null;
-  const [bundle, setBundle] = useState<QuestionBundle | null>(initialBundle);
+  // Helper to map backend taxonomy to UI label
+  const taxonomyLabel = (name: string) => {
+    if (!name) return '';
+    if (name.toLowerCase() === 'apply') return 'Application';
+    if (name.toLowerCase() === 'understand') return 'Understanding';
+    if (name.toLowerCase() === 'knowledge') return 'Knowledge';
+    return name;
+  };
+
+  // Always map backend response to UI structure if present
+  const [bundle, setBundle] = useState<QuestionBundle | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        let paperId = null;
+        if (location.state?.paperid) {
+          paperId = location.state.paperid;
+        } else if (location.state?.par_paperid) {
+          paperId = location.state.par_paperid;
+        } else if (location.state?.bundle?.id) {
+          paperId = location.state.bundle.id;
+        }
+        if (!paperId) {
+          setError('No paper id provided.');
+          setLoading(false);
+          return;
+        }
+        const data = await getPaperQuestionDetails(Number(paperId));
+        // Support both old and new API response structures
+        let questions = [];
+        if (Array.isArray(data.p_refcur)) {
+          // Old structure
+          questions = data.p_refcur.map((q: any, idx: number) => ({
+            id: String(q.questionid ?? idx),
+            text: q.questiontext ?? '',
+            type: taxonomyLabel(q.taxonomyname ?? ''),
+            marks: 1,
+            questionformat: q.questionformat ? q.questionformat.split(',').join('    ').replace(/,/g, '') : ''
+          }));
+        } else if (Array.isArray(data.data) && data.data[0]?.questioninfo) {
+          // New structure (your provided sample)
+          questions = data.data[0].questioninfo.map((q: any, idx: number) => ({
+            id: String(q.parentid ?? idx),
+            text: q.questiontext ?? '',
+            type: taxonomyLabel(q.taxonomy ?? ''),
+            marks: 1,
+            questionformat: q.questionformat ? q.questionformat.split(',').join('    ').replace(/,/g, '') : ''
+          }));
+        }
+        // Prefer fileName from navigation state, then backend, then fallback
+        let paperName = location.state?.fileName || null;
+        if (!paperName && Array.isArray(data.p_refcur1)) {
+          const found = data.p_refcur1.find((p: any) => String(p.paperid) === String(paperId));
+          if (found && found.papername) {
+            paperName = found.papername;
+          }
+        }
+        if (!paperName && data.papername) {
+          paperName = data.papername;
+        }
+        if (!paperName) {
+          paperName = 'Paper';
+        }
+        setBundle({
+          id: String(paperId),
+          name: paperName,
+          lastEditOn: new Date(),
+          questions,
+        });
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch paper question details.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
   const [isEditingBundle, setIsEditingBundle] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [bundleName, setBundleName] = useState(bundle?.name || '');
@@ -43,19 +153,30 @@ const QuestionBundlePreview = () => {
     window.history.back();
   };
   
-  const handleSaveBundleName = () => {
+  // Save bundle name and update in DB
+  const handleSaveBundleName = async () => {
     if (bundle && bundleName.trim()) {
-      const updatedBundle = {
-        ...bundle,
-        name: bundleName.trim(),
-        lastEditOn: new Date()
-      };
-      setBundle(updatedBundle);
-      setIsEditingBundle(false);
-      toast({
-        title: "Bundle Updated",
-        description: "Bundle name has been successfully updated.",
-      });
+      try {
+        // Call backend API to update paper name
+        const result = await updatePaper(Number(bundle.id), bundleName.trim(), 'active');
+        const updatedBundle = {
+          ...bundle,
+          name: result.papername || bundleName.trim(),
+          lastEditOn: new Date()
+        };
+        setBundle(updatedBundle);
+        setIsEditingBundle(false);
+        toast({
+          title: "Bundle Updated",
+          description: "Bundle name has been successfully updated in the database.",
+        });
+      } catch (error: any) {
+        toast({
+          title: "Update Failed",
+          description: error.message || 'Failed to update bundle name in the database.',
+          variant: 'destructive',
+        });
+      }
     }
   };
   
@@ -96,21 +217,24 @@ const QuestionBundlePreview = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="text-lg text-gray-700">Loading paper questions...</div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="text-lg text-red-600">{error}</div>
+      </div>
+    );
+  }
   if (!bundle) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <Card className="text-center p-8">
-            <CardContent>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Bundle Not Found</h2>
-              <p className="text-gray-600 mb-4">The requested question bundle could not be found.</p>
-              <Button onClick={() => navigate('/exam-assist-prep')}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Exam Prep
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="text-lg text-gray-700">No bundle data found.</div>
       </div>
     );
   }
@@ -260,30 +384,19 @@ const QuestionBundlePreview = () => {
                             >
                               {question.type}
                             </Badge>
-                            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                              {question.marks} marks
-                            </Badge>
+                            
                           </div>
-                          <p className="text-gray-900 text-base leading-relaxed">
-                            {question.text}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => setEditingQuestion(question.id)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleDeleteQuestion(question.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          {/* Hide question if it only contains newlines or is empty after trimming */}
+                          {question.text && question.text.replace(/\n/g, '').trim() !== '' ? (
+                            <p className="text-gray-900 text-base leading-relaxed white-space: pre-line;" style={{ whiteSpace: 'pre-line' }}>
+                              {question.text.replace(/\\n/g, '\n')}
+                            </p>
+                          ) : null}
+                          {question.questionformat && (
+                            <p className="text-gray-700 text-sm leading-relaxed mt-2 whitespace-pre-line">
+                              {question.questionformat}
+                            </p>
+                          )}
                         </div>
                       </div>
                     )}
@@ -369,3 +482,4 @@ const EditQuestionForm = ({ question, onSave, onCancel }: {
 };
 
 export default QuestionBundlePreview;
+

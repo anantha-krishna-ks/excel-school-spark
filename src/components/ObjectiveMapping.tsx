@@ -6,48 +6,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Target, Brain, Users, Heart, Link, ArrowRight, Eye, Lightbulb, Edit } from 'lucide-react';
 
 interface ObjectiveMappingProps {
-  coreObjectives?: string[];
-  learningOutcomes?: string[];
+  data: {
+    id: number;
+    coreObjective: string;
+    coreObjectiveDescription?: string;
+    learningOutcomes: string[];
+    bloomsTaxonomy: string;
+    skills: string[];
+    competencies: string[];
+  }[];
 }
 
-// Dummy data structure as specified
-const dummyMappingData = [
-  {
-    id: 1,
-    coreObjective: "CO 1: Students will identify primary colors.",
-    learningOutcomes: [
-      "ELO 1.1: Recognize red, blue, yellow.",
-      "ELO 1.2: Differentiate primary from secondary."
-    ],
-    bloomsTaxonomy: "Apply",
-    skills: ["Observation", "Identification"],
-    competencies: ["Visual Recognition", "Color Theory"]
-  },
-  {
-    id: 2,
-    coreObjective: "CO 2: Students will analyze a simple poem.",
-    learningOutcomes: [
-      "ELO 2.1: Explain metaphors.",
-      "ELO 2.2: Summarize the poem's theme."
-    ],
-    bloomsTaxonomy: "Analysis",
-    skills: ["Critical Thinking", "Interpretation", "Deduction"],
-    competencies: ["Reading Comprehension", "Analytical Reasoning", "Literary Analysis"]
-  },
-  {
-    id: 3,
-    coreObjective: "CO 3: Students will create a short story with a moral.",
-    learningOutcomes: [
-      "ELO 3.1: Develop compelling characters.",
-      "ELO 3.2: Incorporate a clear moral lesson."
-    ],
-    bloomsTaxonomy: "Creation",
-    skills: ["Creative Writing", "Problem-Solving", "Imagination"],
-    competencies: ["Storytelling & Writing", "Creative Thinking", "Ethical Reasoning"]
-  }
-];
-
-const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: ObjectiveMappingProps) => {
+const ObjectiveMapping = ({ data }: ObjectiveMappingProps) => {
   const [selectedMappings, setSelectedMappings] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'edit' | 'view'>('view');
 
@@ -59,23 +29,34 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
     );
   };
 
-  const getBloomsTaxonomyIcon = (level: string) => {
-    switch (level.toLowerCase()) {
-      case 'apply': return '🔧';
-      case 'analysis': return '🔍';
-      case 'creation': return '🎨';
-      default: return '🧠';
-    }
+  const getBloomsTaxonomyIcon = (level: string | undefined | null): string => {
+    if (!level || typeof level !== "string") return "🧠";
+  
+    // Strip numbering like "1. Apply" → "Apply"
+    const cleaned = level.replace(/^\d+\.\s*/, "").toLowerCase();
+  
+    if (cleaned.includes("apply")) return "🔧";
+    if (cleaned.includes("analyse") || cleaned.includes("analysis")) return "🔍";
+    if (cleaned.includes("create") || cleaned.includes("creation")) return "🎨";
+    if (cleaned.includes("evaluate")) return "⚖️";
+  
+    return "🧠"; // Default icon
   };
+  
 
-  const getBloomsTaxonomyColor = (level: string) => {
-    switch (level.toLowerCase()) {
-      case 'apply': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'analysis': return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'creation': return 'bg-green-100 text-green-700 border-green-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
+  const getBloomsTaxonomyColor = (level: string | undefined | null): string => {
+    if (!level || typeof level !== "string") return "bg-gray-100 text-gray-700 border-gray-200";
+  
+    const cleaned = level.replace(/^\d+\.\s*/, "").toLowerCase();
+  
+    if (cleaned.includes("apply")) return "bg-blue-100 text-blue-700 border-blue-200";
+    if (cleaned.includes("analyse") || cleaned.includes("analysis")) return "bg-purple-100 text-purple-700 border-purple-200";
+    if (cleaned.includes("create") || cleaned.includes("creation")) return "bg-green-100 text-green-700 border-green-200";
+    if (cleaned.includes("evaluate")) return "bg-yellow-100 text-yellow-700 border-yellow-200";
+  
+    return "bg-gray-100 text-gray-700 border-gray-200";
   };
+  
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -91,7 +72,15 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
           </div>
         </div>
         
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'edit' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('edit')}
+          >
+            <Edit size={16} className="mr-1" />
+            Edit
+          </Button>
           <Button
             variant={viewMode === 'view' ? 'default' : 'outline'}
             size="sm"
@@ -100,17 +89,17 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
             <Eye size={16} className="mr-1" />
             View
           </Button>
-        </div>
+        </div> */}
       </div>
 
-      {/* Beautiful Grid Overview with Dummy Data */}
+      {/* Beautiful Grid Overview */}
       <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-xl p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
               <Target className="text-blue-600" size={24} />
             </div>
-            <div className="text-2xl font-bold text-blue-600">{dummyMappingData.length}</div>
+            <div className="text-2xl font-bold text-blue-600">{data.length}</div>
             <div className="text-sm text-blue-700">Core Objectives</div>
           </div>
           <div className="text-center">
@@ -118,7 +107,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               <Lightbulb className="text-green-600" size={24} />
             </div>
             <div className="text-2xl font-bold text-green-600">
-              {dummyMappingData.reduce((total, item) => total + item.learningOutcomes.length, 0)}
+              {data.reduce((total, item) => total + item.learningOutcomes.filter(lo => lo.trim().toLowerCase() !== "n/a").length, 0)}
             </div>
             <div className="text-sm text-green-700">Learning Outcomes</div>
           </div>
@@ -126,7 +115,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
               <Brain className="text-purple-600" size={24} />
             </div>
-            <div className="text-2xl font-bold text-purple-600">3</div>
+            <div className="text-2xl font-bold text-purple-600">{new Set(data.flatMap(item => Array.isArray(item.bloomsTaxonomy) ? item.bloomsTaxonomy : [item.bloomsTaxonomy]).filter(b => b !== "N/A")).size}</div>
             <div className="text-sm text-purple-700">Bloom's Levels</div>
           </div>
           <div className="text-center">
@@ -134,7 +123,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               <Users className="text-orange-600" size={24} />
             </div>
             <div className="text-2xl font-bold text-orange-600">
-              {new Set(dummyMappingData.flatMap(item => item.skills)).size}
+              {new Set(data.flatMap(item => item.skills)).size}
             </div>
             <div className="text-sm text-orange-700">Unique Skills</div>
           </div>
@@ -143,14 +132,14 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               <Heart className="text-red-600" size={24} />
             </div>
             <div className="text-2xl font-bold text-red-600">
-              {new Set(dummyMappingData.flatMap(item => item.competencies)).size}
+              {new Set(data.flatMap(item => item.competencies)).size}
             </div>
             <div className="text-sm text-red-700">Competencies</div>
           </div>
         </div>
       </div>
-
-      {/* Grid View with Dummy Data */}
+    
+      {/* Grid View */}
       <div className="space-y-6">
         <h4 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Target className="text-blue-600" size={20} />
@@ -180,26 +169,22 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
             </div>
 
             {/* Table Body */}
-            {dummyMappingData.map((mapping) => (
+            {data.map((mapping) => (
               <div key={mapping.id} className="grid grid-cols-5 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 {/* Core Objective Column */}
                 <div className="p-4 border-r border-gray-200">
-                  <div className="flex items-start gap-3">
-                    {viewMode === 'edit' && (
-                      <Checkbox
-                        checked={selectedMappings.includes(mapping.id)}
-                        onCheckedChange={() => toggleMapping(mapping.id)}
-                        className="mt-1"
-                      />
-                    )}
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900 mb-2">
-                        {mapping.coreObjective}
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {mapping.learningOutcomes.length} ELO{mapping.learningOutcomes.length > 1 ? 's' : ''} linked
-                      </Badge>
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 mb-1">
+                      {mapping.coreObjective}
                     </div>
+                    {mapping.coreObjectiveDescription && (
+                      <div className="text-xs text-gray-500 mb-2">
+                        {mapping.coreObjectiveDescription}
+                      </div>
+                    )}
+                    <Badge variant="outline" className="text-xs">
+                      {mapping.learningOutcomes.length} ELO{mapping.learningOutcomes.length > 1 ? 's' : ''} linked
+                    </Badge>
                   </div>
                 </div>
 
@@ -227,15 +212,31 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
                   </div>
                 </div>
 
-                {/* Bloom's Taxonomy Column */}
+               {/* Bloom's Taxonomy Column */}
                 <div className="p-4 border-r border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{getBloomsTaxonomyIcon(mapping.bloomsTaxonomy)}</span>
-                    <Badge className={`${getBloomsTaxonomyColor(mapping.bloomsTaxonomy)} border`}>
-                      {mapping.bloomsTaxonomy}
-                    </Badge>
+                  <div className="flex flex-col gap-2">
+                    {Array.isArray(mapping.bloomsTaxonomy) ? (
+                      mapping.bloomsTaxonomy.map((bloom: string, index: number) => {
+                        const icon = getBloomsTaxonomyIcon(bloom);
+                        const badgeColor = getBloomsTaxonomyColor(bloom); // Optional: for colored badges
+                        return (
+                          <div key={index} className="flex items-center gap-2">
+                            <span className="text-lg">{icon}</span>
+                            <span
+                              className={`text-xs font-medium px-3 py-1 rounded-full border ${badgeColor}`}
+                            >
+                              {bloom}
+                            </span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-sm text-gray-500">N/A</div>
+                    )}
                   </div>
                 </div>
+
+
 
                 {/* Skills Column */}
                 <div className="p-4 border-r border-gray-200">
@@ -270,7 +271,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
               <CardTitle className="text-sm font-medium text-gray-600">Total Mappings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{dummyMappingData.length}</div>
+              <div className="text-2xl font-bold text-blue-600">{data.length}</div>
               <p className="text-xs text-gray-500">Core objectives mapped</p>
             </CardContent>
           </Card>
@@ -281,7 +282,7 @@ const ObjectiveMapping = ({ coreObjectives = [], learningOutcomes = [] }: Object
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {dummyMappingData.reduce((total, item) => total + item.learningOutcomes.length, 0)}
+                {data.reduce((total, item) => total + item.learningOutcomes.filter(lo => lo.trim().toLowerCase() !== "n/a").length, 0)}
               </div>
               <p className="text-xs text-gray-500">Total ELOs defined</p>
             </CardContent>

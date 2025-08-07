@@ -8,6 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
+import axios from 'axios';
+import { PageLoader } from '@/components/ui/loader';
+import { saveAs } from "file-saver";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+} from "docx";
 
 interface Question {
   id: string;
@@ -33,66 +43,97 @@ const QuizPreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const quizData = location.state?.quizData as QuizData;
+  const initialQuestions = location.state?.questions as Question[];
 
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions || []);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [quizName, setQuizName] = useState(quizData?.name || '');
+  const [loading, setLoading] = useState(false);
 
   // Generate mock questions based on quiz data
   useEffect(() => {
-    if (quizData) {
-      const mockQuestions: Question[] = [];
-      const questionTypes: Question['type'][] = ['multiple-choice', 'true-false', 'short-answer', 'fill-in-the-blanks'];
-      
-      for (let i = 0; i < quizData.questionCount; i++) {
-        const eloIndex = i % quizData.selectedELOs.length;
-        const selectedELO = quizData.selectedELOs[eloIndex];
-        const questionType = questionTypes[i % questionTypes.length];
-        
-        let options: string[] | undefined;
-        let correctAnswer = '';
-        
-        if (questionType === 'multiple-choice') {
-          options = [
-            'Option A - First choice',
-            'Option B - Second choice',
-            'Option C - Third choice',
-            'Option D - Fourth choice'
-          ];
-          correctAnswer = 'Option A - First choice';
-        } else if (questionType === 'true-false') {
-          options = ['True', 'False'];
-          correctAnswer = 'True';
-        } else if (questionType === 'fill-in-the-blanks') {
-          correctAnswer = 'correct word';
-        } else {
-          correctAnswer = 'Sample answer for short answer question';
-        }
+    
+    if (!quizData) return;
+    if (questions && questions.length > 0) return;
 
-        let questionText = '';
-        if (questionType === 'fill-in-the-blanks') {
-          questionText = `Question ${i + 1}: Complete the following sentence related to ${selectedELO.title}. "The key concept of _____ is essential for understanding this topic."`;
-        } else {
-          questionText = `Question ${i + 1}: This is a sample ${questionType} question related to ${selectedELO.title}. What is the correct approach to solve this problem?`;
-        }
-
-        mockQuestions.push({
-          id: `q-${i + 1}`,
-          text: questionText,
-          type: questionType,
-          options,
-          correctAnswer,
-          explanation: `This is the explanation for question ${i + 1}. The correct answer is based on the principles of ${selectedELO.title}.`,
-          difficulty: ['easy', 'medium', 'hard'][i % 3] as Question['difficulty'],
-          elo: selectedELO.title
+    const fetchQuestions = async () => {
+      setLoading(true);
+      if (!quizData) return;
+      setLoading(true); // Start loadingsetLoading(true);
+      try {
+        const response = await fetch('https://ai.excelsoftcorp.com/ExcelAIQuizGen/generate-questions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            grade: quizData.grade,
+            subject: quizData.subject,
+            chapter: quizData.chapter,
+            questionCount: quizData.questionCount,
+            selectedELOs: quizData.selectedELOs || []
+          }),
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data && data.questions) {
+          setQuestions(data.questions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch questions:", error);
       }
-      
-      setQuestions(mockQuestions);
+      finally {
+        setLoading(false); // End loading
+      }
+    };
+
+    fetchQuestions();
+  }, [quizData, questions]);
+
+  const handleSaveQuizquestion = async () => {
+    if (!quizData || !questions || questions.length === 0) {
+      console.error("Quiz data or questions missing");
+      return;
     }
-  }, [quizData]);
+
+    const payload = {
+      custcode: "CUST001",
+      orgcode: "ORG001",
+      usercode: "USER123",
+      classid: quizData.gradeId,
+      subjectid: quizData.subjectId,
+      chapterid: quizData.chapterId,
+      questioncount: quizData.questionCount,
+      eloids: quizData.selectedELOs.map(elo => elo.id).join(","),
+      quizname: quizData.name,
+      questioninfo: questions
+    };
+
+    try {
+      const response = await fetch("https://ai.excelsoftcorp.com/ExcelAIQuizGen/save-quiz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      console.log("Quiz saved successfully:", result);
+      alert("Quiz saved successfully!");
+    } catch (error) {
+      console.error("Error saving quiz:", error);
+      alert("Failed to save quiz.");
+    }
+  };
+
 
   const handleEditQuestion = (question: Question) => {
     setEditingQuestion({ ...question });
@@ -101,7 +142,7 @@ const QuizPreview = () => {
 
   const handleSaveEdit = () => {
     if (editingQuestion) {
-      setQuestions(prev => prev.map(q => 
+      setQuestions(prev => prev.map(q =>
         q.id === editingQuestion.id ? editingQuestion : q
       ));
       setIsEditDialogOpen(false);
@@ -132,17 +173,85 @@ const QuizPreview = () => {
     navigate('/quiz-generator');
   };
 
-  const handleDisplay = () => {
-    navigate('/quiz-generator/display', { state: { questions, quizData: { ...quizData, name: quizName } } });
-  };
-
-  const handleExport = () => {
-    // Implementation for export functionality
-    toast({
-      title: "Export feature",
-      description: "Export functionality will be implemented here.",
+    const handleDisplay = () => {
+    // Always pass questions and quizData on navigation!
+    navigate('/quiz-generator/display', {
+      state: {
+        questions,
+        quizData: { ...quizData, name: quizName }
+      }
     });
   };
+
+  const handleExport = async () => {
+  if (!questions || questions.length === 0) {
+    alert("No questions to export.");
+    return;
+  }
+
+  const questionParagraphs = questions.map((q, index) => {
+    const paragraphs = [
+      new Paragraph({
+        text: `Q${index + 1}. ${q.text}`,
+        heading: HeadingLevel.HEADING_2,
+        spacing: { after: 200 },
+      }),
+    ];
+
+    if (q.type === "multiple-choice" && q.options) {
+      q.options.forEach((opt, i) => {
+        paragraphs.push(
+          new Paragraph({
+            children: [new TextRun({ text: `${String.fromCharCode(65 + i)}. ${opt}` })],
+            bullet: { level: 0 },
+          })
+        );
+      });
+    }
+
+    if (q.type === "true-false") {
+      paragraphs.push(
+        new Paragraph("A. True"),
+        new Paragraph("B. False")
+      );
+    }
+
+    if (q.type === "fill-in-the-blanks") {
+      paragraphs.push(new Paragraph("Answer: ____________"));
+    }
+
+    paragraphs.push(
+      new Paragraph({
+        text: `Correct Answer: ${q.correctAnswer}`,
+        spacing: { before: 200 },
+      }),
+      new Paragraph({
+        text: `Explanation: ${q.explanation}`,
+        spacing: { after: 300 },
+      })
+    );
+
+    return paragraphs;
+  });
+
+  const allParagraphs = questionParagraphs.flat();
+
+  const now = new Date();
+  const timestamp = now.toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  const fileName = `questions_${timestamp}.docx`;
+
+  const docContent = new Document({
+    sections: [
+      {
+        children: allParagraphs,
+      },
+    ],
+  });
+
+  const blob = await Packer.toBlob(docContent);
+  saveAs(blob, fileName);
+};
+
 
   if (!quizData) {
     return (
@@ -160,6 +269,9 @@ const QuizPreview = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+      {loading && (
+        <PageLoader text="Loading ....." />
+      )}
       {/* Header */}
       <header className="bg-background/80 backdrop-blur-sm border-b border-border/50 px-6 py-6">
         <div className="max-w-7xl mx-auto">
@@ -253,13 +365,12 @@ const QuizPreview = () => {
                         <span className="font-bold text-sm text-primary">Q{index + 1}</span>
                       </div>
                       <div className="flex gap-2">
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs ${
-                            question.difficulty === 'easy' ? 'bg-green-50 text-green-700 border-green-200' :
-                            question.difficulty === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                            'bg-red-50 text-red-700 border-red-200'
-                          }`}
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${question.difficulty === 'easy' ? 'bg-green-50 text-green-700 border-green-200' :
+                              question.difficulty === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                'bg-red-50 text-red-700 border-red-200'
+                            }`}
                         >
                           {question.difficulty}
                         </Badge>
@@ -302,11 +413,10 @@ const QuizPreview = () => {
                       </h5>
                       <ul className="space-y-2">
                         {question.options.map((option, optIndex) => (
-                          <li key={optIndex} className={`text-sm p-2 rounded-md transition-colors ${
-                            option === question.correctAnswer 
-                              ? 'bg-green-50 text-green-700 font-medium border border-green-200' 
+                          <li key={optIndex} className={`text-sm p-2 rounded-md transition-colors ${option === question.correctAnswer
+                              ? 'bg-green-50 text-green-700 font-medium border border-green-200'
                               : 'bg-muted/30 text-muted-foreground hover:bg-muted/50'
-                          }`}>
+                            }`}>
                             <span className="font-semibold mr-2">{String.fromCharCode(65 + optIndex)}.</span>
                             {option}
                             {option === question.correctAnswer && <CheckCircle2 className="w-4 h-4 inline ml-2 text-green-600" />}
@@ -361,9 +471,10 @@ const QuizPreview = () => {
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
+
           <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 min-w-32 transition-all duration-200 hover:scale-105 shadow-lg">
+              <Button onClick={handleSaveQuizquestion} className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 min-w-32 transition-all duration-200 hover:scale-105 shadow-lg">
                 <Save className="w-4 h-4 mr-2" />
                 Save
               </Button>

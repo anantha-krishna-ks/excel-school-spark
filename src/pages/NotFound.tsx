@@ -68,13 +68,7 @@ const NotFound = () => {
               <ArrowLeft className="w-4 h-4" />
               Go Back
             </Button>
-            <Button 
-              onClick={() => navigate('/tools')}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
-            >
-              <Home className="w-4 h-4" />
-              Go to Tools
-            </Button>
+                          
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState , useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Calendar, Edit, Copy, Trash2, ArrowLeft, Eye, Download, FileText, FileSpreadsheet, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,40 +30,10 @@ const QuizListing = () => {
   const [exportVersion, setExportVersion] = useState('both');
   const [includeAnswers, setIncludeAnswers] = useState(true);
   const [includeExplanations, setIncludeExplanations] = useState(true);
-
+  const [savedQuizzes, setSavedQuizzes] = useState<SavedQuiz[]>([]);
   // Mock data for saved quizzes
-  const [savedQuizzes] = useState<SavedQuiz[]>([
-    {
-      id: '1',
-      name: 'Photosynthesis Quiz',
-      chapter: 'Life Processes',
-      subject: 'Biology',
-      grade: 'Class 10',
-      questionCount: 10,
-      createdAt: '2024-01-15',
-      lastModified: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Quadratic Equations Test',
-      chapter: 'Polynomials',
-      subject: 'Mathematics',
-      grade: 'Class 10',
-      questionCount: 12,
-      createdAt: '2024-01-10',
-      lastModified: '2024-01-12'
-    },
-    {
-      id: '3',
-      name: 'Periodic Classification Quiz',
-      chapter: 'Periodic Classification of Elements',
-      subject: 'Chemistry',
-      grade: 'Class 10',
-      questionCount: 8,
-      createdAt: '2024-01-05',
-      lastModified: '2024-01-05'
-    }
-  ]);
+
+
 
   const filteredQuizzes = savedQuizzes.filter(quiz =>
     quiz.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,23 +44,122 @@ const QuizListing = () => {
   const handleEdit = (quizId: string) => {
     navigate(`/quiz-generator/preview/${quizId}`);
   };
+  useEffect(() => {
+  const fetchQuizzes = async () => {
+    
+    try {
+      const response = await fetch('https://ai.excelsoftcorp.com/ExcelAIQuizGen/get-quiz-details', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          custcode: 'CUST001',
+          orgcode: 'ORG001',
+          usercode: 'USER123',
+          searchtext: ''
+        })
+      });
 
-  const handlePreview = (quiz: SavedQuiz) => {
-    // Generate mock questions for the quiz
-    const mockQuestions = generateMockQuestions(quiz);
-    const quizData = {
-      name: quiz.name,
-      grade: quiz.grade,
-      subject: quiz.subject,
-      chapter: quiz.chapter,
-      questionCount: quiz.questionCount,
-      selectedELOs: [
-        { id: '1', title: 'Understanding Core Concepts', description: 'Basic understanding of the topic' },
-        { id: '2', title: 'Problem Solving', description: 'Apply knowledge to solve problems' }
-      ]
-    };
-    navigate('/quiz-generator/display', { state: { questions: mockQuestions, quizData } });
+      const result = await response.json();
+
+      if (result.status === 'Success' && Array.isArray(result.data)) {
+        const quizzes: SavedQuiz[] = result.data.map((item: any) => ({
+          id: item.quizid.toString(),
+          name: item.quizname,
+          chapter: item.chaptername || 'Unknown Chapter',
+          subject: item.subjectname || 'Unknown Subject',
+          grade: item.classname || 'Unknown Class',
+          questionCount: item.questioncount,
+          createdAt: item.created_at,
+          lastModified: item.created_at // use created_at if no modified field
+        }));
+
+        setSavedQuizzes(quizzes);
+      } else {
+        
+      }
+    } catch (err) {
+      console.error('Error fetching quizzes:', err);
+      
+    } finally {
+      
+    }
   };
+
+  fetchQuizzes();
+}, []);
+
+
+  const handlePreview = async (quiz: SavedQuiz) => {
+  try {
+    const quizId = Number(quiz.id);
+    if (isNaN(quizId)) {
+      toast({
+        title: "Invalid Quiz ID",
+        description: `Quiz ID "${quiz.id}" is not a valid number.`,
+      });
+      return;
+    }
+
+    const response = await fetch(`https://ai.excelsoftcorp.com/ExcelAIQuizGen/get-json-details/${quizId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'Success' && result.data.length > 0) {
+      // FIXED: extract quizinfo from the first item
+      const quizInfo = result.data[0].quizinfo;
+
+      const questions = quizInfo.map((q: any) => ({
+        id: q.id,
+        text: q.text,
+        type: q.type,
+        options: q.options,
+        correctAnswer: q.correctAnswer, // fixed casing too
+        explanation: q.explanation,
+        difficulty: q.difficulty,
+        elo: q.elo,
+      }));
+
+      const quizData = {
+        name: quiz.name,
+        grade: quiz.grade,
+        subject: quiz.subject,
+        chapter: quiz.chapter,
+        questionCount: questions.length,
+        selectedELOs: [],
+      };
+
+      navigate('/quiz-generator/display', {
+  state: {
+    questions,
+    quizData,
+    origin: 'listing', // 👈 flag to indicate the source
+  },
+});
+    } else {
+      toast({
+        title: "Error",
+        description: "No quiz data found.",
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching quiz preview:', error);
+    toast({
+      title: "Error",
+      description: "Failed to fetch quiz details.",
+    });
+  }
+};
+
+
+
+
 
   const handleExport = (quiz: SavedQuiz) => {
     setSelectedQuizForExport(quiz);
@@ -113,6 +182,7 @@ const QuizListing = () => {
     });
   };
 
+  
   const generateMockQuestions = (quiz: SavedQuiz) => {
     const questions = [];
     for (let i = 0; i < quiz.questionCount; i++) {

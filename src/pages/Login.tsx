@@ -4,52 +4,103 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, LogIn, Mail, Lock, Sparkles, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, LogIn, Mail, Lock, Sparkles, User, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { PageLoader } from '@/components/ui/loader';
+import { PageLoader } from "@/components/ui/loader"
+import axios from "axios";
+import config from '@/config.js';
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simple validation
-    if (!formData.email || !formData.password) {
+  e.preventDefault();
+
+  // Simple validation
+  if (!formData.username && !formData.password) {
+    toast({
+      title: "Missing Information",
+      description: "Both username and password are required. Please fill out these fields.",
+      variant: "destructive"
+    });
+    return;
+  }
+  if (!formData.username) {
+    toast({
+      title: "Missing Information",
+      description: "Username is required. Please fill out this field.",
+      variant: "destructive"
+    });
+    return;
+  }
+  if (!formData.password) {
+    toast({
+      title: "Missing Information",
+      description: "Password is required. Please fill out this field.",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await axios.post(
+      config.LOGIN_CHECK_USER_URL,
+      {
+        username: formData.username,
+        password: formData.password
+      }
+    );
+  
+    // Handle successful login (adjust as per your API's response)
+    if (
+      response.data && (
+        response.data.status === "success" ||
+        response.data.Status === "success" ||
+        response.data.status === "S001" ||
+        response.data.Status === "S001" ||
+        (Array.isArray(response.data.data) && response.data.data.length > 0)
+      )
+    ) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all fields.",
+        title: "Welcome back!",
+        description: "Successfully logged in.",
+      });
+      // Save user info to localStorage
+      if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+        localStorage.setItem('user', JSON.stringify(response.data.data[0]));
+      }
+      navigate('/tools');
+    } else {
+      toast({
+        title: "Login Failed",
+        description: response.data?.message || response.data?.Message || "Invalid credentials.",
         variant: "destructive"
       });
-      return;
     }
-
-    setIsLoading(true);
-
-    // Mock login delay - in real app this would call an API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
+  } catch (err) {
     toast({
-      title: "Welcome back!",
-      description: "Successfully logged in.",
+      title: "Login Error",
+      description: "Unable to login. Please try again.",
+      variant: "destructive"
     });
+  } finally {
+    setLoading(false);
+  }
 
-    // Redirect to tools page
-    navigate('/tools');
-    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
-      {/* Back Button */}
-      <Button
+     {/* Back Button */}
+     <Button
         variant="ghost"
         size="sm"
         onClick={() => navigate(-1)}
@@ -58,8 +109,9 @@ const Login = () => {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back
       </Button>
-
-      {/* Floating background elements */}
+   
+    {loading && <PageLoader text="Signing you in..." />}
+       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200/20 rounded-full blur-xl animate-float"></div>
         <div className="absolute top-40 right-20 w-32 h-32 bg-indigo-200/20 rounded-full blur-xl animate-float animation-delay-2s"></div>
@@ -89,21 +141,23 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Field */}
+              {/* Username Field */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email Address
+                <Label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                  Username
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <User className="h-4 w-4" />
+                  </span>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="pl-10 h-12 bg-white/50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
-                    required
+                    id="username"
+                    type="text"
+                    autoComplete="username"
+                    placeholder="Enter your username"
+                    value={formData.username}
+                    onChange={e => setFormData({ ...formData, username: e.target.value })}
+                    className="mt-1 pl-9"
                   />
                 </div>
               </div>
@@ -122,8 +176,7 @@ const Login = () => {
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                     className="pl-10 pr-10 h-12 bg-white/50 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
-                    required
-                  />
+                   />
                   <Button
                     type="button"
                     variant="ghost"
@@ -143,13 +196,16 @@ const Login = () => {
               {/* Login Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50"
+                className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium shadow-lg shadow-blue-500/25 transition-all duration-200"
               >
                 <LogIn className="h-4 w-4 mr-2" />
-                {isLoading ? 'Signing In...' : 'Sign In'}
+                Sign In
               </Button>
+             
             </form>
+
+            {/* Footer Links */}
+            
           </CardContent>
         </Card>
 
@@ -158,11 +214,8 @@ const Login = () => {
           Powered by Excel School AI Platform
         </div>
       </div>
-      
-      {isLoading && (
-        <PageLoader text="Signing you in..." />
-      )}
     </div>
+    
   );
 };
 

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Trash2, Plus, ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
-import { generateCourseOutcomes } from '../../api';
+import { generateCourseOutcomes } from './api';
 
 interface ELO {
   id: string;

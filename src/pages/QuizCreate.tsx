@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { getGrades, getSubjects, getChapters, generateCourseOutcomes } from '../../api';
+
 
 interface Grade {
   ClassId: number;
@@ -37,84 +37,81 @@ const QuizCreate = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [eloLoading, setEloLoading] = useState(false);
-  
+
   // Form data
   const [quizName, setQuizName] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState<string>('');
-  const [selectedSubject, setSelectedSubject] = useState<string>('');
-  const [selectedChapter, setSelectedChapter] = useState<string>('');
+  const [selectedGrade, setSelectedGrade] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedChapter, setSelectedChapter] = useState("");
   const [questionCount, setQuestionCount] = useState<string>('');
   const [selectedELOs, setSelectedELOs] = useState<ELO[]>([]);
-  
+
   // Dropdown data
-  const [grades, setGrades] = useState<Grade[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [grades, setGrades] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [chapters, setChapters] = useState([]);
   const [elos, setElos] = useState<ELO[]>([]);
 
   // Load grades on component mount
   useEffect(() => {
-    const loadGrades = async () => {
-      try {
-        const gradesData = await getGrades('DEMO_ORG');
-        setGrades(gradesData);
-      } catch (error) {
-        console.error('Error loading grades:', error);
-        // Fallback mock data
-        setGrades([
-          { ClassId: 10, ClassName: 'Class 10' },
-          { ClassId: 11, ClassName: 'Class 11' },
-          { ClassId: 12, ClassName: 'Class 12' }
-        ]);
-      }
-    };
-    loadGrades();
+    fetch("https://ai.excelsoftcorp.com/aiapps/EXAMPREP/get_classes")
+      .then((res) => res.json())
+      .then((data) => {
+        // Normalize the keys
+        const formatted = data.map((item) => ({
+          ClassId: item.classid,
+          ClassName: item.classname
+        }));
+        setGrades(formatted);
+      })
+      .catch((err) => {
+        console.error("Error fetching grades:", err);
+      });
   }, []);
 
   // Load subjects when grade changes
   useEffect(() => {
-    const loadSubjects = async () => {
-      if (selectedGrade) {
-        try {
-          const subjectsData = await getSubjects('DEMO_ORG', parseInt(selectedGrade));
-          setSubjects(subjectsData);
-        } catch (error) {
-          console.error('Error loading subjects:', error);
-          // Fallback mock data
-          setSubjects([
-            { SubjectId: 1, SubjectName: 'Mathematics', PlanClassId: selectedGrade },
-            { SubjectId: 2, SubjectName: 'Science', PlanClassId: selectedGrade },
-            { SubjectId: 3, SubjectName: 'English', PlanClassId: selectedGrade }
-          ]);
-        }
-      }
-    };
-    loadSubjects();
+    if (selectedGrade) {
+      fetch(
+        `https://ai.excelsoftcorp.com/aiapps/EXAMPREP/get_subject?classid=${selectedGrade}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const formatted = data.map((item) => ({
+            SubjectId: item.subjectid,
+            SubjectName: item.subjectname
+          }));
+          setSubjects(formatted);
+          setSelectedSubject(""); // reset subject when grade changes
+        })
+        .catch((err) => console.error("Error fetching subjects:", err));
+    } else {
+      setSubjects([]);
+      setSelectedSubject("");
+    }
   }, [selectedGrade]);
 
   // Load chapters when subject changes
   useEffect(() => {
-    const loadChapters = async () => {
-      if (selectedSubject) {
-        const subject = subjects.find(s => s.SubjectId.toString() === selectedSubject);
-        if (subject) {
-          try {
-            const chaptersData = await getChapters('DEMO_ORG', subject.PlanClassId);
-            setChapters(chaptersData);
-          } catch (error) {
-            console.error('Error loading chapters:', error);
-            // Fallback mock data
-            setChapters([
-              { chapterId: '1', chapterName: 'Introduction to Numbers' },
-              { chapterId: '2', chapterName: 'Algebra Basics' },
-              { chapterId: '3', chapterName: 'Geometry Fundamentals' }
-            ]);
-          }
-        }
-      }
-    };
-    loadChapters();
-  }, [selectedSubject, subjects]);
+    if (selectedGrade && selectedSubject) {
+      fetch(
+        `https://ai.excelsoftcorp.com/aiapps/EXAMPREP/get_chapters?classid=${selectedGrade}&subjectid=${selectedSubject}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const formatted = data.map((item) => ({
+            chapterId: item.chapterid,
+            chapterName: item.chaptername
+          }));
+          setChapters(formatted);
+          setSelectedChapter("");
+        })
+        .catch((err) => console.error("Error fetching chapters:", err));
+    } else {
+      setChapters([]);
+      setSelectedChapter("");
+    }
+  }, [selectedGrade, selectedSubject]);
 
   // Load ELOs when chapter changes
   useEffect(() => {
@@ -124,7 +121,7 @@ const QuizCreate = () => {
         const chapter = chapters.find(c => c.chapterId === selectedChapter);
         const subject = subjects.find(s => s.SubjectId.toString() === selectedSubject);
         const grade = grades.find(g => g.ClassId.toString() === selectedGrade);
-        
+
         if (chapter && subject && grade) {
           try {
             const elosData = await generateCourseOutcomes(
@@ -133,14 +130,14 @@ const QuizCreate = () => {
               subject.SubjectName,
               chapter.chapterName
             );
-            
+
             const formattedELOs: ELO[] = elosData.course_outcomes?.map((outcome: any, index: number) => ({
               id: outcome.co_id || `elo-${index}`,
               title: outcome.co_title || `ELO ${index + 1}`,
               description: outcome.co_description || outcome.title || 'No description available',
               selected: false
             })) || [];
-            
+
             setElos(formattedELOs);
           } catch (error) {
             console.error('Error loading ELOs:', error);
@@ -159,7 +156,7 @@ const QuizCreate = () => {
   }, [selectedChapter, chapters, subjects, grades, selectedSubject, selectedGrade]);
 
   const handleELOSelection = (eloId: string) => {
-    setElos(prev => prev.map(elo => 
+    setElos(prev => prev.map(elo =>
       elo.id === eloId ? { ...elo, selected: !elo.selected } : elo
     ));
   };
@@ -175,28 +172,47 @@ const QuizCreate = () => {
     { value: 'per-elo', label: 'Create quiz with 3 questions per selected ELO' }
   ];
 
+  // const isFormValid = () => {
+  //   return quizName.trim() && selectedGrade && selectedSubject && selectedChapter &&
+  //     questionCount && getSelectedELOsCount() > 0;
+  // };
   const isFormValid = () => {
-    return quizName.trim() && selectedGrade && selectedSubject && selectedChapter && 
-           questionCount;
+    return quizName.trim() && selectedGrade && selectedSubject && selectedChapter &&
+      questionCount ;
   };
 
   const handleGenerate = async () => {
     if (!isFormValid()) return;
-    
+
     setLoading(true);
-    
+
     // Simulate generation time
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    debugger
     const quizData = {
-      name: quizName,
-      grade: grades.find(g => g.ClassId.toString() === selectedGrade)?.ClassName,
-      subject: subjects.find(s => s.SubjectId.toString() === selectedSubject)?.SubjectName,
-      chapter: chapters.find(c => c.chapterId === selectedChapter)?.chapterName,
-      questionCount: questionCount === 'per-elo' ? getSelectedELOsCount() * 3 : parseInt(questionCount),
-      selectedELOs: elos.filter(elo => elo.selected)
-    };
-    
+  name: quizName,
+
+  gradeId: selectedGrade,
+  grade: grades.find(g => g.ClassId.toString() === selectedGrade)?.ClassName,
+
+  subjectId: selectedSubject,
+  subject: subjects.find(s => s.SubjectId.toString() === selectedSubject)?.SubjectName,
+
+  chapterId: selectedChapter,
+  chapter: chapters.find(c => c.chapterId === Number(selectedChapter))?.chapterName,
+
+  questionCount: questionCount === 'per-elo'
+    ? getSelectedELOsCount() > 0
+      ? getSelectedELOsCount() * 3
+      : 0
+    : parseInt(questionCount),
+
+  selectedELOs: getSelectedELOsCount() > 0
+    ? elos.filter(elo => elo.selected)
+    : []
+};
+
+
     navigate('/quiz-generator/preview', { state: { quizData } });
   };
 
@@ -245,13 +261,13 @@ const QuizCreate = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label>Grade</Label>
+                    <label>Grade</label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select grade" />
                       </SelectTrigger>
                       <SelectContent>
-                        {grades.map(grade => (
+                        {grades.map((grade) => (
                           <SelectItem key={grade.ClassId} value={grade.ClassId.toString()}>
                             {grade.ClassName}
                           </SelectItem>
@@ -277,14 +293,21 @@ const QuizCreate = () => {
                   </div>
 
                   <div>
-                    <Label>Chapter</Label>
-                    <Select value={selectedChapter} onValueChange={setSelectedChapter} disabled={!selectedSubject}>
+                    <label>Chapter</label>
+                    <Select
+                      value={selectedChapter}
+                      onValueChange={setSelectedChapter}
+                      disabled={!selectedSubject}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select chapter" />
                       </SelectTrigger>
                       <SelectContent>
-                        {chapters.map(chapter => (
-                          <SelectItem key={chapter.chapterId} value={chapter.chapterId}>
+                        {chapters.map((chapter) => (
+                          <SelectItem
+                            key={chapter.chapterId}
+                            value={chapter.chapterId.toString()}
+                          >
                             {chapter.chapterName}
                           </SelectItem>
                         ))}
@@ -315,9 +338,9 @@ const QuizCreate = () => {
                     <Select>
                       <SelectTrigger>
                         <SelectValue placeholder={
-                          eloLoading 
-                            ? "Loading ELOs..." 
-                            : getSelectedELOsCount() > 0 
+                          eloLoading
+                            ? "Loading ELOs..."
+                            : getSelectedELOsCount() > 0
                               ? `${getSelectedELOsCount()} ELO${getSelectedELOsCount() > 1 ? 's' : ''} selected`
                               : "Select ELOs"
                         } />
@@ -440,16 +463,20 @@ const QuizCreate = () => {
                   <div>
                     <div className="text-sm text-gray-500">Chapter</div>
                     <div className="font-medium">
-                      {chapters.find(c => c.chapterId === selectedChapter)?.chapterName}
+                      {
+                        chapters.find(c => c.chapterId === Number(selectedChapter))
+                          ?.chapterName
+                      }
                     </div>
                   </div>
                 )}
+
 
                 {questionCount && (
                   <div>
                     <div className="text-sm text-gray-500">Questions</div>
                     <div className="font-medium">
-                      {questionCount === 'per-elo' 
+                      {questionCount === 'per-elo'
                         ? `${getSelectedELOsCount() * 3} (3 per ELO)`
                         : questionCount
                       }
