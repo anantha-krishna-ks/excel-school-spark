@@ -36,6 +36,8 @@ const VideoClipEditor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalYoutubeUrl, setModalYoutubeUrl] = useState('');
   const [modalActiveTab, setModalActiveTab] = useState<'youtube' | 'upload'>('youtube');
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [dragOverItem, setDragOverItem] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalFileInputRef = useRef<HTMLInputElement>(null);
@@ -179,6 +181,50 @@ const VideoClipEditor = () => {
     const newClips = [...clips];
     [newClips[currentIndex], newClips[newIndex]] = [newClips[newIndex], newClips[currentIndex]];
     setClips(newClips);
+  };
+
+  const handleDragStart = (e: React.DragEvent, clipId: string) => {
+    setDraggedItem(clipId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, clipId: string) => {
+    e.preventDefault();
+    setDragOverItem(clipId);
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragLeave = () => {
+    setDragOverItem(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetClipId: string) => {
+    e.preventDefault();
+    
+    if (!draggedItem || draggedItem === targetClipId) {
+      setDraggedItem(null);
+      setDragOverItem(null);
+      return;
+    }
+
+    const draggedIndex = clips.findIndex(clip => clip.id === draggedItem);
+    const targetIndex = clips.findIndex(clip => clip.id === targetClipId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    const newClips = [...clips];
+    const [draggedClip] = newClips.splice(draggedIndex, 1);
+    newClips.splice(targetIndex, 0, draggedClip);
+
+    setClips(newClips);
+    setDraggedItem(null);
+    setDragOverItem(null);
+    toast.success('Clip reordered successfully');
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDragOverItem(null);
   };
 
   const downloadAllClips = () => {
@@ -652,32 +698,52 @@ const VideoClipEditor = () => {
                   {clips.map((clip, index) => (
                     <div
                       key={clip.id}
-                      className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-colors"
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, clip.id)}
+                      onDragOver={(e) => handleDragOver(e, clip.id)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, clip.id)}
+                      onDragEnd={handleDragEnd}
+                      className={`bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all cursor-move select-none ${
+                        draggedItem === clip.id 
+                          ? 'opacity-50 scale-95 transform rotate-2' 
+                          : dragOverItem === clip.id 
+                          ? 'border-cyan-400 bg-cyan-50 scale-105' 
+                          : ''
+                      }`}
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-gray-900 truncate">{clip.name}</h4>
+                        <h4 className="font-medium text-gray-900 truncate pointer-events-none">{clip.name}</h4>
                         <div className="flex items-center gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => moveClip(clip.id, 'up')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveClip(clip.id, 'up');
+                            }}
                             disabled={index === 0}
-                            className="h-8 w-8 p-0"
+                            className="h-8 w-8 p-0 cursor-grab active:cursor-grabbing"
+                            onMouseDown={(e) => e.stopPropagation()}
                           >
                             <GripVertical className="w-3 h-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => deleteClip(clip.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteClip(clip.id);
+                            }}
                             className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            onMouseDown={(e) => e.stopPropagation()}
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
                       
-                      <div className="space-y-2 mb-3 text-sm">
+                      <div className="space-y-2 mb-3 text-sm pointer-events-none">
                         <div className="bg-gray-50 rounded p-2">
                           <span className="text-gray-500 text-xs uppercase tracking-wide">Duration</span>
                           <div className="font-mono font-medium text-cyan-600">
@@ -701,7 +767,9 @@ const VideoClipEditor = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-full hover:bg-cyan-50 hover:border-cyan-300"
+                        className="w-full hover:bg-cyan-50 hover:border-cyan-300 pointer-events-auto"
+                        onClick={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
                       >
                         <Play className="w-3 h-3 mr-2" />
                         Preview Clip
