@@ -28,7 +28,6 @@ import QuizPreview from "./pages/QuizPreview";
 import QuizDisplay from "./pages/QuizDisplay";
 import VideoClipEditor from "./pages/VideoClipEditor";
 import SessionPlanPreview from "./pages/SessionPlanPreview";
-import SessionPlanOutput from "./pages/SessionPlanOutput";
 import UnitPlanPreview from "./pages/UnitPlanPreview";
 import ParentDashboard from "./pages/ParentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -58,7 +57,6 @@ const App = () => (
           <Route path="/session/:id" element={<SessionList />} />
           <Route path="/session/create/:lessonId" element={<CreateSession />} />
           <Route path="/session-plan-preview" element={<SessionPlanPreview />} />
-          <Route path="/session-plan-output" element={<SessionPlanOutput />} />
           <Route path="/unit-plan-preview" element={<UnitPlanPreview />} />
           <Route path="/exam-assist-prep" element={<ExamAssistPrep />} />
           <Route path="/slide-generator" element={<SlideGenerator />} />

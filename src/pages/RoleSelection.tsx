@@ -43,9 +43,15 @@ const RoleSelection = () => {
     }
   ];
 
-  const handleRoleSelect = (role: string, route: string) => {
-    if (role === 'teacher') {
+  const handleRoleSelect = (roleId: string, route: string) => {
+    if (roleId === 'teacher') {
       navigate('/login');
+    } else if (roleId === 'admin') {
+      navigate('/admin-login');
+    } else if (roleId === 'student') {
+      navigate('/student-login');
+    } else if (roleId === 'parent') {
+      navigate('/parent-login');
     } else {
       navigate(route);
     }
