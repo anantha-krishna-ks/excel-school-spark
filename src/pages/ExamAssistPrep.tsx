@@ -1801,8 +1801,8 @@ const [userId, setUserId] = useState(12345); // Default user ID
                               
                               {/* Generated Questions Section */}
                               {question.generatedQuestions?.length > 0 && (
-                                <div className="mt-10 w-screen -ml-20 pl-4 pr-24">
-                                  <div className="flex items-center justify-between mb-3 px-6">
+                                <div className="mt-6 w-full max-w-full overflow-hidden">
+                                  <div className="flex items-center justify-between mb-3 px-4">
                                     <div className="flex items-center gap-2">
                                       <div className="flex items-center justify-center bg-black rounded-full w-7 h-7">
                                         <Sparkles className="w-3.5 h-3.5 text-white flex-shrink-0" />
@@ -1814,7 +1814,7 @@ const [userId, setUserId] = useState(12345); // Default user ID
                                     </span>
                                   </div>
                                   
-                                  <div className="space-y-4 w-full px-6">
+                                  <div className="space-y-4 w-full px-4">
                                     {question.generatedQuestions.map((genQuestion, index) => (
                                       <div key={genQuestion.id} className="bg-white p-6 rounded-lg border border-gray-200 w-full shadow-sm">
                                         <div className="flex items-start gap-2">
@@ -1930,8 +1930,8 @@ const [userId, setUserId] = useState(12345); // Default user ID
 
                               {/* Converted Questions Section */}
                               {questionGenerations[question.questionid]?.convertedQuestions?.length > 0 && (
-                                <div className="mt-10 w-screen -ml-20 pl-4 pr-24">
-                                  <div className="flex items-center justify-between mb-3 px-6">
+                                <div className="mt-6 w-full max-w-full overflow-hidden">
+                                  <div className="flex items-center justify-between mb-3 px-4">
                                     <div className="flex items-center gap-2">
                                       <div className="flex items-center justify-center bg-blue-600 rounded-full w-7 h-7">
                                         <RefreshCw className="w-3.5 h-3.5 text-white flex-shrink-0" />
@@ -1943,7 +1943,7 @@ const [userId, setUserId] = useState(12345); // Default user ID
                                     </span>
                                   </div>
                                   
-                                  <div className="space-y-4 w-full px-6">
+                                  <div className="space-y-4 w-full px-4">
                                     {questionGenerations[question.questionid].convertedQuestions.map((convQuestion, index) => (
                                       <div key={convQuestion.id} className="bg-white p-6 rounded-lg border border-gray-200 w-full shadow-sm">
                                         <div className="flex items-start gap-3">
