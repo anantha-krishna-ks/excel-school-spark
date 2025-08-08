@@ -18,16 +18,17 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center p-4 relative">
+      <Button
+        onClick={() => navigate('/')}
+        variant="ghost"
+        className="absolute top-6 left-6 text-gray-600 hover:text-gray-900 hover:bg-white/50 transition-colors z-10 border border-gray-300 hover:border-gray-400 rounded-lg"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back
+      </Button>
+      
       <div className="w-full max-w-md">
-        <Button
-          onClick={() => navigate('/')}
-          variant="ghost"
-          className="mb-6 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Role Selection
-        </Button>
         
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-6">
