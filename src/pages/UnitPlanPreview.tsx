@@ -6,7 +6,7 @@ import { ArrowLeft, Download, Save, Edit, RefreshCw } from 'lucide-react';
 import Header from '@/components/Header';
 import axios from 'axios';
 import config from '@/config';
-import { Dialog, DialogTitle, DialogActions } from '@mui/material';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { set } from 'date-fns';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -180,19 +180,19 @@ const getFormattedQuestionType = (type: string): string => {
        {loading && <PageLoader text="Please wait..." />}
       <Header />
 {saveSuccess && (
-     <Dialog
-    open={saveSuccess}
-    onClose={() => setSaveSuccess(false)}
-    PaperProps={{ sx: { borderRadius: 3, px: 3, py: 2, textAlign: 'center' } }}
-  >
-    <DialogTitle sx={{ fontWeight: 600, fontSize: '1.2rem' }}>
-      ✅ Unit Plan Saved Successfully!
-    </DialogTitle>
-    <DialogActions sx={{ justifyContent: 'center' }}>
-      <Button variant="default" onClick={() => setSaveSuccess(false)}>
-        OK
-      </Button>
-    </DialogActions>
+     <Dialog open={saveSuccess} onOpenChange={setSaveSuccess}>
+    <DialogContent className="text-center">
+      <DialogHeader>
+        <DialogTitle className="text-lg font-semibold">
+          ✅ Unit Plan Saved Successfully!
+        </DialogTitle>
+      </DialogHeader>
+      <div className="pt-4">
+        <Button variant="default" onClick={() => setSaveSuccess(false)}>
+          OK
+        </Button>
+      </div>
+    </DialogContent>
   </Dialog>
 )}
       <div className="container mx-auto px-4 py-8">

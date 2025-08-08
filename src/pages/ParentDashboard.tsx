@@ -17,7 +17,7 @@ const ParentDashboard = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate('/login');
+    navigate('/parent-login');
   };
 
   const parentTools = [

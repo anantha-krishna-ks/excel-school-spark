@@ -33,6 +33,9 @@ import UnitPlanPreview from "./pages/UnitPlanPreview";
 import ParentDashboard from "./pages/ParentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
+import StudentLogin from "./pages/StudentLogin";
+import AdminLogin from "./pages/AdminLogin";
+import ParentLogin from "./pages/ParentLogin";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +77,9 @@ const App = () => (
           <Route path="/parent-dashboard" element={<ParentDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/student-login" element={<StudentLogin />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/parent-login" element={<ParentLogin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

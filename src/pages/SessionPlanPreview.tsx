@@ -7,10 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import {
-  CircularProgress,
-} from '@mui/material';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { Loader2, Download } from 'lucide-react';
 
 // Components for better organization
 const SessionHeader = ({ navigate, downloadPDF, loading }) => (
@@ -45,9 +42,9 @@ const SessionHeader = ({ navigate, downloadPDF, loading }) => (
           className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200"
         >
           {loading ? (
-            <CircularProgress size={16} className="mr-2" />
+            <Loader2 className="mr-2 w-4 h-4 animate-spin" />
           ) : (
-            <PictureAsPdfIcon className="mr-2" style={{ width: 16, height: 16 }} />
+            <Download className="mr-2 w-4 h-4" />
           )}
           {loading ? 'Generating...' : 'Download PDF'}
         </Button>
@@ -656,7 +653,7 @@ const SessionPlanPreview = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <CircularProgress />
+              <Loader2 className="w-8 h-8 animate-spin mx-auto" />
               <p className="text-muted-foreground mt-4">Loading lesson plan...</p>
             </div>
           )}
