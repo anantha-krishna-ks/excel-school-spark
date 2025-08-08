@@ -128,7 +128,18 @@ const SessionPlanOutput = () => {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    // Navigate back to session listing page
+    const unitId = UnitId || location.state?.unitId;
+    const grade = Grade || location.state?.grade;
+    const subject = editableData.metadata?.subject || location.state?.subject;
+    
+    if (unitId && grade && subject) {
+      navigate(`/session/${unitId}/${grade}/${subject}`);
+    } else if (unitId) {
+      navigate(`/session/${unitId}`);
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
@@ -145,7 +156,7 @@ const SessionPlanOutput = () => {
                 className="text-gray-600 hover:text-gray-900 hover:bg-blue-50"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Session Creation
+                Back to Session Listing
               </Button>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-800 rounded-xl flex items-center justify-center shadow-lg">
