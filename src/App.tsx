@@ -39,6 +39,7 @@ import AdminComingSoon from "./pages/AdminComingSoon";
 import StudentComingSoon from "./pages/StudentComingSoon";
 import ParentComingSoon from "./pages/ParentComingSoon";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -81,6 +82,7 @@ const App = () => (
           <Route path="/student-login" element={<StudentLogin />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/parent-login" element={<ParentLogin />} />
+          <Route path="/session-plan-output" element={<SessionPlanOutput />} />
           
           {/* Admin Tools - Coming Soon */}
           <Route path="/teacher-insight" element={<AdminComingSoon />} />
