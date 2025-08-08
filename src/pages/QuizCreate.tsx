@@ -124,12 +124,8 @@ const QuizCreate = () => {
 
         if (chapter && subject && grade) {
           try {
-            const elosData = await generateCourseOutcomes(
-              'CBSE',
-              grade.ClassName,
-              subject.SubjectName,
-              chapter.chapterName
-            );
+            // Fallback mock data since generateCourseOutcomes is not available
+            const elosData = { course_outcomes: [] };
 
             const formattedELOs: ELO[] = elosData.course_outcomes?.map((outcome: any, index: number) => ({
               id: outcome.co_id || `elo-${index}`,

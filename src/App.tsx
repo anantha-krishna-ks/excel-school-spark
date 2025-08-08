@@ -30,6 +30,7 @@ import VideoClipEditor from "./pages/VideoClipEditor";
 import SessionPlanPreview from "./pages/SessionPlanPreview";
 import SessionPlanOutput from "./pages/SessionPlanOutput";
 import UnitPlanPreview from "./pages/UnitPlanPreview";
+import ParentDashboard from "./pages/ParentDashboard";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
           <Route path="/quiz-generator/preview/:id" element={<QuizPreview />} />
           <Route path="/quiz-generator/display" element={<QuizDisplay />} />
           <Route path="/question-bundle/:bundleId" element={<QuestionBundlePreview />} />
+          <Route path="/parent-dashboard" element={<ParentDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

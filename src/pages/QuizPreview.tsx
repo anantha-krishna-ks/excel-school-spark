@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { PageLoader } from '@/components/ui/loader';
+import { Document, Paragraph, TextRun, HeadingLevel, Packer } from 'docx';
 
 
 interface Question {
@@ -100,9 +101,9 @@ const QuizPreview = () => {
       custcode: "CUST001",
       orgcode: "ORG001",
       usercode: "USER123",
-      classid: quizData.gradeId,
-      subjectid: quizData.subjectId,
-      chapterid: quizData.chapterId,
+      classid: quizData.grade,
+      subjectid: quizData.subject,
+      chapterid: quizData.chapter,
       questioncount: quizData.questionCount,
       eloids: quizData.selectedELOs.map(elo => elo.id).join(","),
       quizname: quizData.name,
@@ -242,7 +243,12 @@ const QuizPreview = () => {
   });
 
   const blob = await Packer.toBlob(docContent);
-  //saveAs(blob, fileName);
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  window.URL.revokeObjectURL(url);
 };
 
 

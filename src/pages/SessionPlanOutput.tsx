@@ -1263,47 +1263,40 @@ const SessionPlanOutput = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-          <Button 
-            variant="ghost" 
-            size="sm"
+          <button 
             onClick={() => navigate('/')}
-            className="h-auto p-0 hover:text-foreground"
+            className="text-blue-600 hover:text-blue-800"
           >
-            <Home className="h-4 w-4 mr-1" />
+            <Home className="h-4 w-4 mr-1 inline" />
             Home
-          </Button>
+          </button>
           <span>/</span>
-          <Button 
-            variant="ghost" 
-            size="sm"
+          <button 
             onClick={() => navigate('/lesson-plan-assistant')}
-            className="h-auto p-0 hover:text-foreground"
+            className="text-blue-600 hover:text-blue-800"
           >
             Lesson Plan Repository
-          </Button>
+          </button>
           <span>/</span>
-          <Button 
-            variant="ghost" 
-            size="sm"
+          <button 
             onClick={() => navigate('/session/1/VII/General%20Science')}
-            className="h-auto p-0 hover:text-foreground"
+            className="text-blue-600 hover:text-blue-800"
           >
             Sessions
-          </Button>
+          </button>
           <span>/</span>
           <span className="text-foreground">Session Plan Output</span>
         </div>
 
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="ghost" 
+          <button 
             onClick={() => navigate('/lesson-plan-assistant')}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Lesson Plan Repository
-          </Button>
+          </button>
         </div>
     <div className="max-w-7xl mx-auto space-y-6">
     <Container maxWidth="lg" sx={{ py: 4, width: '100%', fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif' }}>
