@@ -17,15 +17,15 @@ import {
   Divider,
   TextField,
   IconButton,
-  Button,
+  Button as MuiButton,
   Chip,
   Alert,
   Collapse,
-  Dialog,
-  DialogTitle,
-  DialogContent,
+  Dialog as MuiDialog,
+  DialogTitle as MuiDialogTitle,
+  DialogContent as MuiDialogContent,
   DialogContentText,
-  DialogActions,
+  DialogActions as MuiDialogActions,
   CircularProgress as MuiCircularProgress,
   CardMedia,
   Tooltip
@@ -37,7 +37,8 @@ import {
   Add as AddIcon, 
   PlayArrow as PlayArrowIcon 
 } from '@mui/icons-material';
-import { CircularProgress } from '@mui/material';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   ArrowLeft, 
   BookOpen, 
