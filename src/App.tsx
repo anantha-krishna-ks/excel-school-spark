@@ -31,6 +31,8 @@ import SessionPlanPreview from "./pages/SessionPlanPreview";
 import SessionPlanOutput from "./pages/SessionPlanOutput";
 import UnitPlanPreview from "./pages/UnitPlanPreview";
 import ParentDashboard from "./pages/ParentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import StudentDashboard from "./pages/StudentDashboard";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +72,8 @@ const App = () => (
           <Route path="/quiz-generator/display" element={<QuizDisplay />} />
           <Route path="/question-bundle/:bundleId" element={<QuestionBundlePreview />} />
           <Route path="/parent-dashboard" element={<ParentDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
