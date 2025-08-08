@@ -134,7 +134,7 @@ const CreateSession = () => {
           UnitId: lessonId,
           Grade:currentGrade
         }
-      });     
+      });
     } catch (err) {
       setLoading(false);
       const errorMessage = err.response?.data?.message || 'Please check your input and try again.';
