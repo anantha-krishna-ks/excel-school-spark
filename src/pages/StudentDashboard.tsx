@@ -216,41 +216,27 @@ const StudentDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {studentTools.map((tool) => {
             const IconComponent = tool.icon;
             return (
-              <Card 
-                key={tool.id} 
-                className="hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer group bg-white"
-                onClick={() => handleToolClick(tool.route)}
-              >
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className={`w-12 h-12 rounded-lg ${tool.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className="text-white" size={20} />
-                    </div>
+              <div key={tool.id} className="bg-white rounded-xl p-6 border border-gray-200">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className={`w-12 h-12 ${tool.color} rounded-xl flex items-center justify-center`}>
+                    <IconComponent className="w-6 h-6 text-white" />
                   </div>
-                  <CardTitle className="text-base font-semibold text-gray-900 group-hover:text-primary transition-colors leading-tight">
-                    {tool.title}
-                  </CardTitle>
-                  <CardDescription className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
-                    {tool.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <Button 
-                    size="sm"
-                    className={`w-full ${tool.buttonColor} text-white hover:shadow-md transition-all duration-300`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToolClick(tool.route);
-                    }}
-                  >
-                    Launch
-                  </Button>
-                </CardContent>
-              </Card>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{tool.title}</h3>
+                    <p className="text-gray-600 text-sm">{tool.description}</p>
+                  </div>
+                </div>
+                <Button 
+                  className={`w-full ${tool.buttonColor} text-white`}
+                  onClick={() => handleToolClick(tool.route)}
+                >
+                  Launch Tool
+                </Button>
+              </div>
             );
           })}
         </div>
