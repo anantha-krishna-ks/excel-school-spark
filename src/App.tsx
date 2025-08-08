@@ -35,6 +35,9 @@ import StudentDashboard from "./pages/StudentDashboard";
 import StudentLogin from "./pages/StudentLogin";
 import AdminLogin from "./pages/AdminLogin";
 import ParentLogin from "./pages/ParentLogin";
+import AdminComingSoon from "./pages/AdminComingSoon";
+import StudentComingSoon from "./pages/StudentComingSoon";
+import ParentComingSoon from "./pages/ParentComingSoon";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +81,40 @@ const App = () => (
           <Route path="/student-login" element={<StudentLogin />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/parent-login" element={<ParentLogin />} />
+          
+          {/* Admin Tools - Coming Soon */}
+          <Route path="/teacher-insight" element={<AdminComingSoon />} />
+          <Route path="/student-profiling" element={<AdminComingSoon />} />
+          <Route path="/parent-interview" element={<AdminComingSoon />} />
+          <Route path="/alumni-feedback" element={<AdminComingSoon />} />
+          <Route path="/teacher-hiring" element={<AdminComingSoon />} />
+          <Route path="/admission-fit" element={<AdminComingSoon />} />
+          <Route path="/student-risk" element={<AdminComingSoon />} />
+
+          {/* Student Tools - Coming Soon */}
+          <Route path="/focus-buddy" element={<StudentComingSoon />} />
+          <Route path="/smart-revision" element={<StudentComingSoon />} />
+          <Route path="/mix-master" element={<StudentComingSoon />} />
+          <Route path="/quick-recall" element={<StudentComingSoon />} />
+          <Route path="/confidence-tracker" element={<StudentComingSoon />} />
+          <Route path="/exam-prep" element={<StudentComingSoon />} />
+          <Route path="/mock-test" element={<StudentComingSoon />} />
+          <Route path="/resource-vault" element={<StudentComingSoon />} />
+          <Route path="/announcements" element={<StudentComingSoon />} />
+          <Route path="/calendar" element={<StudentComingSoon />} />
+          <Route path="/mood-mirror" element={<StudentComingSoon />} />
+          <Route path="/study-buddy" element={<StudentComingSoon />} />
+          <Route path="/goal-setter" element={<StudentComingSoon />} />
+
+          {/* Parent Tools - Coming Soon */}
+          <Route path="/progress-pulse" element={<ParentComingSoon />} />
+          <Route path="/career-spark" element={<ParentComingSoon />} />
+          <Route path="/focus-wellbeing" element={<ParentComingSoon />} />
+          <Route path="/study-recommender" element={<ParentComingSoon />} />
+          <Route path="/concept-checkin" element={<ParentComingSoon />} />
+          <Route path="/attendance-monitor" element={<ParentComingSoon />} />
+          <Route path="/resource-library" element={<ParentComingSoon />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
