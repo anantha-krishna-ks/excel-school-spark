@@ -11,6 +11,7 @@ import { Loader } from '@/components/ui/loader';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 interface GeneratedSlide {
@@ -42,7 +43,13 @@ const SlideGeneratorLessonPlan = () => {
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [isEditorMode, setIsEditorMode] = useState(false);
   const [savedPresentations, setSavedPresentations] = useState<SavedPresentation[]>([]);
-  const [showSavedPresentations, setShowSavedPresentations] = useState(false);
+  const [showSavedPresentationsDialog, setShowSavedPresentationsDialog] = useState(false);
+  
+  // Filter states for popup
+  const [filterClass, setFilterClass] = useState<string>('');
+  const [filterSubject, setFilterSubject] = useState<string>('');
+  const [filterChapter, setFilterChapter] = useState<string>('');
+  const [filterSessionPlans, setFilterSessionPlans] = useState<string[]>([]);
   
   // New dropdown states
   const [selectedClass, setSelectedClass] = useState<string>('');
@@ -205,7 +212,6 @@ const SlideGeneratorLessonPlan = () => {
     };
     
     setSavedPresentations(prev => [newPresentation, ...prev]);
-    setShowSavedPresentations(true);
     toast.success('Presentation saved successfully!');
   };
 
@@ -433,158 +439,248 @@ const SlideGeneratorLessonPlan = () => {
               </p>
             </div>
             {savedPresentations.length > 0 && (
-              <Button
-                variant="outline"
-                onClick={() => setShowSavedPresentations(!showSavedPresentations)}
-                className="flex items-center gap-2"
-              >
-                <Eye className="w-4 h-4" />
-                {showSavedPresentations ? 'Hide' : 'View'} Saved PPTs ({savedPresentations.length})
-              </Button>
+              <Dialog open={showSavedPresentationsDialog} onOpenChange={setShowSavedPresentationsDialog}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Saved PPTs ({savedPresentations.length})
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <BookOpen className="w-5 h-5" />
+                      Saved Presentations
+                    </DialogTitle>
+                    <DialogDescription>
+                      Manage your previously created presentations
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  {/* Filters */}
+                  <div className="mb-6">
+                    <h4 className="text-sm font-medium text-gray-700 mb-4">Filter Presentations</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {/* Class Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Class</label>
+                        <Select value={filterClass} onValueChange={setFilterClass}>
+                          <SelectTrigger className="h-10 bg-background">
+                            <SelectValue placeholder="All classes" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background z-50">
+                            <SelectItem value="">All classes</SelectItem>
+                            {classes.map((cls) => (
+                              <SelectItem key={cls} value={cls}>
+                                {cls}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Subject Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Subject</label>
+                        <Select value={filterSubject} onValueChange={setFilterSubject}>
+                          <SelectTrigger className="h-10 bg-background">
+                            <SelectValue placeholder="All subjects" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background z-50">
+                            <SelectItem value="">All subjects</SelectItem>
+                            {subjects.map((subject) => (
+                              <SelectItem key={subject} value={subject}>
+                                {subject}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Chapter Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Chapter</label>
+                        <Select value={filterChapter} onValueChange={setFilterChapter}>
+                          <SelectTrigger className="h-10 bg-background">
+                            <SelectValue placeholder="All chapters" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background z-50">
+                            <SelectItem value="">All chapters</SelectItem>
+                            {chapters.map((chapter) => (
+                              <SelectItem key={chapter} value={chapter}>
+                                {chapter}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Session Plans Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Session Plans</label>
+                        <Select value={filterSessionPlans.join(',')} onValueChange={(value) => setFilterSessionPlans(value ? value.split(',') : [])}>
+                          <SelectTrigger className="h-10 bg-background">
+                            <SelectValue placeholder="All sessions" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background z-50">
+                            <SelectItem value="">All sessions</SelectItem>
+                            {sessionPlans.map((plan) => (
+                              <SelectItem key={plan} value={plan}>
+                                {plan}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Saved Presentations Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {savedPresentations.map((presentation) => (
+                      <ContextMenu key={presentation.id}>
+                        <ContextMenuTrigger>
+                          <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300 bg-gradient-to-br from-white to-gray-50/50 hover:from-white hover:to-blue-50/30 overflow-hidden">
+                            <CardContent className="p-0">
+                              {/* Thumbnail with overlay */}
+                              <div className="relative">
+                                <div className={`w-full h-28 ${presentation.thumbnail} relative`}>
+                                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors"></div>
+                                  <div className="absolute top-2 right-2 flex gap-1">
+                                    {presentation.isPrivate && (
+                                      <Badge variant="secondary" className="bg-white/90 text-gray-700 h-5 px-2 text-xs">
+                                        <Lock className="w-3 h-3 mr-1" />
+                                        Private
+                                      </Badge>
+                                    )}
+                                    <Badge variant="secondary" className="bg-white/90 text-gray-700 h-5 px-2 text-xs">
+                                      {presentation.slideCount} slides
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Content */}
+                              <div className="p-4">
+                                <h3 className="font-bold text-gray-900 mb-2 text-base leading-tight group-hover:text-blue-600 transition-colors truncate">
+                                  {presentation.title}
+                                </h3>
+                                
+                                <div className="text-xs text-gray-500 space-y-1 mb-3">
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    Created {presentation.createdAt.toLocaleDateString()}
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Eye className="w-3 h-3" />
+                                    Last viewed {presentation.lastViewed.toLocaleDateString()}
+                                  </div>
+                                </div>
+                                
+                                {/* Action Buttons */}
+                                <div className="space-y-2">
+                                  {/* Primary Download Button */}
+                                  <Button 
+                                    size="sm" 
+                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-md hover:shadow-lg transition-all text-xs h-8"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toast.success('Downloading presentation...');
+                                    }}
+                                  >
+                                    <Download className="w-3 h-3 mr-1" />
+                                    Download PPT
+                                  </Button>
+                                  
+                                  {/* More Actions Dropdown */}
+                                  <div className="flex justify-center">
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button 
+                                          size="sm" 
+                                          variant="outline"
+                                          className="border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-xs h-8"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <MoreHorizontal className="w-3 h-3 mr-1" />
+                                          More Options
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="center" className="w-48">
+                                        <DropdownMenuItem onClick={() => {
+                                          openPresentation(presentation);
+                                          setShowSavedPresentationsDialog(false);
+                                        }}>
+                                          <Edit className="w-4 h-4 mr-2" />
+                                          Edit Presentation
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => {
+                                          openPresentation(presentation);
+                                          setShowSavedPresentationsDialog(false);
+                                        }}>
+                                          <Eye className="w-4 h-4 mr-2" />
+                                          Preview Presentation
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem 
+                                          onClick={() => deletePresentation(presentation.id)}
+                                          className="text-red-600 focus:text-red-600"
+                                        >
+                                          <Trash2 className="w-4 h-4 mr-2" />
+                                          Delete Presentation
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent className="w-56">
+                          <ContextMenuItem onClick={() => {
+                            openPresentation(presentation);
+                            setShowSavedPresentationsDialog(false);
+                          }}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Presentation
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => {
+                            openPresentation(presentation);
+                            setShowSavedPresentationsDialog(false);
+                          }}>
+                            <Eye className="w-4 h-4 mr-2" />
+                            Preview Presentation
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => toast.success('Downloading presentation...')}>
+                            <Download className="w-4 h-4 mr-2" />
+                            Download PPT
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => duplicatePresentation(presentation)}>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Duplicate
+                          </ContextMenuItem>
+                          <ContextMenuSeparator />
+                          <ContextMenuItem 
+                            onClick={() => deletePresentation(presentation.id)}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete Presentation
+                          </ContextMenuItem>
+                        </ContextMenuContent>
+                      </ContextMenu>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
         </div>
 
-        {/* Saved Presentations List */}
-        {showSavedPresentations && savedPresentations.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                Saved Presentations
-              </CardTitle>
-              <CardDescription>
-                Manage your previously created presentations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {savedPresentations.map((presentation) => (
-                  <ContextMenu key={presentation.id}>
-                    <ContextMenuTrigger>
-                      <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300 bg-gradient-to-br from-white to-gray-50/50 hover:from-white hover:to-blue-50/30 overflow-hidden">
-                        <CardContent className="p-0">
-                          {/* Thumbnail with overlay */}
-                          <div className="relative">
-                            <div className={`w-full h-32 ${presentation.thumbnail} relative`}>
-                              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors"></div>
-                              <div className="absolute top-3 right-3 flex gap-1">
-                                {presentation.isPrivate && (
-                                  <Badge variant="secondary" className="bg-white/90 text-gray-700 h-6 px-2">
-                                    <Lock className="w-3 h-3 mr-1" />
-                                    Private
-                                  </Badge>
-                                )}
-                                <Badge variant="secondary" className="bg-white/90 text-gray-700 h-6 px-2">
-                                  {presentation.slideCount} slides
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="p-5">
-                            <h3 className="font-bold text-gray-900 mb-2 text-lg leading-tight group-hover:text-blue-600 transition-colors truncate">
-                              {presentation.title}
-                            </h3>
-                            
-                            <div className="text-xs text-gray-500 space-y-1 mb-4">
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                Created {presentation.createdAt.toLocaleDateString()}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Eye className="w-3 h-3" />
-                                Last viewed {presentation.lastViewed.toLocaleDateString()}
-                              </div>
-                            </div>
-                            
-                            {/* Action Buttons */}
-                            <div className="space-y-3">
-                              {/* Primary Download Button */}
-                              <Button 
-                                size="sm" 
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-md hover:shadow-lg transition-all"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toast.success('Downloading presentation...');
-                                }}
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                Download PPT
-                              </Button>
-                              
-                              {/* More Actions Dropdown */}
-                              <div className="flex justify-center">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      className="border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <MoreHorizontal className="w-4 h-4 mr-2" />
-                                      More Options
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="center" className="w-48">
-                                    <DropdownMenuItem onClick={() => openPresentation(presentation)}>
-                                      <Edit className="w-4 h-4 mr-2" />
-                                      Edit Presentation
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => openPresentation(presentation)}>
-                                      <Eye className="w-4 h-4 mr-2" />
-                                      Preview Presentation
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem 
-                                      onClick={() => deletePresentation(presentation.id)}
-                                      className="text-red-600 focus:text-red-600"
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-2" />
-                                      Delete Presentation
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="w-56">
-                      <ContextMenuItem onClick={() => openPresentation(presentation)}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Presentation
-                      </ContextMenuItem>
-                      <ContextMenuItem onClick={() => openPresentation(presentation)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Preview Presentation
-                      </ContextMenuItem>
-                      <ContextMenuItem onClick={() => toast.success('Downloading presentation...')}>
-                        <Download className="w-4 h-4 mr-2" />
-                        Download PPT
-                      </ContextMenuItem>
-                      <ContextMenuItem onClick={() => duplicatePresentation(presentation)}>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Duplicate
-                      </ContextMenuItem>
-                      <ContextMenuSeparator />
-                      <ContextMenuItem 
-                        onClick={() => deletePresentation(presentation.id)}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete Presentation
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Main Form */}
         <Card className="mb-8">
