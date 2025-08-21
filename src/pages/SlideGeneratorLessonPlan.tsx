@@ -444,12 +444,13 @@ const SlideGeneratorLessonPlan = () => {
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
+                    onClick={() => setShowSavedPresentationsDialog(true)}
                   >
                     <Eye className="w-4 h-4" />
                     View Saved PPTs ({savedPresentations.length})
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto z-50 bg-background border shadow-lg">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                       <BookOpen className="w-5 h-5" />
